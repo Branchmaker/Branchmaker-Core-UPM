@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,15 @@ namespace BranchMaker.Actors
     {
         public string displayName;
         public Color themeColor;
+        public List<CharacterExpression> expressions;
+    }
+
+    [Serializable]
+    public class CharacterExpression
+    {
+        public string expression;
+        public Sprite characterImage;
+
     }
 
 }
