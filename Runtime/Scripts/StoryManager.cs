@@ -317,9 +317,9 @@ namespace BranchMaker.Story
                 {
                     if (StoryActor.actorpool.ContainsKey(activeBlock.character))
                     {
-                        StoryActor actor = StoryActor.actorpool[activeBlock.character];
+                        var actor = StoryActor.actorpool[activeBlock.character];
                         StoryActor.NewSpeaker(activeBlock.character);
-                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.sockPuppet.themeColor) + ">" + actor.sockPuppet.displayName + "</color>\n" + dialogue;
+                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.ActorObject.themeColor) + ">" + actor.ActorObject.displayName + "</color>\n" + dialogue;
                     }
                     //parseSpeaker(activeBlock.character);
                 }
