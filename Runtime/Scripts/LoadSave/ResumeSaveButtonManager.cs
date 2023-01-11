@@ -3,27 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class ResumeSaveButtonManager : MonoBehaviour
+namespace BranchMaker.LoadSave
 {
-    public static ResumeSaveButtonManager manager;
-    public GameObject resumeButton;
-    // Start is called before the first frame update
-    private void Awake()
+    public class ResumeSaveButtonManager : MonoBehaviour
     {
-        manager = this;
-    }
+        public static ResumeSaveButtonManager manager;
 
-    private void OnEnable()
-    {
-        CheckButton();
-    }
-    public void CheckButton()
-    {
-        resumeButton.SetActive(CloudSaveManager.CheckForSaveFile());
-    }
+        public GameObject resumeButton;
 
-    public void ResumeGame() {
-        string scene = CloudSaveManager.Resume();
-        SceneManager.LoadScene(scene);
+        // Start is called before the first frame update
+        private void Awake()
+        {
+            manager = this;
+        }
+
+        private void OnEnable()
+        {
+            CheckButton();
+        }
+
+        public void CheckButton()
+        {
+            resumeButton.SetActive(CloudSaveManager.CheckForSaveFile());
+        }
+
+        public void ResumeGame()
+        {
+            string scene = CloudSaveManager.Resume();
+            SceneManager.LoadScene(scene);
+        }
     }
 }

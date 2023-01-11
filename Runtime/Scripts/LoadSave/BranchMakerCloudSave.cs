@@ -2,6 +2,10 @@ using BranchMaker.Story;
 using System;
 using System.Collections.Generic;
 
+
+namespace BranchMaker.LoadSave
+{
+    
 [Serializable]
 public class BranchMakerCloudSave
 {
@@ -38,4 +42,6 @@ public class BranchMakerCloudSave
             elements.WriteData(this);
         }
     }
+}
+
 }
