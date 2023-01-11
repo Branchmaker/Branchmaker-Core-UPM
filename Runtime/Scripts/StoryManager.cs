@@ -195,10 +195,6 @@ namespace BranchMaker.Story
             }
 
             JSONNode allthenodes = JSONNode.Parse(content);
-
-            ZeldaTyper.manager.Clearout();
-
-
             foreach (JSONNode storynode in allthenodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storynode));
 
             loadingStory = false;
