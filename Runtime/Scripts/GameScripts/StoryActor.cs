@@ -40,7 +40,7 @@ public class StoryActor : MonoBehaviour
 
     private void OnEnable()
     {
-        GetComponent<Image>().CrossFadeColor(UnspokenColorTint(), 0f, false, false);
+        if (GetComponent<Image>() != null) GetComponent<Image>().CrossFadeColor(UnspokenColorTint(), 0f, false, false);
         if (string.IsNullOrEmpty(actorKey)) return;
         if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey, this);
         actorpool[actorKey] = this;
@@ -48,15 +48,15 @@ public class StoryActor : MonoBehaviour
 
     Color UnspokenColorTint() {
         if (sockPuppet == null) return Color.black;
-        Color tinted = sockPuppet.themeColor * 0.3f;
+        var tinted = sockPuppet.themeColor * 0.3f;
 
-        float f = 0.5f; // desaturate by 20%
-        float L = 0.3f * tinted.r + 0.6f * tinted.g + 0.1f * tinted.b;
-        float new_r = tinted.r + f * (L - tinted.r);
-        float new_g = tinted.g + f * (L - tinted.g);
-        float new_b = tinted.b + f * (L - tinted.b);
+        var f = 0.5f; // desaturate by 20%
+        var L = 0.3f * tinted.r + 0.6f * tinted.g + 0.1f * tinted.b;
+        var newR = tinted.r + f * (L - tinted.r);
+        var newG = tinted.g + f * (L - tinted.g);
+        var newB = tinted.b + f * (L - tinted.b);
 
-        return new Color(new_r,new_g,new_b);
+        return new Color(newR,newG,newB);
     }
 
     public static void ShowSpeaker(string actor)
