@@ -2,10 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu]
-[SerializeField]
-public class ActorObject : ScriptableObject
+
+namespace BranchMaker.Actors
 {
-    public string displayName;
-    public Color themeColor;
+
+    [CreateAssetMenu]
+    [SerializeField]
+    public class ActorObject : ScriptableObject
+    {
+        public string displayName;
+        public Color themeColor;
+    }
+
 }
