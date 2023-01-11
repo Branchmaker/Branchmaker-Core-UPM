@@ -9,7 +9,8 @@
   "changelogUrl": "https://branchmaker.com/changelog.html",
   "licensesUrl": "https://branchmaker.com/licensing.html",
   "dependencies": {
- },
+    "com.unity.textmeshpro": "3.0.6"
+  },
  "keywords": [
     "narrative",
     "branches",
