@@ -59,18 +59,25 @@ public class StoryActor : MonoBehaviour
         return new Color(newR,newG,newB);
     }
 
-    public static void ShowSpeaker(string actor)
+    public static void FadeInSpeaker(StoryActor newshown)
     {
-        if (!actorpool.ContainsKey(actor)) return;
-
-        var newshown = actorpool[actor];
+        currentlySpeaking = newshown;
         foreach (var blocked in newshown.blocksOutActors)
         {
             blocked.characterImage.enabled = false;
         }
-        newshown.characterImage.enabled = true;
-        newshown.characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
 
+        if (newshown.characterImage != null)
+        {
+            newshown.characterImage.enabled = true;
+            newshown.characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
+        }
+    }
+
+    public static void ShowSpeaker(string actor)
+    {
+        if (!actorpool.ContainsKey(actor)) return;
+        FadeInSpeaker(actorpool[actor]);
     }
     public static void NewSpeaker(string actor)
     {
@@ -91,12 +98,7 @@ public class StoryActor : MonoBehaviour
             }
         }
         
-        currentlySpeaking = actorpool[actor];
-        foreach (var blocked in currentlySpeaking.blocksOutActors) {
-            blocked.characterImage.enabled = false;
-        }
-        actorpool[actor].characterImage.enabled = true;
-        actorpool[actor].characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
+        FadeInSpeaker(actorpool[actor]);
 
     }
 }
