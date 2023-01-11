@@ -28,7 +28,7 @@ public class StoryActor : MonoBehaviour
         if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey,this);
         actorpool[actorKey] = this;
         characterImage = GetComponent<Image>();
-        characterImage.enabled = false;
+        if (characterImage != null) characterImage.enabled = false;
         if (rawImage != null) rawImage.enabled = false;
     }
 
