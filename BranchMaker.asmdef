@@ -1,6 +1,6 @@
 {
     "name": "BranchMaker",
-    "rootNamespace": "",
+    "rootNamespace": "BranchMaker",
     "references": [
         "SockPuppets",
         "Unity.TextMeshPro",
