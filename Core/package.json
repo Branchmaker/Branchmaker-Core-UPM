@@ -1,0 +1,23 @@
+{
+  "name": "com.branchmaker.core",
+  "version": "0.0.3",
+  "displayName": "Branchmaker CORE",
+  "description": "This is an example package",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "documentationUrl": "https://branchmaker.com/",
+  "changelogUrl": "https://branchmaker.com/changelog.html",
+  "licensesUrl": "https://branchmaker.com/licensing.html",
+  "dependencies": {
+ },
+ "keywords": [
+    "narrative",
+    "branches",
+    "player choice"
+  ],
+  "author": {
+    "name": "BranchMaker",
+    "email": "nils@branchmaker.com",
+    "url": "https://branchmaker.com"
+  }
+}
