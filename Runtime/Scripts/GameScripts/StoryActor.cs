@@ -8,7 +8,7 @@ public class StoryActor : MonoBehaviour
 {
     public static Dictionary<string, StoryActor> actorpool = new Dictionary<string, StoryActor>();
 
-    public ActorObject sockPuppet;
+    public ActorObject ActorObject;
     public string actorKey;
     static Color unspokenColor = new Color(0.3f, 0.3f, 0.3f,1f);
 
@@ -47,8 +47,8 @@ public class StoryActor : MonoBehaviour
     }
 
     Color UnspokenColorTint() {
-        if (sockPuppet == null) return Color.black;
-        var tinted = sockPuppet.themeColor * 0.3f;
+        if (ActorObject == null) return Color.black;
+        var tinted = ActorObject.themeColor * 0.3f;
 
         var f = 0.5f; // desaturate by 20%
         var L = 0.3f * tinted.r + 0.6f * tinted.g + 0.1f * tinted.b;
