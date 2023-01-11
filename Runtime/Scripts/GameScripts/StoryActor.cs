@@ -34,13 +34,13 @@ public class StoryActor : MonoBehaviour
 
     private void OnDisable()
     {
-        characterImage.enabled = false;
+        if (characterImage != null) characterImage.enabled = false;
         currentlySpeaking = null;
     }
 
     private void OnEnable()
     {
-        if (GetComponent<Image>() != null) GetComponent<Image>().CrossFadeColor(UnspokenColorTint(), 0f, false, false);
+        if (characterImage != null) characterImage.CrossFadeColor(UnspokenColorTint(), 0f, false, false);
         if (string.IsNullOrEmpty(actorKey)) return;
         if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey, this);
         actorpool[actorKey] = this;
@@ -63,8 +63,8 @@ public class StoryActor : MonoBehaviour
     {
         if (!actorpool.ContainsKey(actor)) return;
 
-        StoryActor newshown = actorpool[actor];
-        foreach (StoryActor blocked in newshown.blocksOutActors)
+        var newshown = actorpool[actor];
+        foreach (var blocked in newshown.blocksOutActors)
         {
             blocked.characterImage.enabled = false;
         }
@@ -90,9 +90,9 @@ public class StoryActor : MonoBehaviour
                 }
             }
         }
-        //Debug.Log("Speaker : "+ actor);
+        
         currentlySpeaking = actorpool[actor];
-        foreach (StoryActor blocked in currentlySpeaking.blocksOutActors) {
+        foreach (var blocked in currentlySpeaking.blocksOutActors) {
             blocked.characterImage.enabled = false;
         }
         actorpool[actor].characterImage.enabled = true;
