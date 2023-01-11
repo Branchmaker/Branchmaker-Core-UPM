@@ -2,9 +2,7 @@
     "name": "BranchMaker",
     "rootNamespace": "BranchMaker",
     "references": [
-        "SockPuppets",
-        "Unity.TextMeshPro",
-        "com.rlabrecque.steamworks.net"
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
