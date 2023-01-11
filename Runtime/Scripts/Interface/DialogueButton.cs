@@ -6,7 +6,7 @@ namespace BranchMaker.UI
     
 public class DialogueButton : MonoBehaviour
 {
-    public TMPro.TextMeshPro TMLabel;
+    public TMPro.TextMeshProUGUI TMLabel;
     public void SetLabel(string newLabel)
     {
         if (TMLabel != null) TMLabel.text = newLabel;
