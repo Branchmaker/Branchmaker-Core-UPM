@@ -68,7 +68,7 @@ namespace BranchMaker.Story
             
 
             _actionButtons = FindObjectsOfType<DialogueButton>().ToList();
-            clickToContinue.SetActive(false);
+            if (clickToContinue != null) clickToContinue.SetActive(false);
             TryBackdrop("waiting");
             WindowOverlays = FindObjectsOfType<MonoBehaviour>().OfType<IWindowOverlay>().ToList();
             StoryEventManager.Initialize();
@@ -122,15 +122,15 @@ namespace BranchMaker.Story
 
             if (speakQueue.Count > 0)
             {
-                manager.clickToContinue.SetActive(!ZeldaTyper.currentlyWriting);
+                if (manager.clickToContinue != null) manager.clickToContinue.SetActive(!ZeldaTyper.currentlyWriting);
                 return false;
             }
 
             if (ZeldaTyper.currentlyWriting) return false;
 
-            manager.clickToContinue.SetActive(false);
+            if (manager.clickToContinue != null) manager.clickToContinue.SetActive(false);
 
-            foreach (BranchNodeBlock block in currentnode.blocks)
+            foreach (var block in currentnode.blocks)
             {
                 if (!block.isActionNode()) continue;
                 if (StorySceneManager.SceneHasNodeButton(block.target_node)) continue;
@@ -350,7 +350,7 @@ namespace BranchMaker.Story
             actionCooldown = .6f;
             currentnode = node;
             speakQueue.Clear();
-            Debug.Log("Load node "+node.id+ " blocks "+node.blocks.Count);
+            //Debug.Log("Load node "+node.id+ " blocks "+node.blocks.Count);
             foreach (var block in node.StoryBlocks())
             {
                 if (!StoryEventManager.ValidBlockCheck(block.meta_scripts, block)) continue;

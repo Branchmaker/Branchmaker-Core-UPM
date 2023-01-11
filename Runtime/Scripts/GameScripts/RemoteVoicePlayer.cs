@@ -11,14 +11,16 @@ public class RemoteVoicePlayer : MonoBehaviour
         player = this;
     }
 
-    static public void PlayRemoteOgg(string uri)
+    public static void PlayRemoteOgg(string uri)
     {
         if (string.IsNullOrEmpty(uri)) return;
         if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
         player.StartCoroutine(player.PlayFile(uri));
     }
 
-    static public void StopSpeaking() {
+    public static void StopSpeaking()
+    {
+        if (player == null) return;
         player.StopAllCoroutines();
         player.GetComponent<AudioSource>().Stop();
     }

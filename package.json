@@ -18,6 +18,13 @@
   "author": {
     "name": "BranchMaker",
     "email": "nils@branchmaker.com",
-    "url": "https://branchmaker.com"
-  }
+    "url": "https://branchmaker.com"},
+  
+  "samples": [
+    {
+      "displayName": "Absolute Basics",
+      "description": "The very thinnest of starting points.",
+      "path": "Samples/AbsoluteBasics"
+    }
+  ]
 }
