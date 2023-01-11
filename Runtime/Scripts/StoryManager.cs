@@ -140,13 +140,17 @@ namespace BranchMaker.Story
                 string buttonLabel = block.dialogue.CapitalizeFirst();
                 if (!string.IsNullOrEmpty(block.meta_scripts))
                 {
-                    if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=cyan>" + buttonLabel + "</color>";
+                    if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
                 }
 
                 manager._actionButtons[buttonIndex].gameObject.SetActive(true);
-                manager._actionButtons[buttonIndex].GetComponentInChildren<Text>().text = buttonLabel;
-                manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite = (icon == null ? manager.detectiveFace : icon);
-               
+                manager._actionButtons[buttonIndex].BroadcastMessage("SetLabel",buttonLabel);;
+                if (manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
+                {
+                    manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
+                        (icon == null ? manager.detectiveFace : icon);
+                }
+
                 manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
                 manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
                     () =>
