@@ -134,10 +134,9 @@ namespace BranchMaker.Story
             {
                 if (!block.isActionNode()) continue;
                 if (StorySceneManager.SceneHasNodeButton(block.target_node)) continue;
-                if (!StoryEventManager.ValidBlockCheck(block.meta_scripts, block)) continue;
+                if (!StoryEventManager.ValidBlockCheck(block)) continue;
 
-                Sprite icon = StoryEventManager.BlockIcon(block.meta_scripts);
-                string buttonLabel = block.dialogue.CapitalizeFirst();
+                var buttonLabel = block.dialogue.CapitalizeFirst();
                 if (!string.IsNullOrEmpty(block.meta_scripts))
                 {
                     if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
@@ -147,6 +146,7 @@ namespace BranchMaker.Story
                 manager._actionButtons[buttonIndex].BroadcastMessage("SetLabel",buttonLabel);;
                 if (manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
                 {
+                    var icon = StoryEventManager.BlockIcon(block);
                     manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
                         (icon == null ? manager.detectiveFace : icon);
                 }
@@ -167,16 +167,16 @@ namespace BranchMaker.Story
         public IEnumerator GetAllTheNodes()
         {
             loadingStory = true;
-            string content = "";
+            var content = "";
             yield return new WaitForEndOfFrame();
 #pragma warning disable 612, 618
-            WWW nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished) + bookkey);
+            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished) + bookkey);
             nodefetcher.threadPriority = ThreadPriority.High;
 #pragma warning restore 612, 618
             
             yield return nodefetcher;
 
-            string backupFileName = Application.persistentDataPath + "/" + bookkey + ".txt";
+            var backupFileName = Application.persistentDataPath + "/" + bookkey + ".txt";
 
             if (!string.IsNullOrEmpty(nodefetcher.error))
             {
@@ -187,7 +187,7 @@ namespace BranchMaker.Story
                 }
                 else
                 {
-                    ZeldaWriteDialogue("Could not reach case file server, please check your internet connection...");
+                    ZeldaWriteDialogue("Could not reach BranchMaker server, please check your internet connection...");
                 }
             }
             else
@@ -210,7 +210,7 @@ namespace BranchMaker.Story
                 forceLoad = null;
             }
 
-            if (reloadPurpose == true)
+            if (reloadPurpose)
             {
                 LoadNodeKey(startingNode);
                 reloadPurpose = false;
@@ -294,40 +294,37 @@ namespace BranchMaker.Story
             }
         }
 
-        static void SpeakActiveNode()
+        private static void SpeakActiveNode()
         {
-            if (speakQueue.Count > 0)
+            if (speakQueue.Count <= 0) return;
+            var activeBlock = speakQueue[0];
+            RemoteVoicePlayer.StopSpeaking();
+                
+            if (activeBlock.meta_scripts.Contains("hide:dialogue"))
             {
-                var activeBlock = speakQueue[0];
-                RemoteVoicePlayer.StopSpeaking();
-                
-                if (activeBlock.meta_scripts.Contains("hide:dialogue"))
-                {
-                    speakQueue.RemoveAt(0);
-                    BuildButtons();
-                    manager.dialogueWindow.SetActive(false);
-                    return;
-                }
-                
-                manager.dialogueWindow.SetActive(true);
-                var dialogue = activeBlock.dialogue;
-                StoryEventManager.ParseBlockscript(activeBlock.meta_scripts, activeBlock);
-                
-                if (!string.IsNullOrEmpty(activeBlock.character))
-                {
-                    if (StoryActor.actorpool.ContainsKey(activeBlock.character))
-                    {
-                        var actor = StoryActor.actorpool[activeBlock.character];
-                        StoryActor.NewSpeaker(activeBlock.character);
-                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.ActorObject.themeColor) + ">" + actor.ActorObject.displayName + "</color>\n" + dialogue;
-                    }
-                    //parseSpeaker(activeBlock.character);
-                }
-                if (!string.IsNullOrEmpty(activeBlock.voice_file)) RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
-                ZeldaWriteDialogue(dialogue);
                 speakQueue.RemoveAt(0);
                 BuildButtons();
+                manager.dialogueWindow.SetActive(false);
+                return;
             }
+                
+            manager.dialogueWindow.SetActive(true);
+            var dialogue = activeBlock.dialogue;
+            StoryEventManager.ParseBlockscript(activeBlock);
+                
+            if (!string.IsNullOrEmpty(activeBlock.character))
+            {
+                if (StoryActor.actorpool.ContainsKey(activeBlock.character))
+                {
+                    var actor = StoryActor.actorpool[activeBlock.character];
+                    StoryActor.NewSpeaker(activeBlock.character);
+                    dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.ActorObject.themeColor) + ">" + actor.ActorObject.displayName + "</color>\n" + dialogue;
+                }
+            }
+            if (!string.IsNullOrEmpty(activeBlock.voice_file)) RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
+            ZeldaWriteDialogue(dialogue);
+            speakQueue.RemoveAt(0);
+            BuildButtons();
         }
 
         public static void LoadNodeKey(string key)
@@ -345,7 +342,7 @@ namespace BranchMaker.Story
             LoadNode(nodeLib[key]);
         }
 
-        static void LoadNode(BranchNode node)
+        private static void LoadNode(BranchNode node)
         {
             actionCooldown = .6f;
             currentnode = node;
@@ -353,7 +350,7 @@ namespace BranchMaker.Story
             //Debug.Log("Load node "+node.id+ " blocks "+node.blocks.Count);
             foreach (var block in node.StoryBlocks())
             {
-                if (!StoryEventManager.ValidBlockCheck(block.meta_scripts, block)) continue;
+                if (!StoryEventManager.ValidBlockCheck(block)) continue;
                 if (block.meta_scripts.Contains("dontrepeat"))
                 {
                     if (manager._seenNodes.Contains(block.id)) continue;
@@ -378,6 +375,11 @@ namespace BranchMaker.Story
             if (currentnode != null && bNode.id == currentnode.id)
             {
                 LoadNode(bNode);
+            }
+            
+            foreach (var block in bNode.blocks)
+            {
+                StoryEventManager.PreloadScriptCheck(block);
             }
         }
 

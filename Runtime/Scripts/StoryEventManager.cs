@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace BranchMaker.Story
 {
-    public class StoryEventManager
+    public static class StoryEventManager
     {
         static List<StoryEventTrigger> _triggerPool = new List<StoryEventTrigger>();
 
@@ -35,22 +35,28 @@ namespace BranchMaker.Story
                 _triggerPool.Add(trigger);
             }
         }
-
-
-        static public Sprite BlockIcon(string blockscript)
+        
+        public static void PreloadScriptCheck(BranchNodeBlock nodeBlock)
         {
-            if (blockscript == null) return null;
-            if (blockscript == string.Empty) return null;
-            if (blockscript == "null") return null;
-            string[] codelines = blockscript.Split("\n"[0]);
-
-            /*
-             INSERT YOUR CUSTOM SCRIPTING TRIGGERS HERE
-             */
-
-            foreach (string line in codelines)
+            if (!nodeBlock.HasMetaScript()) return;
+            foreach (var line in nodeBlock.MetaScriptLines())
             {
-                string cline = line.Trim();
+                var cline = line.Trim();
+                var bits = cline.Split(':');
+                foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.PreloadStory))
+                {
+                        trigger.Run(cline, nodeBlock, bits);
+                }
+            }
+        }
+
+
+        public static Sprite BlockIcon(BranchNodeBlock block)
+        {
+            if (!block.HasMetaScript()) return null;
+            foreach (var line in block.MetaScriptLines())
+            {
+                var cline = line.Trim();
 
                 if (cline.Contains("icon:"))
                 {
@@ -67,23 +73,11 @@ namespace BranchMaker.Story
             return null;
         }
 
-        internal static bool ValidBlockCheck(string blockscript, BranchNodeBlock nodeBlock)
+        internal static bool ValidBlockCheck(BranchNodeBlock nodeBlock)
         {
-            switch (blockscript)
-            {
-                case null:
-                case "":
-                case "null":
-                    return true;
-            }
+            if (!nodeBlock.HasMetaScript()) return true;
 
-            var codelines = blockscript.Split("\n"[0]);
-
-            /*
-             INSERT YOUR CUSTOM SCRIPTING TRIGGERS HERE
-             */
-
-            foreach (string line in codelines)
+            foreach (string line in nodeBlock.MetaScriptLines())
             {
                 string cline = line.Trim();
 
@@ -100,23 +94,11 @@ namespace BranchMaker.Story
         }
 
 
-        static public void ParseBlockscript(string blockscript, BranchNodeBlock nodeBlock)
+        static public void ParseBlockscript(BranchNodeBlock nodeBlock)
         {
-            switch (blockscript)
-            {
-                case null:
-                case "":
-                case "null":
-                    return;
-            }
-
-            string[] codelines = blockscript.Split("\n"[0]);
-
-            /*
-             INSERT YOUR CUSTOM SCRIPTING TRIGGERS HERE
-             */
-
-            foreach (string line in codelines)
+            if (!nodeBlock.HasMetaScript()) return;
+            
+            foreach (string line in nodeBlock.MetaScriptLines())
             {
                 string cline = line.Trim();
 
@@ -166,11 +148,6 @@ namespace BranchMaker.Story
                     StoryActor.NewSpeaker(charname);
                 }
             }
-        }
-
-        public void ReplayLevel()
-        {
-            BranchNode.nodecollection.Clear();
         }
 
     }
