@@ -80,6 +80,7 @@ public class StoryActor : MonoBehaviour
         {
             StoryManager.manager.speakerPortrait.enabled = true;
             StoryManager.manager.speakerPortrait.sprite = newshown.PortraitSprite();
+            if (currentlySpeaking.PortraitSprite() == null) StoryManager.manager.speakerPortrait.enabled = false;
         }
     }
     
@@ -90,6 +91,7 @@ public class StoryActor : MonoBehaviour
         if (StoryManager.manager.speakerPortrait != null)
         {
             StoryManager.manager.speakerPortrait.sprite = currentlySpeaking.PortraitSprite();
+            if (currentlySpeaking.PortraitSprite() == null) StoryManager.manager.speakerPortrait.enabled = false;
         }
     }
 
@@ -121,9 +123,13 @@ public class StoryActor : MonoBehaviour
         {
             if (currentlySpeaking.gameObject.activeInHierarchy)
             {
-                if (currentlySpeaking.characterImage.enabled)
+                if (currentlySpeaking.characterImage != null)
                 {
-                    currentlySpeaking.characterImage.CrossFadeColor(currentlySpeaking.UnspokenColorTint(), speakFadeSpeed, false, false);
+                    if (currentlySpeaking.characterImage.enabled)
+                    {
+                        currentlySpeaking.characterImage.CrossFadeColor(currentlySpeaking.UnspokenColorTint(),
+                            speakFadeSpeed, false, false);
+                    }
                 }
             }
         }
