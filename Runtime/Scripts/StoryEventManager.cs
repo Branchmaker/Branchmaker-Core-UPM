@@ -21,6 +21,7 @@ namespace BranchMaker.Story
         public static void RegisterEventTrigger(Type eventClass)
         {
             if (_triggerPool.Count == 0) PreloadEvents();
+            if (_triggerPool.Any(a => a.GetType() == eventClass)) return;
             var trigger = Activator.CreateInstance(eventClass) as StoryEventTrigger;
             _triggerPool.Add(trigger);
         }
@@ -32,6 +33,7 @@ namespace BranchMaker.Story
             foreach (var triggerEvent in allAbilities)
             {
                 var trigger = Activator.CreateInstance(triggerEvent) as StoryEventTrigger;
+                if (_triggerPool.Any(a => a.GetType() == triggerEvent)) continue;
                 _triggerPool.Add(trigger);
             }
         }
