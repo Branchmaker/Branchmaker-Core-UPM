@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BranchMaker.Actors;
 using BranchMaker.Story;
 using UnityEngine;
@@ -94,7 +95,7 @@ public class StoryActor : MonoBehaviour
     public Sprite PortraitSprite()
     {
         if (currentlySpeaking.ActorObject.expressions.Count == 0) return null;
-        if (string.IsNullOrEmpty(currentlySpeaking.ActorObject.current_emotion)) return null;
+        if (string.IsNullOrEmpty(currentlySpeaking.ActorObject.current_emotion)) return currentlySpeaking.ActorObject.expressions.First().characterImage;
         foreach (var expression in currentlySpeaking.ActorObject.expressions) {
             if (expression.expression == currentlySpeaking.ActorObject.current_emotion) return expression.characterImage;
         }
