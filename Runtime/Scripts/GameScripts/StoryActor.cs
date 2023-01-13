@@ -27,6 +27,7 @@ public class StoryActor : MonoBehaviour
     private void Awake()
     {
         if (string.IsNullOrEmpty(actorKey)) return;
+        actorKey = actorKey.ToLower();
         if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey,this);
         actorpool[actorKey] = this;
         characterImage = GetComponent<Image>();
@@ -44,7 +45,7 @@ public class StoryActor : MonoBehaviour
     {
         if (characterImage != null) characterImage.CrossFadeColor(UnspokenColorTint(), 0f, false, false);
         if (string.IsNullOrEmpty(actorKey)) return;
-        if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey, this);
+        if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey.ToLower(), this);
         actorpool[actorKey] = this;
     }
 
