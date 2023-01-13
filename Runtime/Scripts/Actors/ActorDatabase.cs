@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BranchMaker.Actors;
-using UnityEngine;
 
 namespace BranchMaker.Actors
 {
