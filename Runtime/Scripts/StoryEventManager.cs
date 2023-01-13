@@ -87,7 +87,7 @@ namespace BranchMaker.Story
 
                 foreach (var trigger in _triggerPool.FindAll(a => a.Method == StoryEventTrigger.TriggerMethod.Validator))
                 {
-                    if (cline.StartsWith(trigger.TriggerKey) || nodeBlock.dialogue == trigger.TriggerKey)
+                    if (cline.StartsWith(trigger.TriggerKey) || nodeBlock.clean_action == trigger.TriggerKey)
                     {
                         if (trigger.PassValidation(cline, nodeBlock) == false) return false;
                     }

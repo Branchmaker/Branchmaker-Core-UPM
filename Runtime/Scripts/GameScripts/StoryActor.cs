@@ -76,6 +76,7 @@ public class StoryActor : MonoBehaviour
 
         if (StoryManager.manager.speakerPortrait != null)
         {
+            StoryManager.manager.speakerPortrait.enabled = true;
             StoryManager.manager.speakerPortrait.sprite = newshown.PortraitSprite();
         }
     }
@@ -84,6 +85,10 @@ public class StoryActor : MonoBehaviour
     {
         if (string.IsNullOrEmpty(emotion)) return;
         currentlySpeaking.ActorObject.current_emotion = emotion;
+        if (StoryManager.manager.speakerPortrait != null)
+        {
+            StoryManager.manager.speakerPortrait.sprite = currentlySpeaking.PortraitSprite();
+        }
     }
 
     public Sprite PortraitSprite()
