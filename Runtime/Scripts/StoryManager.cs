@@ -50,6 +50,7 @@ namespace BranchMaker.Story
         private List<string> _seenNodes = new List<string>();
 
         private List<IWindowOverlay> _windowOverlays;
+        private List<ICustomDialogueAction> _customDialogueOptions;
 
         public bool HideScriptActions = true;
         
@@ -64,8 +65,9 @@ namespace BranchMaker.Story
             speakerPortrait.enabled = false;
             
             
-            _actionButtons = FindObjectsOfType<DialogueButton>().ToList();
-            _windowOverlays = FindObjectsOfType<MonoBehaviour>().OfType<IWindowOverlay>().ToList();
+            _actionButtons = FindObjectsOfType<DialogueButton>(true).ToList();
+            _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
+            _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
             
             if (clickToContinue != null) clickToContinue.SetActive(false);
         }
@@ -142,6 +144,11 @@ namespace BranchMaker.Story
                         LoadNodeKey(block.target_node);
                     });
                 buttonIndex++;
+            }
+
+            foreach (var dialogueOption in manager._customDialogueOptions)
+            {
+                dialogueOption.ProcessDialogueOptions(currentnode);
             }
 
             if (SuggestionManager.SuggestionMode) return;
