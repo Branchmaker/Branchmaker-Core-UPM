@@ -62,8 +62,7 @@ namespace BranchMaker.Story
             nodeLib.Clear();
             StoryButton.playerkeys.Clear();
             Application.targetFrameRate = 30;
-            speakerPortrait.enabled = false;
-            
+            if (speakerPortrait != null) speakerPortrait.enabled = false;
             
             _actionButtons = FindObjectsOfType<DialogueButton>(true).ToList();
             _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
@@ -306,7 +305,6 @@ namespace BranchMaker.Story
         {
             if (clickCooldown > 0) return;
             if (!nodeLib.ContainsKey(key)) return;
-            manager.speakerPortrait.enabled = false;
             clickCooldown = 0.2f;
             HideButtons();
             if (key == "okay")

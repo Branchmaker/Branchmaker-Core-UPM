@@ -88,7 +88,7 @@ namespace BranchMaker.Story
                     if (cline.StartsWith(trigger.TriggerKey) || nodeBlock.clean_action == trigger.TriggerKey)
                     {
                         if (trigger.PassValidation(cline, nodeBlock) == false) return false;
-                    }
+                    }   
                 }
             }
             return true;
@@ -102,13 +102,13 @@ namespace BranchMaker.Story
             foreach (var line in nodeBlock.MetaScriptLines())
             {
                 var cline = line.Trim();
-                var bits = cline.Split(':');
                 
                 // Dynamic trigger handling
                 foreach (var trigger in _triggerPool)
                 {
-                    if (trigger.Method == StoryEventTrigger.TriggerMethod.OnBlockRun && bits[0] == trigger.TriggerKey)
+                    if (trigger.Method == StoryEventTrigger.TriggerMethod.OnBlockRun && cline.StartsWith(trigger.TriggerKey))
                     {
+                        var bits = cline.Split(':');
                         trigger.Run(cline, nodeBlock, bits);
                     }
                 }
