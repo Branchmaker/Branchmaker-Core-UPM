@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
@@ -10,7 +8,7 @@ namespace BranchMaker.Story
 {
     public static class StoryEventManager
     {
-        static List<StoryEventTrigger> _triggerPool = new List<StoryEventTrigger>();
+        static List<StoryEventTrigger> _triggerPool = new();
 
         static StoryEventManager()
         {
@@ -101,28 +99,20 @@ namespace BranchMaker.Story
         {
             if (!nodeBlock.HasMetaScript()) return;
             
-            foreach (string line in nodeBlock.MetaScriptLines())
+            foreach (var line in nodeBlock.MetaScriptLines())
             {
-                string cline = line.Trim();
-
-                string[] bits = cline.Split(':');
-
-
+                var cline = line.Trim();
+                var bits = cline.Split(':');
+                
                 // Dynamic trigger handling
-                foreach (StoryEventTrigger trigger in _triggerPool)
+                foreach (var trigger in _triggerPool)
                 {
                     if (trigger.Method == StoryEventTrigger.TriggerMethod.OnBlockRun && bits[0] == trigger.TriggerKey)
                     {
                         trigger.Run(cline, nodeBlock, bits);
                     }
                 }
-
-                if (cline.StartsWith("bg:"))
-                {
-                    string bgwish = cline.Replace("bg:", "").Trim();
-                    StoryManager.manager.TryBackdrop(bgwish);
-                }
-
+                
                 if (cline.StartsWith("sound:"))
                 {
                     string clipname = cline.Replace("sound:", "").ToLower().Trim();

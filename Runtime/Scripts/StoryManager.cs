@@ -38,13 +38,10 @@ namespace BranchMaker.Story
         public GameObject dialogueWindow;
         public GameObject clickToContinue;
 
-        [Header("Backdrop switch plugin")]
-        public Renderer backdropTexture;
-        public Sprite[] backdrops;
         [Header("Speaker portrait plugin")]
         public Image speakerPortrait;
         public Sprite[] faces;
-        public Sprite detectiveFace;
+        public Sprite defaultActionIcon;
 
         static float clickCooldown = 0f;
 
@@ -52,7 +49,7 @@ namespace BranchMaker.Story
 
         private List<string> _seenNodes = new List<string>();
 
-        private static List<IWindowOverlay> WindowOverlays;
+        private List<IWindowOverlay> _windowOverlays;
 
         public bool HideScriptActions = true;
         
@@ -66,10 +63,11 @@ namespace BranchMaker.Story
             Application.targetFrameRate = 30;
             speakerPortrait.enabled = false;
             
+            
             _actionButtons = FindObjectsOfType<DialogueButton>().ToList();
+            _windowOverlays = FindObjectsOfType<MonoBehaviour>().OfType<IWindowOverlay>().ToList();
+            
             if (clickToContinue != null) clickToContinue.SetActive(false);
-            TryBackdrop("waiting");
-            WindowOverlays = FindObjectsOfType<MonoBehaviour>().OfType<IWindowOverlay>().ToList();
         }
 
         private void FixedUpdate()
@@ -77,18 +75,6 @@ namespace BranchMaker.Story
             if (clickCooldown > 0)
             {
                 clickCooldown -= Time.deltaTime;
-            }
-        }
-
-        internal void TryBackdrop(string key)
-        {
-            foreach (Sprite bit in backdrops)
-            {
-                if (key.ToLower() == bit.name.ToLower())
-                {
-                    backdropTexture.material.mainTexture = bit.texture;
-                    return;
-                }
             }
         }
 
@@ -146,7 +132,7 @@ namespace BranchMaker.Story
                 {
                     var icon = StoryEventManager.BlockIcon(block);
                     manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
-                        (icon == null ? manager.detectiveFace : icon);
+                        (icon == null ? manager.defaultActionIcon : icon);
                 }
 
                 manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
@@ -232,7 +218,7 @@ namespace BranchMaker.Story
             if (gameover) return true;
             if (manager == null) return true;
             
-            foreach (var overlay in WindowOverlays)
+            foreach (var overlay in manager._windowOverlays)
             {
                 if (overlay.WindowOverlayOpen()) return true;
             }
