@@ -24,7 +24,7 @@ namespace BranchMaker.Actors
         {
             _currentlyShowingActor = ActorDatabase.ActorByKey(actorKey);
             actorImage.sprite = _currentlyShowingActor.PortraitSprite();
-            actorImage.enabled = (actorImage.sprite != null));
+            actorImage.enabled = (actorImage.sprite != null);
         }
 
         public void HideActors(BranchNodeBlock updateBlock)
