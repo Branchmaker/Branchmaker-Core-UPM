@@ -14,6 +14,7 @@ namespace BranchMaker.Actors
         public string displayName;
         public Color themeColor;
         public List<CharacterExpression> expressions;
+        public string current_emotion;
     }
 
     [Serializable]

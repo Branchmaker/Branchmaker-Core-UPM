@@ -117,21 +117,10 @@ namespace BranchMaker.Story
                     }
                 }
 
-                if (cline.StartsWith("speaks:"))
-                {
-                    string whospeaks = cline.Replace("speaks:", "").Trim();
-                    StoryManager.ParseSpeaker(whospeaks);
-                }
-
                 if (cline.StartsWith("bg:"))
                 {
                     string bgwish = cline.Replace("bg:", "").Trim();
                     StoryManager.manager.TryBackdrop(bgwish);
-                }
-                if (cline.StartsWith("evidence:"))
-                {
-                    string bgwish = cline.Replace("evidence:", "").Trim();
-                    StoryManager.ParseSpeaker(bgwish);
                 }
 
                 if (cline.StartsWith("sound:"))

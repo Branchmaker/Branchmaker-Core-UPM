@@ -8,8 +8,8 @@ public class ShowPerson : StoryEventTrigger
     public override string TriggerKey => "showperson";
     public override void Run(string trigger, BranchNodeBlock block, string[] bits)
     {
-        string whospeaks = bits[1];
-        StoryManager.ParseSpeaker(whospeaks);
+        var speaks = bits[1];
+        StoryActor.ShowSpeaker(speaks);
     }
 
     public override bool PassValidation(string trigger, BranchNodeBlock block)

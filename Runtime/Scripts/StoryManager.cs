@@ -53,6 +53,8 @@ namespace BranchMaker.Story
         private List<string> _seenNodes = new List<string>();
 
         private static List<IWindowOverlay> WindowOverlays;
+
+        public bool HideScriptActions = true;
         
         public void Awake()
         {
@@ -109,28 +111,28 @@ namespace BranchMaker.Story
             }
         }
 
-        public static bool BuildButtons()
+        public static void BuildButtons()
         {
-            int buttonIndex = 0;
+            var buttonIndex = 0;
             HideButtons();
 
-            if (currentnode == null) return false;
+            if (currentnode == null) return;
 
             if (speakQueue.Count > 0)
             {
                 if (manager.clickToContinue != null) manager.clickToContinue.SetActive(!ZeldaTyper.currentlyWriting);
-                return false;
+                return;
             }
 
-            if (ZeldaTyper.currentlyWriting) return false;
+            if (ZeldaTyper.currentlyWriting) return;
 
             if (manager.clickToContinue != null) manager.clickToContinue.SetActive(false);
 
-            foreach (var block in currentnode.blocks)
+            foreach (var block in currentnode.ActionBlocks())
             {
-                if (!block.isActionNode()) continue;
                 if (StorySceneManager.SceneHasNodeButton(block.target_node)) continue;
                 if (!StoryEventManager.ValidBlockCheck(block)) continue;
+                if (block.clean_action.StartsWith("#") && manager.HideScriptActions) continue;
 
                 var buttonLabel = block.dialogue.CapitalizeFirst();
                 if (!string.IsNullOrEmpty(block.meta_scripts))
@@ -156,11 +158,10 @@ namespace BranchMaker.Story
                 buttonIndex++;
             }
 
-            if (SuggestionManager.SuggestionMode) return true;
-            return (buttonIndex != 0);
+            if (SuggestionManager.SuggestionMode) return;
         }
 
-        public IEnumerator GetAllTheNodes()
+        private IEnumerator GetAllTheNodes()
         {
             loadingStory = true;
             var content = "";
@@ -274,22 +275,6 @@ namespace BranchMaker.Story
             StartCoroutine(GetAllTheNodes());
         }
 
-        public static void ParseSpeaker(string speaker)
-        {
-            if (speaker == string.Empty) return;
-            foreach (var spr in manager.faces)
-            {
-                if (spr.name.ToLower() == speaker)
-                {
-                    manager.speakerPortrait.enabled = true;
-                    manager.speakerPortrait.sprite = spr;
-                    manager.speakerPortrait.CrossFadeAlpha(0f, 0f, true);
-                    manager.speakerPortrait.CrossFadeAlpha(1f, 2f, true);
-                    return;
-                }
-            }
-        }
-
         private static void SpeakActiveNode()
         {
             if (speakQueue.Count <= 0) return;
@@ -313,6 +298,7 @@ namespace BranchMaker.Story
                 if (StoryActor.actorpool.ContainsKey(activeBlock.character))
                 {
                     var actor = StoryActor.actorpool[activeBlock.character];
+                    actor.SwitchEmotion(activeBlock.emotion);
                     StoryActor.NewSpeaker(activeBlock.character);
                     dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.ActorObject.themeColor) + ">" + actor.ActorObject.displayName + "</color>\n" + dialogue;
                 }

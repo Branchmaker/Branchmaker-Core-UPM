@@ -13,6 +13,7 @@ namespace BranchMaker
         public string meta_scripts;
         public string voice_file;
         public string character;
+        public string emotion;
 
         // Action nodes
         public string clean_action;
@@ -36,6 +37,7 @@ namespace BranchMaker
             block.voice_file = jsonNode["voice_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
+            block.emotion = (jsonNode["emotion"].Value.ToLower() ?? null);
 
             if (block.meta_scripts != string.Empty) {
                 block.script_lines = new List<string>();
@@ -49,7 +51,7 @@ namespace BranchMaker
             if (jsonNode["target_node"] != null)
             {
                 block.target_node = jsonNode["target_node"].Value;
-                block.clean_action = jsonNode["clean_dialogue"].Value;
+                block.clean_action = jsonNode["clean_dialogue"].Value.ToLower();
                 // Lingual
                 block.process_lines = jsonNode["processed_lines"].Value.ToLower();
                 block.process_line_list = new List<string>();
