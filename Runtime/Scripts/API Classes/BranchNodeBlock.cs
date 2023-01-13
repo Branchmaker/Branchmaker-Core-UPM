@@ -51,7 +51,7 @@ namespace BranchMaker
             if (jsonNode["target_node"] != null)
             {
                 block.target_node = jsonNode["target_node"].Value;
-                block.clean_action = jsonNode["clean_dialogue"].Value.ToLower();
+                block.clean_action = jsonNode["dialogue"].Value.Trim().ToLower();
                 // Lingual
                 block.process_lines = jsonNode["processed_lines"].Value.ToLower();
                 block.process_line_list = new List<string>();
