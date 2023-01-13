@@ -81,15 +81,13 @@ namespace BranchMaker.Story
         internal static bool ValidBlockCheck(BranchNodeBlock nodeBlock)
         {
             if (!nodeBlock.HasMetaScript()) return true;
-
-            foreach (string line in nodeBlock.MetaScriptLines())
+            foreach (var line in nodeBlock.MetaScriptLines())
             {
-                string cline = line.Trim();
+                var cline = line.Trim();
 
-                // Dynamic trigger handling
-                foreach (StoryEventTrigger trigger in _triggerPool)
+                foreach (var trigger in _triggerPool.FindAll(a => a.Method == StoryEventTrigger.TriggerMethod.Validator))
                 {
-                    if (trigger.Method == StoryEventTrigger.TriggerMethod.Validator && cline.StartsWith(trigger.TriggerKey))
+                    if (cline.StartsWith(trigger.TriggerKey) || nodeBlock.dialogue == trigger.TriggerKey)
                     {
                         if (trigger.PassValidation(cline, nodeBlock) == false) return false;
                     }
@@ -99,7 +97,7 @@ namespace BranchMaker.Story
         }
 
 
-        static public void ParseBlockscript(BranchNodeBlock nodeBlock)
+        public static void ParseBlockscript(BranchNodeBlock nodeBlock)
         {
             if (!nodeBlock.HasMetaScript()) return;
             
