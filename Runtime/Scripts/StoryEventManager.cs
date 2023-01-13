@@ -12,9 +12,10 @@ namespace BranchMaker.Story
     {
         static List<StoryEventTrigger> _triggerPool = new List<StoryEventTrigger>();
 
-        public static void Initialize()
+        static StoryEventManager()
         {
-            if (_triggerPool.Count == 0) PreloadEvents();
+            _triggerPool.Clear();
+            PreloadEvents();
         }
 
         public static void RegisterEventTrigger(Type eventClass)

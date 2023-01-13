@@ -27,7 +27,7 @@ namespace BranchMaker.Story
 
         private static List<BranchNodeBlock> speakQueue = new List<BranchNodeBlock>();
 
-        public static Dictionary<string, BranchNode> nodeLib = new Dictionary<string, BranchNode>();
+        private static Dictionary<string, BranchNode> nodeLib = new Dictionary<string, BranchNode>();
 
         [Header("Handlers")]
         public GameObject[] dialogueHandlers;
@@ -48,7 +48,7 @@ namespace BranchMaker.Story
 
         static float clickCooldown = 0f;
 
-        public static bool reloadPurpose = true;
+        private static bool reloadPurpose = true;
 
         private List<string> _seenNodes = new List<string>();
 
@@ -64,14 +64,10 @@ namespace BranchMaker.Story
             Application.targetFrameRate = 30;
             speakerPortrait.enabled = false;
             
-            
-            
-
             _actionButtons = FindObjectsOfType<DialogueButton>().ToList();
             if (clickToContinue != null) clickToContinue.SetActive(false);
             TryBackdrop("waiting");
             WindowOverlays = FindObjectsOfType<MonoBehaviour>().OfType<IWindowOverlay>().ToList();
-            StoryEventManager.Initialize();
         }
 
         private void FixedUpdate()
