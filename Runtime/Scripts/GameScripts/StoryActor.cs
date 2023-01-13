@@ -76,34 +76,27 @@ public class StoryActor : MonoBehaviour
             newshown.characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
         }
 
+        /*
         if (StoryManager.manager.speakerPortrait != null)
         {
             StoryManager.manager.speakerPortrait.enabled = true;
             StoryManager.manager.speakerPortrait.sprite = newshown.PortraitSprite();
             if (currentlySpeaking.PortraitSprite() == null) StoryManager.manager.speakerPortrait.enabled = false;
         }
+        */
     }
     
     internal void SwitchEmotion(string emotion)
     {
         if (string.IsNullOrEmpty(emotion)) return;
-        currentlySpeaking.ActorObject.current_emotion = emotion;
+        currentlySpeaking.ActorObject.CurrentEmotion = emotion;
+        /*
         if (StoryManager.manager.speakerPortrait != null)
         {
             StoryManager.manager.speakerPortrait.sprite = currentlySpeaking.PortraitSprite();
             if (currentlySpeaking.PortraitSprite() == null) StoryManager.manager.speakerPortrait.enabled = false;
         }
-    }
-
-    public Sprite PortraitSprite()
-    {
-        if (currentlySpeaking.ActorObject.expressions.Count == 0) return null;
-        if (string.IsNullOrEmpty(currentlySpeaking.ActorObject.current_emotion)) return currentlySpeaking.ActorObject.expressions.First().characterImage;
-        foreach (var expression in currentlySpeaking.ActorObject.expressions) {
-            if (expression.expression == currentlySpeaking.ActorObject.current_emotion) return expression.characterImage;
-        }
-        Debug.LogError("Could not find expression = "+currentlySpeaking.ActorObject.expressions);
-        return null;
+        */
     }
 
     public static void ShowSpeaker(string actor)

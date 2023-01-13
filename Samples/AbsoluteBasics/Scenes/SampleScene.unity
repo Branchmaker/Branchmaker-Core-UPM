@@ -1270,8 +1270,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -20, y: -20}
+  m_AnchoredPosition: {x: 55, y: 0}
+  m_SizeDelta: {x: -130, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1285844073
 MonoBehaviour:
@@ -1936,13 +1936,14 @@ GameObject:
   - component: {fileID: 1605159883}
   - component: {fileID: 1605159885}
   - component: {fileID: 1605159884}
+  - component: {fileID: 1605159886}
   m_Layer: 5
   m_Name: Speaker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1605159883
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1958,11 +1959,11 @@ RectTransform:
   m_Father: {fileID: 1852084749}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1605159884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2001,6 +2002,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1605159882}
   m_CullTransparentMesh: 1
+--- !u!114 &1605159886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605159882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa0b6168bc9a14489347151e9c563b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  preloadActors:
+  - {fileID: 11400000, guid: 1392f1feb3903b04fad3b736e804a1a9, type: 2}
+  actorImage: {fileID: 1605159884}
 --- !u!1 &1651900511
 GameObject:
   m_ObjectHideFlags: 0
@@ -2037,11 +2053,9 @@ MonoBehaviour:
   - {fileID: 1285844071}
   dialogueWindow: {fileID: 1285844071}
   clickToContinue: {fileID: 1853065031}
-  backdropTexture: {fileID: 0}
-  backdrops: []
-  speakerPortrait: {fileID: 1605159884}
   faces: []
-  detectiveFace: {fileID: 0}
+  defaultActionIcon: {fileID: 0}
+  HideScriptActions: 1
 --- !u!4 &1651900513
 Transform:
   m_ObjectHideFlags: 0

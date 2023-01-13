@@ -6,6 +6,7 @@ using SimpleJSON;
 using System.IO;
 using BranchMaker.UI;
 using System.Linq;
+using BranchMaker.Actors;
 using BranchMaker.Api;
 using BranchMaker.LoadSave;
 using Debug = UnityEngine.Debug;
@@ -39,7 +40,7 @@ namespace BranchMaker.Story
         public GameObject clickToContinue;
 
         [Header("Speaker portrait plugin")]
-        public Image speakerPortrait;
+        //public Image speakerPortrait;
         public Sprite[] faces;
         public Sprite defaultActionIcon;
 
@@ -51,6 +52,7 @@ namespace BranchMaker.Story
 
         private List<IWindowOverlay> _windowOverlays;
         private List<ICustomDialogueAction> _customDialogueOptions;
+        private List<IActorHandler> _actorHandlers;
 
         public bool HideScriptActions = true;
         
@@ -61,12 +63,13 @@ namespace BranchMaker.Story
             reloadPurpose = true;
             nodeLib.Clear();
             StoryButton.playerkeys.Clear();
-            Application.targetFrameRate = 30;
-            if (speakerPortrait != null) speakerPortrait.enabled = false;
             
             _actionButtons = FindObjectsOfType<DialogueButton>(true).ToList();
             _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
+            _actorHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IActorHandler>().ToList();
             _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
+            
+            _actorHandlers.ForEach(a => a.ResetActors());
             
             if (clickToContinue != null) clickToContinue.SetActive(false);
         }
@@ -187,8 +190,8 @@ namespace BranchMaker.Story
                 content = nodefetcher.text;
             }
 
-            JSONNode allthenodes = JSONNode.Parse(content);
-            foreach (JSONNode storynode in allthenodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storynode));
+            var allthenodes = JSONNode.Parse(content);
+            foreach (var storynode in allthenodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storynode));
 
             loadingStory = false;
 
@@ -287,12 +290,12 @@ namespace BranchMaker.Story
                 
             if (!string.IsNullOrEmpty(activeBlock.character))
             {
-                if (StoryActor.actorpool.ContainsKey(activeBlock.character))
+                var actor = ActorDatabase.ActorByKey(activeBlock.character);
+                if (actor != null)
                 {
-                    var actor = StoryActor.actorpool[activeBlock.character];
-                    actor.SwitchEmotion(activeBlock.emotion);
-                    StoryActor.NewSpeaker(activeBlock.character);
-                    dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.ActorObject.themeColor) + ">" + actor.ActorObject.displayName + "</color>\n" + dialogue;
+                    if (!string.IsNullOrEmpty(activeBlock.emotion)) actor.CurrentEmotion = activeBlock.emotion;
+                    manager._actorHandlers.ForEach(a => a.ActorUpdate(activeBlock.character, activeBlock));
+                    dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.themeColor) + ">" + actor.displayName + "</color>\n" + dialogue;
                 }
             }
             if (!string.IsNullOrEmpty(activeBlock.voice_file)) RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
