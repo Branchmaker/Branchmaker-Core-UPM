@@ -24,9 +24,8 @@ namespace BranchMaker.Story
             _triggerPool.Add(trigger);
         }
 
-        static void PreloadEvents()
+        private static void PreloadEvents()
         {
-            _triggerPool.Clear();
             var allAbilities = Assembly.GetAssembly(typeof(StoryEventTrigger)).GetTypes().Where(t => !t.IsAbstract && typeof(StoryEventTrigger).IsAssignableFrom(t));
 
             foreach (var triggerEvent in allAbilities)
@@ -42,10 +41,13 @@ namespace BranchMaker.Story
             foreach (var line in nodeBlock.MetaScriptLines())
             {
                 var cline = line.Trim();
-                var bits = cline.Split(':');
                 foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.PreloadStory))
                 {
+                    if (cline.StartsWith(trigger.TriggerKey))
+                    {
+                        var bits = cline.Split(':');
                         trigger.Run(cline, nodeBlock, bits);
+                    }
                 }
             }
         }
@@ -58,7 +60,7 @@ namespace BranchMaker.Story
             {
                 var cline = line.Trim();
 
-                if (cline.Contains("icon:"))
+                if (cline.StartsWith("icon:"))
                 {
                     string newclue = cline.Replace("icon:", "").ToLower().Trim();
                     foreach (Sprite spr in StoryManager.manager.faces)
