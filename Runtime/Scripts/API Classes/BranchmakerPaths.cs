@@ -12,8 +12,9 @@ namespace BranchMaker.Api
         public static string jsonupdateurl = serverRoot + "suggestions/updateblock/";
         public static string suggesturl = serverRoot + "suggestions/playersuggest/";
         
-        public static string StoryNodes(bool staticPath)
+        public static string StoryNodes(bool staticPath, string storyId)
         {
+            return serverRoot+"/api/"+storyId+"/feed/story.json";
             return serverRoot + (staticPath ? "static/" : "") +"client/storynodes/";
         }
     }

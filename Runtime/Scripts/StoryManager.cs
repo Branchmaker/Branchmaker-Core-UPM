@@ -162,7 +162,7 @@ namespace BranchMaker.Story
             var content = "";
             yield return new WaitForEndOfFrame();
 #pragma warning disable 612, 618
-            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished) + bookkey);
+            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished,bookkey));
             nodefetcher.threadPriority = ThreadPriority.High;
 #pragma warning restore 612, 618
             
