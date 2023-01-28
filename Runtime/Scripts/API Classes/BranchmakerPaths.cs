@@ -13,7 +13,7 @@ namespace BranchMaker.Api
         
         public static string StoryNodes(bool staticPath, string storyId)
         {
-            return serverRoot+"/api/"+storyId+"/feed/story.json";
+            return serverRoot+"api/"+storyId+"/feed/story.json";
             //return serverRoot + (staticPath ? "static/" : "") +"client/storynodes/";
         }
     }
