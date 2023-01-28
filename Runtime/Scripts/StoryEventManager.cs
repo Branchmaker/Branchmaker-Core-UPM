@@ -64,7 +64,7 @@ namespace BranchMaker.Story
                 if (cline.StartsWith("icon:"))
                 {
                     string newclue = cline.Replace("icon:", "").ToLower().Trim();
-                    foreach (Sprite spr in StoryManager.manager.faces)
+                    foreach (var spr in StoryManager.manager.IconSprites)
                     {
                         if (spr.name.ToLower() == newclue)
                         {
@@ -76,7 +76,7 @@ namespace BranchMaker.Story
             return null;
         }
 
-        internal static bool ValidBlockCheck(BranchNodeBlock nodeBlock)
+        public static bool ValidBlockCheck(BranchNodeBlock nodeBlock)
         {
             if (!nodeBlock.HasMetaScript()) return true;
             foreach (var line in nodeBlock.MetaScriptLines())

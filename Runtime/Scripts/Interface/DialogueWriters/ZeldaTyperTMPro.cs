@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace BranchMaker.UI
 {
-    public class ZeldaTyperTMPro : MonoBehaviour
+    public class ZeldaTyperTMPro : MonoBehaviour, IDialogueHandler
     {
-        public static ZeldaTyperTMPro manager;
+        private static ZeldaTyperTMPro manager;
         static string displayDialogueString;
         static List<string> displayDialogueBits = new List<string>();
 
@@ -21,12 +20,7 @@ namespace BranchMaker.UI
         static bool zeldaInsideBracket;
         static bool zeldaInsideWord;
         static string zeldaGeneratedText;
-        static public bool currentlyWriting;
-        static string purewrite;
-
-        public Color[] fadecolors;
-
-        List<GameObject> queue = new List<GameObject>();
+        private static bool currentlyWriting;
 
         bool rushSpeaker;
         public TextMeshProUGUI dialogue;
@@ -35,8 +29,17 @@ namespace BranchMaker.UI
         {
             manager = this;
         }
+        
+        public void WriteDialogue(BranchNodeBlock block, string processedText)
+        {
+            DisplayDialogue(processedText);
+        }
 
-
+        public bool BusyWriting()
+        {
+            return currentlyWriting;
+        }
+        
         public void DisplayDialogue(string text)
         {
             rushSpeaker = false;
@@ -45,7 +48,7 @@ namespace BranchMaker.UI
 
             displayDialogueString = text.Replace("\r", "").Replace("  ", " ").Replace(" ?", "?");
 
-            purewrite = Regex.Replace(text, @"<[^>]*>", String.Empty);
+            //purewrite = Regex.Replace(text, @"<[^>]*>", String.Empty);
 
             string[] bits = displayDialogueString.Split(' ');
 
@@ -60,24 +63,12 @@ namespace BranchMaker.UI
             zeldaGeneratedText = "";
             zeldaInsideBracket = false;
             zeldaInsideColor = false;
-
-            Phaseout();
         }
 
-        public void Clearout() {
-            queue.Clear();
-        }
 
         public static string StripHTML(string input)
         {
             return Regex.Replace(input, "<.*?>", String.Empty);
-        }
-
-        void Phaseout() {
-            if (queue.Count > 1)
-            {
-                queue[0].GetComponent<Text>().text = StripHTML(queue[0].GetComponent<Text>().text);
-            }
         }
 
         void ZeldaType()
@@ -152,6 +143,7 @@ namespace BranchMaker.UI
             speedupCooldown -= Time.deltaTime;
             lettercooldown -= Time.deltaTime;
         }
+
     }
 
 }
