@@ -7,7 +7,8 @@ namespace BranchMaker {
     {
         public string id;
         public string nickname;
-        public List<BranchNodeBlock> blocks = new List<BranchNodeBlock>();
+        public List<BranchNodeBlock> blocks = new();
+        public List<BranchNodeBlock> suggestions = new();
 
         public bool processed;
 
