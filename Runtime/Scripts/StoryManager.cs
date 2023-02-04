@@ -9,6 +9,7 @@ using System.Linq;
 using BranchMaker.Actors;
 using BranchMaker.Api;
 using BranchMaker.LoadSave;
+using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
 
 namespace BranchMaker.Story
@@ -19,30 +20,23 @@ namespace BranchMaker.Story
         public static BranchMakerCloudSave forceLoad;
 
         [Header("API Configuration")]
-        public string bookkey = "Place Storybook API key here";
-        public string startingNode;
-        public bool loadFromPublished = true;
+        public string Bookkey = "Place Storybook API key here";
+        [SerializeField] private string StartingNode;
+        [SerializeField] private bool loadFromPublished = true;
         public static BranchNode currentnode;
 
         static float actionCooldown = 0f;
 
-        private static List<BranchNodeBlock> speakQueue = new List<BranchNodeBlock>();
+        private static List<BranchNodeBlock> _speakQueue = new List<BranchNodeBlock>();
 
         private static Dictionary<string, BranchNode> nodeLib = new Dictionary<string, BranchNode>();
 
         [Header("Handlers")]
-        public GameObject[] dialogueHandlers;
 
         static bool gameover;
-        private List<DialogueButton> _actionButtons;
         static bool loadingStory;
-        public GameObject dialogueWindow;
         public GameObject clickToContinue;
-
-        [Header("Speaker portrait plugin")]
-        //public Image speakerPortrait;
-        public Sprite[] faces;
-        public Sprite defaultActionIcon;
+        public Sprite[] IconSprites;
 
         static float clickCooldown = 0f;
 
@@ -50,8 +44,10 @@ namespace BranchMaker.Story
 
         private List<string> _seenNodes = new List<string>();
 
+        private List<IDialogueHandler> _dialogueHandlers;
         private List<IWindowOverlay> _windowOverlays;
-        private List<ICustomDialogueAction> _customDialogueOptions;
+        public List<ICustomDialogueAction> _customDialogueOptions;
+        private List<IOptionHandler> _optionHandlers;
         private List<IActorHandler> _actorHandlers;
 
         public bool HideScriptActions = true;
@@ -64,10 +60,11 @@ namespace BranchMaker.Story
             nodeLib.Clear();
             StoryButton.playerkeys.Clear();
             
-            _actionButtons = FindObjectsOfType<DialogueButton>(true).ToList();
             _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
             _actorHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IActorHandler>().ToList();
+            _dialogueHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IDialogueHandler>().ToList();
             _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
+            _optionHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IOptionHandler>().ToList();
             
             _actorHandlers.ForEach(a => a.ResetActors());
             
@@ -84,7 +81,7 @@ namespace BranchMaker.Story
 
         private void Start()
         {
-            HideButtons();
+            _optionHandlers.ForEach(a => a.Cleanup());
             if (!loadingStory) StartCoroutine(GetAllTheNodes());
         }
 
@@ -93,82 +90,27 @@ namespace BranchMaker.Story
             if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
         }
 
-        static void HideButtons()
-        {
-            foreach (var but in manager._actionButtons)
-            {
-                but.gameObject.SetActive(false);
-            }
-        }
-
-        public static void BuildButtons()
-        {
-            var buttonIndex = 0;
-            HideButtons();
-
-            if (currentnode == null) return;
-
-            if (speakQueue.Count > 0)
-            {
-                if (manager.clickToContinue != null) manager.clickToContinue.SetActive(!ZeldaTyper.currentlyWriting);
-                return;
-            }
-
-            if (ZeldaTyper.currentlyWriting) return;
-
-            if (manager.clickToContinue != null) manager.clickToContinue.SetActive(false);
-
-            foreach (var block in currentnode.ActionBlocks())
-            {
-                if (StorySceneManager.SceneHasNodeButton(block.target_node)) continue;
-                if (!StoryEventManager.ValidBlockCheck(block)) continue;
-                if (block.clean_action.StartsWith("#") && manager.HideScriptActions) continue;
-
-                var buttonLabel = block.dialogue.CapitalizeFirst();
-                if (!string.IsNullOrEmpty(block.meta_scripts))
-                {
-                    if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
-                }
-
-                manager._actionButtons[buttonIndex].gameObject.SetActive(true);
-                manager._actionButtons[buttonIndex].BroadcastMessage("SetLabel",buttonLabel);;
-                if (manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
-                {
-                    var icon = StoryEventManager.BlockIcon(block);
-                    manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
-                        (icon == null ? manager.defaultActionIcon : icon);
-                }
-
-                manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
-                manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
-                    () =>
-                    {
-                        LoadNodeKey(block.target_node);
-                    });
-                buttonIndex++;
-            }
-
-            foreach (var dialogueOption in manager._customDialogueOptions)
-            {
-                dialogueOption.ProcessDialogueOptions(currentnode);
-            }
-
-            if (SuggestionManager.SuggestionMode) return;
-        }
 
         private IEnumerator GetAllTheNodes()
         {
             loadingStory = true;
             var content = "";
-            yield return new WaitForEndOfFrame();
+            //yield return new WaitForEndOfFrame();
+            
+            /*
+            UnityWebRequest webcall = UnityWebRequest.Get("https://branchmaker.com/api/steam/suggestion", formData);
+            webcall.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
+            webcall.SetRequestHeader("Pragma", "no-cache");
+            */
+            
 #pragma warning disable 612, 618
-            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished,bookkey));
+            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished,Bookkey));
             nodefetcher.threadPriority = ThreadPriority.High;
 #pragma warning restore 612, 618
             
             yield return nodefetcher;
 
-            var backupFileName = Application.persistentDataPath + "/" + bookkey + ".txt";
+            var backupFileName = Application.persistentDataPath + "/" + Bookkey + ".txt";
 
             if (!string.IsNullOrEmpty(nodefetcher.error))
             {
@@ -179,12 +121,12 @@ namespace BranchMaker.Story
                 }
                 else
                 {
-                    ZeldaWriteDialogue("Could not reach BranchMaker server, please check your internet connection...");
+                    foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(null, "Could not reach BranchMaker server, please check your internet connection...");
                 }
             }
             else
             {
-                StreamWriter writer = new StreamWriter(backupFileName, false);
+                var writer = new StreamWriter(backupFileName, false);
                 writer.Write(nodefetcher.text);
                 writer.Close();
                 content = nodefetcher.text;
@@ -196,7 +138,7 @@ namespace BranchMaker.Story
             loadingStory = false;
 
             if (forceLoad != null) {
-                startingNode = forceLoad.currentNode;
+                StartingNode = forceLoad.currentNode;
                 forceLoad.Resume();
                 StorySceneManager.ShowPotentialScene(forceLoad.backgroundScene);
                 forceLoad = null;
@@ -204,23 +146,11 @@ namespace BranchMaker.Story
 
             if (reloadPurpose)
             {
-                LoadNodeKey(startingNode);
+                LoadNodeKey(StartingNode);
                 reloadPurpose = false;
             }
         }
 
-
-        private static void ZeldaWriteDialogue(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return;
-            actionCooldown = 0.5f;
-
-            foreach (var obj in manager.dialogueHandlers)
-            {
-                obj.BroadcastMessage("DisplayDialogue", text, SendMessageOptions.DontRequireReceiver);
-            }
-        }
-        
         private static bool Busy()
         {
             if (loadingStory) return true;
@@ -234,11 +164,16 @@ namespace BranchMaker.Story
             return false;
         }
 
+        public static bool IsCurrentlyWriting()
+        {
+            return manager._dialogueHandlers.Any(dialogueHandler => dialogueHandler.BusyWriting());
+        }
+
         private void Update()
         {
             if (Busy()) return;
 
-            if (ZeldaTyper.currentlyWriting)
+            if (IsCurrentlyWriting())
             {
                 actionCooldown = 0.1f;
                 return;
@@ -264,27 +199,24 @@ namespace BranchMaker.Story
 
         private void ForceReloadFromServer()
         {
-            speakQueue.Clear();
-            HideButtons();
+            _speakQueue.Clear();
+            if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
             loadFromPublished = false;
             StartCoroutine(GetAllTheNodes());
         }
 
         private static void SpeakActiveNode()
         {
-            if (speakQueue.Count <= 0) return;
-            var activeBlock = speakQueue[0];
+            if (_speakQueue.Count <= 0) return;
+            var activeBlock = _speakQueue[0];
             RemoteVoicePlayer.StopSpeaking();
                 
             if (activeBlock.meta_scripts.Contains("hide:dialogue"))
             {
-                speakQueue.RemoveAt(0);
-                BuildButtons();
-                manager.dialogueWindow.SetActive(false);
+                _speakQueue.RemoveAt(0);
                 return;
             }
                 
-            manager.dialogueWindow.SetActive(true);
             var dialogue = activeBlock.dialogue;
             StoryEventManager.ParseBlockscript(activeBlock);
                 
@@ -299,9 +231,10 @@ namespace BranchMaker.Story
                 }
             }
             if (!string.IsNullOrEmpty(activeBlock.voice_file)) RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
-            ZeldaWriteDialogue(dialogue);
-            speakQueue.RemoveAt(0);
-            BuildButtons();
+
+            foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(activeBlock, dialogue);
+            
+            _speakQueue.RemoveAt(0);
         }
 
         public static void LoadNodeKey(string key)
@@ -309,10 +242,10 @@ namespace BranchMaker.Story
             if (clickCooldown > 0) return;
             if (!nodeLib.ContainsKey(key)) return;
             clickCooldown = 0.2f;
-            HideButtons();
+            manager._optionHandlers.ForEach(a => a.Cleanup());
             if (key == "okay")
             {
-                speakQueue.Clear();
+                _speakQueue.Clear();
                 return;
             }
             LoadNode(nodeLib[key]);
@@ -322,7 +255,7 @@ namespace BranchMaker.Story
         {
             actionCooldown = .6f;
             currentnode = node;
-            speakQueue.Clear();
+            _speakQueue.Clear();
             //Debug.Log("Load node "+node.id+ " blocks "+node.blocks.Count);
             foreach (var block in node.StoryBlocks())
             {
@@ -332,13 +265,14 @@ namespace BranchMaker.Story
                     if (manager._seenNodes.Contains(block.id)) continue;
                     manager._seenNodes.Add(block.id);
                 }
-                speakQueue.Add(block);
+                _speakQueue.Add(block);
             }
             StorySceneManager.ShowPotentialScene(node.id);
             SpeakActiveNode();
 
             node.processed = true;
             CloudSaveManager.UpdateSaveFile();
+            manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
         }
 
 
@@ -359,5 +293,14 @@ namespace BranchMaker.Story
             }
         }
 
+        public static void BuildButtons()
+        {
+            manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
+        }
+
+        public static bool HasSpeakingQueue()
+        {
+            return _speakQueue.Count > 0;
+        }
     }
 }
