@@ -14,7 +14,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
     public void Awake()
     {
         manager = this;
-        _actionButtons = FindObjectsOfType<DialogueButton>(true).ToList();
+        _actionButtons = GetComponentsInChildren<DialogueButton>(true).ToList();
     }
 
     public bool CanHandleBlock(BranchNodeBlock block)
