@@ -46,7 +46,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             }
 
             manager._actionButtons[buttonIndex].gameObject.SetActive(true);
-            manager._actionButtons[buttonIndex].BroadcastMessage("SetLabel", buttonLabel);
+            manager._actionButtons[buttonIndex].SetLabel(buttonLabel);
             
             if (manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
             {
