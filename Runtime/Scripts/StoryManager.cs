@@ -27,9 +27,9 @@ namespace BranchMaker.Story
 
         static float actionCooldown = 0f;
 
-        private static List<BranchNodeBlock> _speakQueue = new List<BranchNodeBlock>();
+        private static List<BranchNodeBlock> _speakQueue = new();
 
-        private static Dictionary<string, BranchNode> nodeLib = new Dictionary<string, BranchNode>();
+        private static Dictionary<string, BranchNode> _nodeLib = new();
 
         [Header("Handlers")]
 
@@ -42,7 +42,7 @@ namespace BranchMaker.Story
 
         private static bool reloadPurpose = true;
 
-        private List<string> _seenNodes = new List<string>();
+        private List<string> _seenNodes = new();
 
         private List<IDialogueHandler> _dialogueHandlers;
         private List<IWindowOverlay> _windowOverlays;
@@ -57,7 +57,7 @@ namespace BranchMaker.Story
             manager = this;
             currentnode = null;
             reloadPurpose = true;
-            nodeLib.Clear();
+            _nodeLib.Clear();
             StoryButton.playerkeys.Clear();
             
             _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
@@ -69,6 +69,11 @@ namespace BranchMaker.Story
             _actorHandlers.ForEach(a => a.ResetActors());
             
             if (clickToContinue != null) clickToContinue.SetActive(false);
+        }
+
+        public static List<BranchNode> AllNodes()
+        {
+            return _nodeLib.Values.ToList();
         }
 
         private void FixedUpdate()
@@ -240,7 +245,7 @@ namespace BranchMaker.Story
         public static void LoadNodeKey(string key)
         {
             if (clickCooldown > 0) return;
-            if (!nodeLib.ContainsKey(key)) return;
+            if (!_nodeLib.ContainsKey(key)) return;
             clickCooldown = 0.2f;
             manager._optionHandlers.ForEach(a => a.Cleanup());
             if (key == "okay")
@@ -248,7 +253,7 @@ namespace BranchMaker.Story
                 _speakQueue.Clear();
                 return;
             }
-            LoadNode(nodeLib[key]);
+            LoadNode(_nodeLib[key]);
         }
 
         private static void LoadNode(BranchNode node)
@@ -278,7 +283,7 @@ namespace BranchMaker.Story
 
         private static void ProcessIncomingNode(BranchNode bNode)
         {
-            if (!nodeLib.ContainsKey(bNode.id)) nodeLib.Add(bNode.id, bNode);
+            if (!_nodeLib.ContainsKey(bNode.id)) _nodeLib.Add(bNode.id, bNode);
 
             bNode.processed = false;
 
