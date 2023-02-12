@@ -12,6 +12,7 @@ public class BranchMakerCloudSave
     public string currentNode;
     public string backgroundScene;
     public List<string> unlockedWords;
+    public List<string> customData = new List<string>();
     public static List<ILoadSaveElement> SaveElements = new();
     public Dictionary<string, List<string>> ElementDict = new();
     public Dictionary<string, List<string[]>> ElementBitsDict = new();
