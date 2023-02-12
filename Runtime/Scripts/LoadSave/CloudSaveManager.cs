@@ -18,7 +18,7 @@ namespace BranchMaker.LoadSave
         public BranchMakerCloudSave saveFile;
     }
 
-    public class CloudSaveManager : MonoBehaviour
+    public class CloudSaveManager : MonoBehaviour, ILoadSaveHandler
     {
         static SteamCloudPrefs LocalStorage = new SteamCloudPrefs();
 
@@ -34,12 +34,23 @@ namespace BranchMaker.LoadSave
             if (ResumeSaveButtonManager.manager != null) ResumeSaveButtonManager.manager.CheckButton();
         }
 
-        public static void UpdateSaveFile()
+
+        void ILoadSaveHandler.UpdateSaveFile()
         {
-            if (LocalStorage == null) LocalStorage = new SteamCloudPrefs();
-            if (LocalStorage.saveFile == null) LocalStorage.saveFile = new BranchMakerCloudSave();
+            LocalStorage ??= new SteamCloudPrefs();
+            LocalStorage.saveFile ??= new BranchMakerCloudSave();
             LocalStorage.saveFile.Populate();
             Save(LocalStorage);
+        }
+
+        bool ILoadSaveHandler.CheckForSaveFile()
+        {
+            return CheckForSaveFile();
+        }
+
+        string ILoadSaveHandler.Resume()
+        {
+            return Resume();
         }
 
         private void OnDestroy()

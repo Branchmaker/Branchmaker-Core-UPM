@@ -49,6 +49,7 @@ namespace BranchMaker.Story
         public List<ICustomDialogueAction> _customDialogueOptions;
         private List<IOptionHandler> _optionHandlers;
         private List<IActorHandler> _actorHandlers;
+        static ILoadSaveHandler _loadSaveHandler;
 
         public bool HideScriptActions = true;
         
@@ -65,6 +66,7 @@ namespace BranchMaker.Story
             _dialogueHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IDialogueHandler>().ToList();
             _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
             _optionHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IOptionHandler>().ToList();
+            _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().First();
             
             _actorHandlers.ForEach(a => a.ResetActors());
             
@@ -161,12 +163,8 @@ namespace BranchMaker.Story
             if (loadingStory) return true;
             if (gameover) return true;
             if (manager == null) return true;
-            
-            foreach (var overlay in manager._windowOverlays)
-            {
-                if (overlay.WindowOverlayOpen()) return true;
-            }
-            return false;
+
+            return manager._windowOverlays.Any(overlay => overlay.WindowOverlayOpen());
         }
 
         public static bool IsCurrentlyWriting()
@@ -276,7 +274,7 @@ namespace BranchMaker.Story
             SpeakActiveNode();
 
             node.processed = true;
-            CloudSaveManager.UpdateSaveFile();
+            _loadSaveHandler.UpdateSaveFile();
             manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
         }
 
