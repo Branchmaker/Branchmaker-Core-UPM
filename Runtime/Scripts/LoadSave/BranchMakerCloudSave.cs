@@ -40,7 +40,7 @@ public class BranchMakerCloudSave
         StoryButton.playerkeys = unlockedWords;
         foreach (var elements in SaveElements)
         {
-            elements.WriteData(this);
+            elements.ReadData(this);
         }
     }
 }
