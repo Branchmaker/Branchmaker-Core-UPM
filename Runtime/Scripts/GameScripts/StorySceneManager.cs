@@ -13,7 +13,7 @@ namespace BranchMaker.Story
 
         private void Awake()
         {
-            if (!managers.Contain(this)) managers.Add(this);
+            if (!managers.Contains(this)) managers.Add(this);
             foreach (var scene in transform.GetComponentsInChildren<StoryScene>(true))
             {
                 RegisterScene(scene);
