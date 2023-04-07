@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace BranchMaker.Story
 {
     public class StorySceneManager : MonoBehaviour
     {
+        private static readonly List<StorySceneManager> managers = new List<StorySceneManager>();
         static readonly Dictionary<string, StoryScene> sceneBank = new Dictionary<string, StoryScene>();
         static readonly Dictionary<string, StoryButton> sceneButtons = new Dictionary<string, StoryButton>();
 
@@ -12,6 +14,7 @@ namespace BranchMaker.Story
 
         private void Awake()
         {
+            if (!managers.Contains(this)) managers.Add(this);
             foreach (var scene in transform.GetComponentsInChildren<StoryScene>(true))
             {
                 RegisterScene(scene);
@@ -55,6 +58,14 @@ namespace BranchMaker.Story
             {
                 if (_currentScene.storyNodeId == nodeKey) return;
                 _currentScene.gameObject.SetActive(false);
+            }
+
+            foreach (var manager in managers)
+            {
+                foreach (var scene in manager.gameObject.GetComponentsInChildren<StoryScene>(true).Where(a => a.storyNodeId == nodeKey))
+                {
+                    scene.gameObject.SetActive(true);
+                }
             }
 
             _currentScene = sceneBank[nodeKey];
