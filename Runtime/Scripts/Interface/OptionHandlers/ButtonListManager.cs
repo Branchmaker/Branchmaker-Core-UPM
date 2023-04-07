@@ -57,7 +57,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
             manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
             manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
-                () => { StoryManager.LoadNodeKey(block.target_node); });
+                () => { StoryManager.PerformAction(block); });
             buttonIndex++;
         }
 

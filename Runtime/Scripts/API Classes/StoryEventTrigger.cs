@@ -7,7 +7,7 @@ namespace BranchMaker.Story
     public abstract class StoryEventTrigger
     {
         public StoryEventTrigger() { }
-        public enum TriggerMethod { Inactive, OnBlockRun, PreloadStory, Validator };
+        public enum TriggerMethod { Inactive, OnBlockRun, PreloadStory, Validator, ActionCheck };
         public abstract TriggerMethod Method { get; }
         public abstract string TriggerKey { get; }
 

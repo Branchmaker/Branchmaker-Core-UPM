@@ -185,13 +185,12 @@ namespace BranchMaker.Story
             if (actionCooldown > 0)
             {
                 actionCooldown -= Time.deltaTime;
+                return;
             }
-            else
+            
+            if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return) || Input.GetMouseButtonDown(0))
             {
-                if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return) || Input.GetMouseButtonDown(0))
-                {
-                    SpeakActiveNode();
-                }
+                SpeakActiveNode();
             }
 
             if (Input.GetKeyUp(KeyCode.F5)) ForceReloadFromServer();
@@ -213,6 +212,7 @@ namespace BranchMaker.Story
                 
             if (activeBlock.meta_scripts.Contains("hide:dialogue"))
             {
+                Debug.LogError("hide:dialogue DEPRICATED!");
                 _speakQueue.RemoveAt(0);
                 return;
             }
@@ -237,17 +237,19 @@ namespace BranchMaker.Story
             _speakQueue.RemoveAt(0);
         }
 
-        public static void LoadNodeKey(string key)
+        public static void PerformAction(BranchNodeBlock action)
         {
             if (clickCooldown > 0) return;
-            if (!_nodeLib.ContainsKey(key)) return;
             clickCooldown = 0.2f;
-            manager._optionHandlers.ForEach(a => a.Cleanup());
-            if (key == "okay")
+            if (StoryEventManager.ValidateActionBlock(action))
             {
-                _speakQueue.Clear();
-                return;
+                LoadNodeKey(action.target_node);
             }
+        }
+
+        public static void LoadNodeKey(string key)
+        {
+            if (!_nodeLib.ContainsKey(key)) return;
             LoadNode(_nodeLib[key]);
         }
 
@@ -257,6 +259,7 @@ namespace BranchMaker.Story
             currentnode = node;
             _speakQueue.Clear();
             manager.OnNodeChange.Invoke();
+            manager._optionHandlers.ForEach(a => a.Cleanup());
             
             foreach (var block in node.StoryBlocks())
             {
@@ -270,7 +273,6 @@ namespace BranchMaker.Story
             _loadSaveHandler.UpdateSaveFile();
             manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
         }
-
 
         private static void ProcessIncomingNode(BranchNode bNode)
         {

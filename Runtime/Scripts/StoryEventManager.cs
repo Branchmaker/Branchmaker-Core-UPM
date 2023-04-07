@@ -10,7 +10,8 @@ namespace BranchMaker.Story
     {
         static List<StoryEventTrigger> _triggerPool = new();
         static List<string> _seenNodes = new();
-
+        public static bool PassActionValidation;
+        public static BranchNodeBlock StoredAction;
 
         static StoryEventManager()
         {
@@ -53,6 +54,27 @@ namespace BranchMaker.Story
                     }
                 }
             }
+        }
+        
+        public static bool ValidateActionBlock(BranchNodeBlock nodeBlock)
+        {
+            if (!nodeBlock.HasMetaScript()) return true;
+            PassActionValidation = true;
+            StoredAction = nodeBlock;
+            foreach (var line in nodeBlock.MetaScriptLines())
+            {
+                var cline = line.Trim();
+                foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.ActionCheck))
+                {
+                    if (cline.StartsWith(trigger.TriggerKey))
+                    {
+                        var bits = cline.Split(':');
+                        trigger.Run(cline, nodeBlock, bits);
+                    }
+                }
+            }
+
+            return PassActionValidation;
         }
 
 
