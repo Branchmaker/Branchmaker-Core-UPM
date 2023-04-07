@@ -9,6 +9,8 @@ namespace BranchMaker.Story
     public static class StoryEventManager
     {
         static List<StoryEventTrigger> _triggerPool = new();
+        static List<string> _seenNodes = new();
+
 
         static StoryEventManager()
         {
@@ -90,6 +92,12 @@ namespace BranchMaker.Story
                         if (trigger.PassValidation(cline, nodeBlock) == false) return false;
                     }   
                 }
+            }
+            
+            if (nodeBlock.meta_scripts.Contains("dontrepeat"))
+            {
+                if (_seenNodes.Contains(nodeBlock.id)) return false;
+                _seenNodes.Add(nodeBlock.id);
             }
             return true;
         }

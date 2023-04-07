@@ -9,6 +9,7 @@ using BranchMaker.Api;
 using BranchMaker.LoadSave;
 using Debug = UnityEngine.Debug;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 
 namespace BranchMaker.Story
 {
@@ -39,8 +40,6 @@ namespace BranchMaker.Story
         static float clickCooldown = 0f;
 
         private static bool reloadPurpose = true;
-
-        private List<string> _seenNodes = new();
 
         private List<IDialogueHandler> _dialogueHandlers;
         private List<IWindowOverlay> _windowOverlays;
@@ -112,18 +111,17 @@ namespace BranchMaker.Story
             webcall.SetRequestHeader("Pragma", "no-cache");
             */
             
-#pragma warning disable 612, 618
-            var nodefetcher = new WWW(BranchmakerPaths.StoryNodes(loadFromPublished,Bookkey));
-            nodefetcher.threadPriority = ThreadPriority.High;
-#pragma warning restore 612, 618
+            var webcall = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,Bookkey));
+            webcall.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
+            webcall.SetRequestHeader("Pragma", "no-cache");
             
-            yield return nodefetcher;
+            yield return webcall.SendWebRequest();
 
             var backupFileName = Application.persistentDataPath + "/" + Bookkey + ".txt";
 
-            if (!string.IsNullOrEmpty(nodefetcher.error))
+            if (!string.IsNullOrEmpty(webcall.error))
             {
-                Debug.LogError("Fetch error : (" + nodefetcher.url + ") " + nodefetcher.error);
+                Debug.LogError("Fetch error : (" + webcall.url + ") " + webcall.error);
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -136,13 +134,13 @@ namespace BranchMaker.Story
             else
             {
                 var writer = new StreamWriter(backupFileName, false);
-                writer.Write(nodefetcher.text);
+                writer.Write(webcall.downloadHandler.text);
                 writer.Close();
-                content = nodefetcher.text;
+                content = webcall.downloadHandler.text;
             }
 
-            var allthenodes = JSONNode.Parse(content);
-            foreach (var storynode in allthenodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storynode));
+            var allNodes = JSONNode.Parse(content);
+            foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
 
             loadingStory = false;
 
@@ -196,10 +194,7 @@ namespace BranchMaker.Story
                 }
             }
 
-            if (Input.GetKeyUp(KeyCode.F5))
-            {
-                ForceReloadFromServer();
-            }
+            if (Input.GetKeyUp(KeyCode.F5)) ForceReloadFromServer();
         }
 
         private void ForceReloadFromServer()
@@ -266,11 +261,6 @@ namespace BranchMaker.Story
             foreach (var block in node.StoryBlocks())
             {
                 if (!StoryEventManager.ValidBlockCheck(block)) continue;
-                if (block.meta_scripts.Contains("dontrepeat"))
-                {
-                    if (manager._seenNodes.Contains(block.id)) continue;
-                    manager._seenNodes.Add(block.id);
-                }
                 _speakQueue.Add(block);
             }
             StorySceneManager.ShowPotentialScene(node.id);
@@ -285,14 +275,10 @@ namespace BranchMaker.Story
         private static void ProcessIncomingNode(BranchNode bNode)
         {
             if (!_nodeLib.ContainsKey(bNode.id)) _nodeLib.Add(bNode.id, bNode);
-
             bNode.processed = false;
 
-            if (currentnode != null && bNode.id == currentnode.id)
-            {
-                LoadNode(bNode);
-            }
-            
+            if (currentnode != null && bNode.id == currentnode.id) LoadNode(bNode);
+
             foreach (var block in bNode.blocks)
             {
                 StoryEventManager.PreloadScriptCheck(block);
