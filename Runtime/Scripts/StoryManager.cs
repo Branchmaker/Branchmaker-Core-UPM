@@ -1,16 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using SimpleJSON;
 using System.IO;
-using BranchMaker.UI;
 using System.Linq;
 using BranchMaker.Actors;
 using BranchMaker.Api;
 using BranchMaker.LoadSave;
-using UnityEngine.Networking;
 using Debug = UnityEngine.Debug;
+using UnityEngine.Events;
 
 namespace BranchMaker.Story
 {
@@ -52,6 +50,10 @@ namespace BranchMaker.Story
         static ILoadSaveHandler _loadSaveHandler;
 
         public bool HideScriptActions = true;
+
+        [Header("Events")]
+
+        [SerializeField] private UnityEvent OnNodeChange;
         
         public void Awake()
         {
@@ -259,7 +261,8 @@ namespace BranchMaker.Story
             actionCooldown = .6f;
             currentnode = node;
             _speakQueue.Clear();
-            //Debug.Log("Load node "+node.id+ " blocks "+node.blocks.Count);
+            manager.OnNodeChange.Invoke();
+            
             foreach (var block in node.StoryBlocks())
             {
                 if (!StoryEventManager.ValidBlockCheck(block)) continue;
