@@ -41,6 +41,7 @@ namespace BranchMaker.Story
 
         private void OnDestroy()
         {
+            managers.Clear();
             sceneBank.Clear();
             sceneButtons.Clear();
             _currentScene = null;
