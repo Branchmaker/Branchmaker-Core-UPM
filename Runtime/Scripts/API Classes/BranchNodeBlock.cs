@@ -27,6 +27,7 @@ namespace BranchMaker
         public List<string> process_line_list;
         public List<string> script_lines = new List<string>();
         public List<string> processed_checklist = new List<string>();
+        public Sprite forcedIcon;
 
         public static BranchNodeBlock createFromJson(SimpleJSON.JSONNode jsonNode)
         {

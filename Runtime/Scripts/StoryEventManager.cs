@@ -80,6 +80,7 @@ namespace BranchMaker.Story
 
         public static Sprite BlockIcon(BranchNodeBlock block)
         {
+            if (block.forcedIcon != null) return block.forcedIcon;
             if (!block.HasMetaScript()) return null;
             foreach (var line in block.MetaScriptLines())
             {
