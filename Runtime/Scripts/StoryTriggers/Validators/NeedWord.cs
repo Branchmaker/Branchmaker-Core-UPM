@@ -1,8 +1,5 @@
 using BranchMaker;
 using BranchMaker.Story;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class NeedWord : StoryEventTrigger
 {
