@@ -12,6 +12,7 @@ namespace BranchMaker.Actors
     public class ActorObject : ScriptableObject
     {
         public string displayName;
+        public string rootNode;
         public Sprite mainSprite;
         public Color themeColor;
         public List<CharacterExpression> expressions;
