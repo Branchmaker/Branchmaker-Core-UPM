@@ -42,6 +42,7 @@ namespace BranchMaker.UI
         
         public void DisplayDialogue(string text)
         {
+            currentlyWriting = true;
             rushSpeaker = false;
 
             speedupCooldown = 0.5f;
