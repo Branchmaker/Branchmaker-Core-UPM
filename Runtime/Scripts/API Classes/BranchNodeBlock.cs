@@ -38,7 +38,7 @@ namespace BranchMaker
             block.dialogue = jsonNode["dialogue"].Value;
             block.voice_file = jsonNode["voice_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
-            block.isSafe = jsonNode["safe_for_playing"].Value;
+            block.isSafe = (jsonNode["safe_for_playing"].Value.ToLower() ?? "false") == "true";
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
             block.emotion = (jsonNode["emotion"].Value.ToLower() ?? null);
 
