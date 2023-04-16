@@ -95,12 +95,15 @@ namespace BranchMaker.Story
 
         public static void ForceRefresh()
         {
+            
             if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
         }
 
 
         private IEnumerator GetAllTheNodes()
         {
+            foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(null, "Loading...");
+
             loadingStory = true;
             var content = "";
             //yield return new WaitForEndOfFrame();
