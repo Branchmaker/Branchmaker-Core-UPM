@@ -26,6 +26,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
     public void ProcessNode(BranchNode node)
     {
+        if (node == null) return;
         var buttonIndex = 0;
         Cleanup();
 
