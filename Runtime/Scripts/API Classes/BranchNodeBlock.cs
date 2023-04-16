@@ -20,6 +20,7 @@ namespace BranchMaker
         public string target_node;
 
         public bool processed;
+        public bool isSafe;
 
         // Lingual
         public string process_lines;
@@ -37,6 +38,7 @@ namespace BranchMaker
             block.dialogue = jsonNode["dialogue"].Value;
             block.voice_file = jsonNode["voice_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
+            block.isSafe = (jsonNode["safe_for_playing"].Value ?? false);
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
             block.emotion = (jsonNode["emotion"].Value.ToLower() ?? null);
 
