@@ -247,6 +247,7 @@ namespace BranchMaker.Story
             if (StoryEventManager.ValidateActionBlock(action))
             {
                 LoadNodeKey(action.target_node);
+                StoryEventManager.ParseBlockscript(action);
             }
         }
 
