@@ -20,11 +20,9 @@ namespace BranchMaker.Story
         public static BranchMakerCloudSave forceLoad;
 
         [Header("API Configuration")]
-        [SerializeField] private string storybookId = "Place Storybook API key here";
+        public string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
-        
-
         private static List<BranchNodeBlock> _speakQueue = new();
 
         private static Dictionary<string, BranchNode> _nodeLib = new();
