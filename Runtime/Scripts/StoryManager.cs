@@ -10,6 +10,7 @@ using BranchMaker.LoadSave;
 using Debug = UnityEngine.Debug;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
 namespace BranchMaker.Story
 {
@@ -19,26 +20,22 @@ namespace BranchMaker.Story
         public static BranchMakerCloudSave forceLoad;
 
         [Header("API Configuration")]
-        public string Bookkey = "Place Storybook API key here";
-        [SerializeField] private string StartingNode;
+        [SerializeField] private string storybookId = "Place Storybook API key here";
+        [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
-        public static BranchNode currentnode;
-
-        static float actionCooldown = 0f;
+        
 
         private static List<BranchNodeBlock> _speakQueue = new();
 
         private static Dictionary<string, BranchNode> _nodeLib = new();
 
         [Header("Handlers")]
-
-        static bool gameover;
         static bool loadingStory;
-        public GameObject clickToContinue;
         public Sprite[] IconSprites;
+        public static BranchNode currentnode;
 
-        static float clickCooldown = 0f;
-
+        private static float actionCooldown;
+        private static float clickCooldown;
         private static bool reloadPurpose = true;
 
         private List<IDialogueHandler> _dialogueHandlers;
@@ -51,9 +48,14 @@ namespace BranchMaker.Story
         public bool HideScriptActions = true;
 
         [Header("Events")]
-
-        [SerializeField] private UnityEvent OnNodeChange;
+        [SerializeField] private UnityEvent<BranchNode> OnNodeChange;
+        [SerializeField] private UnityEvent<BranchNodeBlock> OnBlockChange;
         
+        private void Start()
+        {
+            _optionHandlers.ForEach(a => a.Cleanup());
+            if (!loadingStory) StartCoroutine(GetAllTheNodes());
+        }
         public void Awake()
         {
             manager = this;
@@ -70,8 +72,6 @@ namespace BranchMaker.Story
             _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().First();
             
             _actorHandlers.ForEach(a => a.ResetActors());
-            
-            if (clickToContinue != null) clickToContinue.SetActive(false);
         }
 
         public static List<BranchNode> AllNodes()
@@ -87,15 +87,9 @@ namespace BranchMaker.Story
             }
         }
 
-        private void Start()
-        {
-            _optionHandlers.ForEach(a => a.Cleanup());
-            if (!loadingStory) StartCoroutine(GetAllTheNodes());
-        }
 
         public static void ForceRefresh()
         {
-            
             if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
         }
 
@@ -106,25 +100,17 @@ namespace BranchMaker.Story
 
             loadingStory = true;
             var content = "";
-            //yield return new WaitForEndOfFrame();
             
-            /*
-            UnityWebRequest webcall = UnityWebRequest.Get("https://branchmaker.com/api/steam/suggestion", formData);
-            webcall.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
-            webcall.SetRequestHeader("Pragma", "no-cache");
-            */
-            
-            var webcall = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,Bookkey));
-            webcall.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
-            webcall.SetRequestHeader("Pragma", "no-cache");
-            
-            yield return webcall.SendWebRequest();
+            var fetch = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,storybookId));
+            fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
+            fetch.SetRequestHeader("Pragma", "no-cache");
+            yield return fetch.SendWebRequest();
 
-            var backupFileName = Application.persistentDataPath + "/" + Bookkey + ".txt";
+            var backupFileName = Application.persistentDataPath + "/" + storybookId + ".txt";
 
-            if (!string.IsNullOrEmpty(webcall.error))
+            if (!string.IsNullOrEmpty(fetch.error))
             {
-                Debug.LogError("Fetch error : (" + webcall.url + ") " + webcall.error);
+                Debug.LogError("Fetch error : (" + fetch.url + ") " + fetch.error);
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -137,9 +123,9 @@ namespace BranchMaker.Story
             else
             {
                 var writer = new StreamWriter(backupFileName, false);
-                writer.Write(webcall.downloadHandler.text);
+                writer.Write(fetch.downloadHandler.text);
                 writer.Close();
-                content = webcall.downloadHandler.text;
+                content = fetch.downloadHandler.text;
             }
 
             var allNodes = JSONNode.Parse(content);
@@ -148,7 +134,7 @@ namespace BranchMaker.Story
             loadingStory = false;
 
             if (forceLoad != null) {
-                StartingNode = forceLoad.currentNode;
+                startingNodeID = forceLoad.currentNode;
                 forceLoad.Resume();
                 StorySceneManager.ShowPotentialScene(forceLoad.backgroundScene);
                 forceLoad = null;
@@ -156,7 +142,7 @@ namespace BranchMaker.Story
 
             if (reloadPurpose)
             {
-                LoadNodeKey(StartingNode);
+                LoadNodeKey(startingNodeID);
                 reloadPurpose = false;
             }
         }
@@ -164,7 +150,6 @@ namespace BranchMaker.Story
         private static bool Busy()
         {
             if (loadingStory) return true;
-            if (gameover) return true;
             if (manager == null) return true;
 
             return manager._windowOverlays.Any(overlay => overlay.WindowOverlayOpen());
@@ -211,44 +196,48 @@ namespace BranchMaker.Story
         {
             if (_speakQueue.Count <= 0) return;
             var activeBlock = _speakQueue[0];
-            RemoteVoicePlayer.StopSpeaking();
-                
-            if (activeBlock.meta_scripts.Contains("hide:dialogue"))
-            {
-                Debug.LogError("hide:dialogue DEPRICATED!");
-                _speakQueue.RemoveAt(0);
-                return;
-            }
-                
-            var dialogue = activeBlock.dialogue;
-            StoryEventManager.ParseBlockscript(activeBlock);
-                
-            if (!string.IsNullOrEmpty(activeBlock.character))
-            {
-                var actor = ActorDatabase.ActorByKey(activeBlock.character);
-                if (actor != null)
-                {
-                    if (!string.IsNullOrEmpty(activeBlock.emotion)) actor.CurrentEmotion = activeBlock.emotion;
-                    manager._actorHandlers.ForEach(a => a.ActorUpdate(activeBlock.character, activeBlock));
-                    dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.themeColor) + ">" + actor.displayName + "</color>\n" + dialogue;
-                }
-            }
-            if (!string.IsNullOrEmpty(activeBlock.voice_file)) RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
-
-            foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(activeBlock, dialogue);
-            
             _speakQueue.RemoveAt(0);
+            RemoteVoicePlayer.StopSpeaking();
+
+            var canRun = StoryEventManager.ValidBlockCheck(activeBlock);
+
+            if (canRun)
+            {
+                manager.OnBlockChange.Invoke(activeBlock);
+                var dialogue = activeBlock.dialogue;
+                StoryEventManager.ParseBlockscript(activeBlock);
+
+                if (!string.IsNullOrEmpty(activeBlock.character))
+                {
+                    var actor = ActorDatabase.ActorByKey(activeBlock.character);
+                    if (actor != null)
+                    {
+                        if (!string.IsNullOrEmpty(activeBlock.emotion)) actor.CurrentEmotion = activeBlock.emotion;
+                        manager._actorHandlers.ForEach(a => a.ActorUpdate(activeBlock.character, activeBlock));
+                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.themeColor) + ">" +
+                                   actor.displayName + "</color>\n" + dialogue;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(activeBlock.voice_file))
+                    RemoteVoicePlayer.PlayRemoteOgg(activeBlock.voice_file);
+
+                foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(activeBlock, dialogue);
+            }
+            else
+            {
+                SpeakActiveNode();
+            }
+
         }
 
         public static void PerformAction(BranchNodeBlock action)
         {
             if (clickCooldown > 0) return;
             clickCooldown = 0.2f;
-            if (StoryEventManager.ValidateActionBlock(action))
-            {
-                LoadNodeKey(action.target_node);
-                StoryEventManager.ParseBlockscript(action);
-            }
+            if (!StoryEventManager.ValidateActionBlock(action)) return;
+            StoryEventManager.ParseBlockscript(action);
+            LoadNodeKey(action.target_node);
         }
 
         public static void LoadNodeKey(string key)
@@ -262,12 +251,11 @@ namespace BranchMaker.Story
             actionCooldown = .6f;
             currentnode = node;
             _speakQueue.Clear();
-            manager.OnNodeChange.Invoke();
+            manager.OnNodeChange.Invoke(node);
             manager._optionHandlers.ForEach(a => a.Cleanup());
             
             foreach (var block in node.StoryBlocks())
             {
-                if (!StoryEventManager.ValidBlockCheck(block)) continue;
                 _speakQueue.Add(block);
             }
             StorySceneManager.ShowPotentialScene(node.id);

@@ -146,18 +146,18 @@ namespace BranchMaker.Story
                 
                 if (cline.StartsWith("sound:"))
                 {
-                    string clipname = cline.Replace("sound:", "").ToLower().Trim();
+                    var clipname = cline.Replace("sound:", "").ToLower().Trim();
                     SoundeffectsManager.PlayEffect(clipname, false, false);
                 }
                 if (cline.StartsWith("speak:"))
                 {
                     SoundeffectsManager.stopSpeech();
-                    string clipname = cline.Replace("speak:", "").ToLower().Trim();
+                    var clipname = cline.Replace("speak:", "").ToLower().Trim();
                     SoundeffectsManager.PlayEffect(clipname, false, false);
                 }
                 if (cline.StartsWith("showcharacter:"))
                 {
-                    string charname = cline.Replace("showcharacter:", "").ToLower().Trim();
+                    var charname = cline.Replace("showcharacter:", "").ToLower().Trim();
                     StoryActor.NewSpeaker(charname);
                 }
             }
