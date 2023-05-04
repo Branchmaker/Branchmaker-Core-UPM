@@ -11,6 +11,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
     private static ButtonListManager manager;
     private List<DialogueButton> _actionButtons;
     public Sprite defaultActionIcon;
+    public GameObject clickToContinue;
     
     
     public void Awake()
@@ -35,7 +36,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         
         gameObject.SetActive(true);
 
-        if (StoryManager.manager.clickToContinue != null) StoryManager.manager.clickToContinue.SetActive(false);
+        if (clickToContinue != null) clickToContinue.SetActive(false);
 
         foreach (var block in node.ActionBlocks())
         {
