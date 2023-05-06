@@ -1,6 +1,6 @@
 {
   "name": "com.branchmaker.core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "displayName": "Branchmaker CORE",
   "description": "This is the core package for using Branchmaker API, a cloudbased story writing tool.",
   "unity": "2019.1",
