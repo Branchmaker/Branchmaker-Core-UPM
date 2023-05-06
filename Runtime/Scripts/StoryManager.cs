@@ -23,6 +23,7 @@ namespace BranchMaker.Story
         public string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
+        [SerializeField] private bool debugLog = true;
         private static List<BranchNodeBlock> _speakQueue = new();
 
         private static Dictionary<string, BranchNode> _nodeLib = new();
@@ -100,6 +101,7 @@ namespace BranchMaker.Story
             var content = "";
             
             var fetch = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,storybookId));
+            Log("Loading story from "+fetch.url);
             fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
             fetch.SetRequestHeader("Pragma", "no-cache");
             yield return fetch.SendWebRequest();
@@ -108,7 +110,7 @@ namespace BranchMaker.Story
 
             if (!string.IsNullOrEmpty(fetch.error))
             {
-                Debug.LogError("Fetch error : (" + fetch.url + ") " + fetch.error);
+                Log("Fetch error : (" + fetch.url + ") " + fetch.error);
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -124,6 +126,7 @@ namespace BranchMaker.Story
                 writer.Write(fetch.downloadHandler.text);
                 writer.Close();
                 content = fetch.downloadHandler.text;
+                Log("Story load complete");
             }
 
             var allNodes = JSONNode.Parse(content);
@@ -143,6 +146,7 @@ namespace BranchMaker.Story
                 LoadNodeKey(startingNodeID);
                 reloadPurpose = false;
             }
+            Log("Loaded "+_nodeLib.Count+" nodes");
         }
 
         private static bool Busy()
@@ -285,6 +289,11 @@ namespace BranchMaker.Story
         public static bool HasSpeakingQueue()
         {
             return _speakQueue.Count > 0;
+        }
+
+        protected static void Log(string log)
+        {
+            if (manager.debugLog) Debug.Log("<color=#00FFFF><b>StoryManager</b></color>: "+log);
         }
     }
 }
