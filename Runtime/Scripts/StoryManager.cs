@@ -196,7 +196,11 @@ namespace BranchMaker.Story
 
         private static void SpeakActiveNode()
         {
-            if (_speakQueue.Count <= 0) return;
+            if (_speakQueue.Count <= 0)
+            {
+                BuildButtons();
+                return;
+            }
             var activeBlock = _speakQueue[0];
             _speakQueue.RemoveAt(0);
             RemoteVoicePlayer.StopSpeaking();

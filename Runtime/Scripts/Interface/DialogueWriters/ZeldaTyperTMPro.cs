@@ -100,6 +100,7 @@ namespace BranchMaker.UI
             else
             {
                 displayDialogueString = null;
+                StoryManager.BuildButtons();
             }
             if (zeldaInsideBracket) ZeldaType();
             if (zeldaInsideWord) ZeldaType();
