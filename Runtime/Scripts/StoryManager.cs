@@ -55,6 +55,9 @@ namespace BranchMaker.Story
         [Header("Events")]
         [SerializeField] private UnityEvent<BranchNode> OnNodeChange;
         [SerializeField] private UnityEvent<BranchNodeBlock> OnBlockChange;
+        
+        public static string ActiveStoryId => manager.storybookId;
+        
         public void Awake()
         {
             manager = this;
