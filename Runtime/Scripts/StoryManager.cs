@@ -16,11 +16,18 @@ namespace BranchMaker.Story
 {
     public class StoryManager : MonoBehaviour
     {
+        public enum LoadFlow
+        {
+            LoadOnLaunch,
+            AwaitLoadCommand
+        };
+
         public static StoryManager manager;
         public static BranchMakerCloudSave forceLoad;
 
         [Header("API Configuration")]
-        public string storybookId = "Place Storybook API key here";
+        [SerializeField] private LoadFlow loadFlow;
+        [SerializeField] private string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
         [SerializeField] private bool debugLog = true;
@@ -30,11 +37,10 @@ namespace BranchMaker.Story
 
         [Header("Handlers")]
         static bool loadingStory;
-        public Sprite[] IconSprites;
+        //public Sprite[] IconSprites;
         public static BranchNode currentnode;
 
         private static float actionCooldown;
-        private static float clickCooldown;
         private static bool reloadPurpose = true;
 
         private List<IDialogueHandler> _dialogueHandlers;
@@ -49,12 +55,6 @@ namespace BranchMaker.Story
         [Header("Events")]
         [SerializeField] private UnityEvent<BranchNode> OnNodeChange;
         [SerializeField] private UnityEvent<BranchNodeBlock> OnBlockChange;
-        
-        private void Start()
-        {
-            _optionHandlers.ForEach(a => a.Cleanup());
-            if (!loadingStory) StartCoroutine(GetAllTheNodes());
-        }
         public void Awake()
         {
             manager = this;
@@ -68,24 +68,33 @@ namespace BranchMaker.Story
             _dialogueHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IDialogueHandler>().ToList();
             _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
             _optionHandlers = FindObjectsOfType<MonoBehaviour>(true).OfType<IOptionHandler>().ToList();
-            _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().First();
+            _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().FirstOrDefault();
             
             _actorHandlers.ForEach(a => a.ResetActors());
+        }
+        
+        private void Start()
+        {
+            _optionHandlers.ForEach(a => a.Cleanup());
+            if (loadFlow == LoadFlow.LoadOnLaunch) ForceRefresh();
+        }
+
+        public void LaunchWithBookKey(string newBookKey)
+        {
+            Debug.Log("Hello "+newBookKey);
+            if (newBookKey.Length != 36) return;
+            if (loadFlow == LoadFlow.AwaitLoadCommand)
+            {
+                startingNodeID = null;
+                storybookId = newBookKey;
+                ForceRefresh();
+            }
         }
 
         public static List<BranchNode> AllNodes()
         {
             return _nodeLib.Values.ToList();
         }
-
-        private void FixedUpdate()
-        {
-            if (clickCooldown > 0)
-            {
-                clickCooldown -= Time.deltaTime;
-            }
-        }
-
 
         public static void ForceRefresh()
         {
@@ -96,21 +105,18 @@ namespace BranchMaker.Story
         private IEnumerator GetAllTheNodes()
         {
             foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(null, "Loading...");
-
             loadingStory = true;
             var content = "";
-            
             var fetch = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,storybookId));
-            Log("Loading story from "+fetch.url);
+            Debug.Log("Fetching "+fetch);
+            
             fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
             fetch.SetRequestHeader("Pragma", "no-cache");
             yield return fetch.SendWebRequest();
-
             var backupFileName = Application.persistentDataPath + "/" + storybookId + ".txt";
 
             if (!string.IsNullOrEmpty(fetch.error))
             {
-                Log("Fetch error : (" + fetch.url + ") " + fetch.error);
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -126,7 +132,6 @@ namespace BranchMaker.Story
                 writer.Write(fetch.downloadHandler.text);
                 writer.Close();
                 content = fetch.downloadHandler.text;
-                Log("Story load complete");
             }
 
             var allNodes = JSONNode.Parse(content);
@@ -134,6 +139,8 @@ namespace BranchMaker.Story
 
             loadingStory = false;
 
+            if (startingNodeID == null) startingNodeID = _nodeLib.First().Key;
+            
             if (forceLoad != null) {
                 startingNodeID = forceLoad.currentNode;
                 forceLoad.Resume();
@@ -146,14 +153,11 @@ namespace BranchMaker.Story
                 LoadNodeKey(startingNodeID);
                 reloadPurpose = false;
             }
-            Log("Loaded "+_nodeLib.Count+" nodes");
         }
 
         private static bool Busy()
         {
-            if (loadingStory) return true;
-            if (manager == null) return true;
-
+            if (loadingStory || manager == null) return true;
             return manager._windowOverlays.Any(overlay => overlay.WindowOverlayOpen());
         }
 
@@ -239,8 +243,7 @@ namespace BranchMaker.Story
 
         public static void PerformAction(BranchNodeBlock action)
         {
-            if (clickCooldown > 0) return;
-            clickCooldown = 0.2f;
+            if (actionCooldown > 0) return;
             if (!StoryEventManager.ValidateActionBlock(action)) return;
             StoryEventManager.ParseBlockscript(action);
             LoadNodeKey(action.target_node);
@@ -268,7 +271,7 @@ namespace BranchMaker.Story
             SpeakActiveNode();
 
             node.processed = true;
-            _loadSaveHandler.UpdateSaveFile();
+            _loadSaveHandler?.UpdateSaveFile();
             manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
         }
 

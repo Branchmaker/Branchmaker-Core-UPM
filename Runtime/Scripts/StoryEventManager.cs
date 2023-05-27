@@ -82,22 +82,24 @@ namespace BranchMaker.Story
         {
             if (block.forcedIcon != null) return block.forcedIcon;
             if (!block.HasMetaScript()) return null;
-            foreach (var line in block.MetaScriptLines())
-            {
-                var cline = line.Trim();
+            /*
+        foreach (var line in block.MetaScriptLines())
+        {
+            var cline = line.Trim();
 
-                if (cline.StartsWith("icon:"))
+            if (cline.StartsWith("icon:"))
+            {
+                string newclue = cline.Replace("icon:", "").ToLower().Trim();
+                foreach (var spr in StoryManager.manager.IconSprites)
                 {
-                    string newclue = cline.Replace("icon:", "").ToLower().Trim();
-                    foreach (var spr in StoryManager.manager.IconSprites)
+                    if (spr.name.ToLower() == newclue)
                     {
-                        if (spr.name.ToLower() == newclue)
-                        {
-                            return spr;
-                        }
+                        return spr;
                     }
                 }
             }
+            }
+            */
             return null;
         }
 

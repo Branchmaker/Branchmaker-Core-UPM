@@ -1,0 +1,34 @@
+using System;
+using TMPro;
+using UnityEngine;
+
+namespace BranchMaker.Addons.Dyslexia
+{
+    public class OpenDyslexicFontReplacer : MonoBehaviour
+    {
+        private TMPro.TextMeshProUGUI label;
+        private TMPro.TMP_FontAsset basicFont;
+        private void Awake()
+        {
+            label = GetComponent<TextMeshProUGUI>();
+            basicFont = label.font;
+        }
+
+        private void OnEnable()
+        {
+            CheckForFontUpdate();
+        }
+
+        public void CheckForFontUpdate()
+        {
+            if (OpenDyslexicSetting.ChangeFonts())
+            {
+                if (label.font != OpenDyslexicSetting.globalDysFont) label.font = OpenDyslexicSetting.globalDysFont;
+            }
+            else
+            {
+                if (label.font != basicFont) label.font = basicFont;
+            }
+        }
+    }
+}

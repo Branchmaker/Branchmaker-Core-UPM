@@ -12,7 +12,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
     private List<DialogueButton> _actionButtons;
     public Sprite defaultActionIcon;
     public GameObject clickToContinue;
-    
+    [SerializeField] private bool blockUnsafeActions; 
     
     public void Awake()
     {
@@ -61,7 +61,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
                     (icon == null ? manager.defaultActionIcon : icon);
             }
 
-            manager._actionButtons[buttonIndex].GetComponent<Button>().interactable = block.isSafe;
+            if (blockUnsafeActions) manager._actionButtons[buttonIndex].GetComponent<Button>().interactable = block.isSafe;
             manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
             manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
                 () => { StoryManager.PerformAction(block); });
