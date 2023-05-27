@@ -11,6 +11,7 @@ namespace BranchMaker.Addons.Dyslexia
         private void Awake()
         {
             label = GetComponent<TextMeshProUGUI>();
+            if (label == null) return;
             basicFont = label.font;
         }
 
@@ -21,6 +22,7 @@ namespace BranchMaker.Addons.Dyslexia
 
         public void CheckForFontUpdate()
         {
+            if (label == null) return;
             if (OpenDyslexicSetting.ChangeFonts())
             {
                 if (label.font != OpenDyslexicSetting.globalDysFont) label.font = OpenDyslexicSetting.globalDysFont;
