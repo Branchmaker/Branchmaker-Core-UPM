@@ -24,7 +24,7 @@ public class BranchMakerCloudSave
 
     public void Populate()
     {
-        currentNode = StoryManager.currentnode.id;
+        currentNode = StoryManager.Currentnode.id;
         unlockedWords = StoryButton.playerkeys;
         backgroundScene = StorySceneManager.CurrentSceneLoaded();
 

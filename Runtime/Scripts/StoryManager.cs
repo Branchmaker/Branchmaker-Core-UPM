@@ -10,7 +10,6 @@ using BranchMaker.LoadSave;
 using Debug = UnityEngine.Debug;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using UnityEngine.Serialization;
 
 namespace BranchMaker.Story
 {
@@ -36,12 +35,12 @@ namespace BranchMaker.Story
         private static Dictionary<string, BranchNode> _nodeLib = new();
 
         [Header("Handlers")]
-        static bool loadingStory;
+        static bool _loadingStory;
         //public Sprite[] IconSprites;
-        public static BranchNode currentnode;
+        public static BranchNode Currentnode;
 
-        private static float actionCooldown;
-        private static bool reloadPurpose = true;
+        private static float _actionCooldown;
+        private static bool _reloadPurpose = true;
 
         private List<IDialogueHandler> _dialogueHandlers;
         private List<IWindowOverlay> _windowOverlays;
@@ -61,8 +60,8 @@ namespace BranchMaker.Story
         public void Awake()
         {
             manager = this;
-            currentnode = null;
-            reloadPurpose = true;
+            Currentnode = null;
+            _reloadPurpose = true;
             _nodeLib.Clear();
             StoryButton.playerkeys.Clear();
             
@@ -101,14 +100,14 @@ namespace BranchMaker.Story
 
         public static void ForceRefresh()
         {
-            if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
+            if (!_loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
         }
 
 
         private IEnumerator GetAllTheNodes()
         {
             foreach (var handler in manager._dialogueHandlers) handler.WriteDialogue(null, "Loading...");
-            loadingStory = true;
+            _loadingStory = true;
             var content = "";
             var fetch = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,storybookId));
             Debug.Log("Fetching "+fetch);
@@ -139,10 +138,15 @@ namespace BranchMaker.Story
 
             var allNodes = JSONNode.Parse(content);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
+            
+            foreach (var block in _nodeLib.Values.SelectMany(node => node.blocks))
+            {
+                StoryEventManager.PreloadScriptCheck(block);
+            }
 
-            loadingStory = false;
+            _loadingStory = false;
 
-            if (startingNodeID == null) startingNodeID = _nodeLib.First().Key;
+            startingNodeID ??= _nodeLib.First().Key;
             
             if (forceLoad != null) {
                 startingNodeID = forceLoad.currentNode;
@@ -151,16 +155,16 @@ namespace BranchMaker.Story
                 forceLoad = null;
             }
 
-            if (reloadPurpose)
+            if (_reloadPurpose)
             {
                 LoadNodeKey(startingNodeID);
-                reloadPurpose = false;
+                _reloadPurpose = false;
             }
         }
 
         private static bool Busy()
         {
-            if (loadingStory || manager == null) return true;
+            if (_loadingStory || manager == null) return true;
             return manager._windowOverlays.Any(overlay => overlay.WindowOverlayOpen());
         }
 
@@ -175,13 +179,13 @@ namespace BranchMaker.Story
 
             if (IsCurrentlyWriting())
             {
-                actionCooldown = 0.1f;
+                _actionCooldown = 0.1f;
                 return;
             }
 
-            if (actionCooldown > 0)
+            if (_actionCooldown > 0)
             {
-                actionCooldown -= Time.deltaTime;
+                _actionCooldown -= Time.deltaTime;
                 return;
             }
             
@@ -196,7 +200,7 @@ namespace BranchMaker.Story
         private void ForceReloadFromServer()
         {
             _speakQueue.Clear();
-            if (!loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
+            if (!_loadingStory) manager.StartCoroutine(manager.GetAllTheNodes());
             loadFromPublished = false;
             StartCoroutine(GetAllTheNodes());
         }
@@ -246,7 +250,7 @@ namespace BranchMaker.Story
 
         public static void PerformAction(BranchNodeBlock action)
         {
-            if (actionCooldown > 0) return;
+            if (_actionCooldown > 0) return;
             if (!StoryEventManager.ValidateActionBlock(action)) return;
             StoryEventManager.ParseBlockscript(action);
             LoadNodeKey(action.target_node);
@@ -260,8 +264,8 @@ namespace BranchMaker.Story
 
         private static void LoadNode(BranchNode node)
         {
-            actionCooldown = .6f;
-            currentnode = node;
+            _actionCooldown = .6f;
+            Currentnode = node;
             _speakQueue.Clear();
             manager.OnNodeChange.Invoke(node);
             manager._optionHandlers.ForEach(a => a.Cleanup());
@@ -275,7 +279,7 @@ namespace BranchMaker.Story
 
             node.processed = true;
             _loadSaveHandler?.UpdateSaveFile();
-            manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
+            manager._optionHandlers.ForEach(a => a.ProcessNode(Currentnode));
         }
 
         private static void ProcessIncomingNode(BranchNode bNode)
@@ -283,7 +287,7 @@ namespace BranchMaker.Story
             if (!_nodeLib.ContainsKey(bNode.id)) _nodeLib.Add(bNode.id, bNode);
             bNode.processed = false;
 
-            if (currentnode != null && bNode.id == currentnode.id) LoadNode(bNode);
+            if (Currentnode != null && bNode.id == Currentnode.id) LoadNode(bNode);
 
             foreach (var block in bNode.blocks)
             {
@@ -293,7 +297,7 @@ namespace BranchMaker.Story
 
         public static void BuildButtons()
         {
-            manager._optionHandlers.ForEach(a => a.ProcessNode(currentnode));
+            manager._optionHandlers.ForEach(a => a.ProcessNode(Currentnode));
         }
 
         public static bool HasSpeakingQueue()
