@@ -28,6 +28,7 @@ namespace BranchMaker {
 
             foreach (SimpleJSON.JSONNode block in jsonNode["blocks"]) {
                 var nodeblock = BranchNodeBlock.createFromJson(block);
+                nodeblock.node_id = node.id;
                 node.blocks.Add(nodeblock);
             }
 

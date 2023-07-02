@@ -18,6 +18,7 @@ namespace BranchMaker
         // Action nodes
         public string clean_action;
         public string target_node;
+        public string node_id;
 
         public bool processed;
         public bool isSafe;
