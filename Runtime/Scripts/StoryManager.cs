@@ -144,6 +144,15 @@ namespace BranchMaker.Story
                 StoryEventManager.PreloadScriptCheck(block);
             }
 
+            if (Currentnode != null)
+            {
+                foreach (var node in _nodeLib.Values.Where(node => node.id == Currentnode.id))
+                {
+                    LoadNode(node);
+                    break;
+                }
+            }
+
             _loadingStory = false;
 
             startingNodeID ??= _nodeLib.First().Key;
@@ -286,13 +295,6 @@ namespace BranchMaker.Story
         {
             if (!_nodeLib.ContainsKey(bNode.id)) _nodeLib.Add(bNode.id, bNode);
             bNode.processed = false;
-
-            if (Currentnode != null && bNode.id == Currentnode.id) LoadNode(bNode);
-
-            foreach (var block in bNode.blocks)
-            {
-                StoryEventManager.PreloadScriptCheck(block);
-            }
         }
 
         public static void BuildButtons()
