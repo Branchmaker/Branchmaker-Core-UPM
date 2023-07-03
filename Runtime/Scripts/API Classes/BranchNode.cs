@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace BranchMaker {
     public class BranchNode
@@ -15,7 +13,7 @@ namespace BranchMaker {
         public List<BranchNodeBlock> StoryBlocks() => blocks.FindAll(a => !a.isActionNode());
         public List<BranchNodeBlock> ActionBlocks() => blocks.FindAll(a => a.isActionNode());
 
-        static public Dictionary<string, BranchNode> nodecollection = new Dictionary<string, BranchNode>();
+        static public Dictionary<string, BranchNode> nodecollection = new();
 
         // Use this for initialization
         public static BranchNode createFromJson(SimpleJSON.JSONNode jsonNode)

@@ -52,6 +52,7 @@ namespace BranchMaker.Story
         public bool HideScriptActions = true;
 
         [Header("Events")]
+        [SerializeField] private UnityEvent OnStoryReady;
         [SerializeField] private UnityEvent<BranchNode> OnNodeChange;
         [SerializeField] private UnityEvent<BranchNodeBlock> OnBlockChange;
         
@@ -110,13 +111,11 @@ namespace BranchMaker.Story
             _loadingStory = true;
             var content = "";
             var fetch = UnityWebRequest.Get(BranchmakerPaths.StoryNodes(loadFromPublished,storybookId));
-            Debug.Log("Fetching "+fetch);
-            
             fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
             fetch.SetRequestHeader("Pragma", "no-cache");
             yield return fetch.SendWebRequest();
+            
             var backupFileName = Application.persistentDataPath + "/" + storybookId + ".txt";
-
             if (!string.IsNullOrEmpty(fetch.error))
             {
                 if (File.Exists(backupFileName))
@@ -169,6 +168,8 @@ namespace BranchMaker.Story
                 LoadNodeKey(startingNodeID);
                 _reloadPurpose = false;
             }
+            
+            OnStoryReady.Invoke();
         }
 
         private static bool Busy()
