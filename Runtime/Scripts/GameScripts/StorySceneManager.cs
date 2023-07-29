@@ -6,15 +6,15 @@ namespace BranchMaker.Story
 {
     public class StorySceneManager : MonoBehaviour
     {
-        private static readonly List<StorySceneManager> managers = new List<StorySceneManager>();
-        static readonly Dictionary<string, StoryScene> sceneBank = new Dictionary<string, StoryScene>();
-        static readonly Dictionary<string, StoryButton> sceneButtons = new Dictionary<string, StoryButton>();
+        private static readonly List<StorySceneManager> Managers = new();
+        private static readonly Dictionary<string, StoryScene> SceneBank = new();
+        private static readonly Dictionary<string, StoryButton> SceneButtons = new();
 
         static StoryScene _currentScene;
 
         private void Awake()
         {
-            if (!managers.Contains(this)) managers.Add(this);
+            if (!Managers.Contains(this)) Managers.Add(this);
             foreach (var scene in transform.GetComponentsInChildren<StoryScene>(true))
             {
                 RegisterScene(scene);
@@ -24,11 +24,11 @@ namespace BranchMaker.Story
         internal static void RegisterScene(StoryScene scene)
         {
             if (string.IsNullOrEmpty(scene.storyNodeId)) return;
-            if (sceneBank.ContainsKey(scene.storyNodeId)) return;
-            sceneBank.Add(scene.storyNodeId, scene);
+            if (SceneBank.ContainsKey(scene.storyNodeId)) return;
+            SceneBank.Add(scene.storyNodeId, scene);
             foreach (var altId in scene.storyNodeIdAlts)
             {
-                sceneBank.Add(altId, scene);
+                SceneBank.Add(altId, scene);
             }
 
             scene.gameObject.SetActive(false);
@@ -41,27 +41,27 @@ namespace BranchMaker.Story
 
         private void OnDestroy()
         {
-            managers.Clear();
-            sceneBank.Clear();
-            sceneButtons.Clear();
+            Managers.Clear();
+            SceneBank.Clear();
+            SceneButtons.Clear();
             _currentScene = null;
         }
 
         public static bool SceneHasNodeButton(string nodeId)
         {
-            return sceneButtons.ContainsKey(nodeId);
+            return SceneButtons.ContainsKey(nodeId);
         }
 
         public static void ShowPotentialScene(string nodeKey)
         {
-            if (!sceneBank.ContainsKey(nodeKey)) return;
+            if (!SceneBank.ContainsKey(nodeKey)) return;
             if (_currentScene != null)
             {
                 if (_currentScene.storyNodeId == nodeKey) return;
                 _currentScene.gameObject.SetActive(false);
             }
 
-            foreach (var manager in managers)
+            foreach (var manager in Managers)
             {
                 foreach (var scene in manager.gameObject.GetComponentsInChildren<StoryScene>(true).Where(a => a.storyNodeId == nodeKey))
                 {
@@ -69,15 +69,15 @@ namespace BranchMaker.Story
                 }
             }
 
-            _currentScene = sceneBank[nodeKey];
-            sceneButtons.Clear();
+            _currentScene = SceneBank[nodeKey];
+            SceneButtons.Clear();
             _currentScene.gameObject.SetActive(true);
 
             foreach (var btn in _currentScene.GetComponentsInChildren<StoryButton>())
             {
                 if (string.IsNullOrEmpty(btn.gotoNode)) continue;
-                if (sceneButtons.ContainsKey(btn.gotoNode)) continue;
-                sceneButtons.Add(btn.gotoNode, btn);
+                if (SceneButtons.ContainsKey(btn.gotoNode)) continue;
+                SceneButtons.Add(btn.gotoNode, btn);
             }
         }
     }
