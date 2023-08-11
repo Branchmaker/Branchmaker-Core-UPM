@@ -2,48 +2,66 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
+[RequireComponent(typeof(AudioSource))]
 public class RemoteVoicePlayer : MonoBehaviour
 {
-    private static RemoteVoicePlayer player;
-    // Start is called before the first frame update
-    void Awake()
+    private static RemoteVoicePlayer _player;
+    private UnityWebRequest _webRequest;
+    private AudioSource _audioSource;
+    private void Awake()
     {
-        player = this;
+        _player = this;
+        _audioSource = GetComponent<AudioSource>();
     }
 
     public static void PlayRemoteOgg(string uri)
     {
         if (string.IsNullOrEmpty(uri)) return;
         if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
-        player.StartCoroutine(player.PlayFile(uri));
+        _player.StartCoroutine(_player.PlayFile(uri));
     }
 
     public static void StopSpeaking()
     {
-        if (player == null) return;
-        player.StopAllCoroutines();
-        player.GetComponent<AudioSource>().Stop();
+        if (_player == null) return;
+        _player.StopAllCoroutines();
+        _player.GetComponent<AudioSource>().Stop();
     }
-    
-    IEnumerator PlayFile(string path)
+    private IEnumerator PlayFile(string path)
     {
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.OGGVORBIS))
-        {
-            yield return www.SendWebRequest();
+        _webRequest = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.OGGVORBIS);
+        _webRequest.SendWebRequest();
 
-            if (www.result != UnityWebRequest.Result.ConnectionError)
+        while (!_webRequest.isDone)
+        {
+            // Check for errors during streaming
+            if (_webRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.Log(www.error);
+                Debug.LogError("Error streaming audio from " + _webRequest.url);
+                Debug.Log(_webRequest.error);
+                yield break;
             }
-            else
+
+            // Process the downloaded audio data
+            var audioHandler = (DownloadHandlerAudioClip)_webRequest.downloadHandler;
+            var audioClip = audioHandler.audioClip;
+
+            // Make sure the audio source is set and ready
+            if (_audioSource.clip == null)
             {
-                var myClip = DownloadHandlerAudioClip.GetContent(www);
-                if (myClip != null)
-                {
-                    GetComponent<AudioSource>().clip = myClip;
-                    GetComponent<AudioSource>().Play();
-                }
+                _audioSource.clip = AudioClip.Create("StreamingAudioClip", audioClip.samples, audioClip.channels, audioClip.frequency, false);
             }
+
+            // Get the samples from the downloaded audio clip
+            var samples = new float[audioClip.samples * audioClip.channels];
+            audioClip.GetData(samples, 0);
+
+            // Stream the samples to the audio source
+            _audioSource.clip.SetData(samples, _audioSource.timeSamples);
+            _audioSource.Play();
+
+            // Wait for a short time before streaming the next portion
+            yield return new WaitForSecondsRealtime(0.1f);
         }
     }
 }
