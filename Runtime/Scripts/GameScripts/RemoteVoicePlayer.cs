@@ -6,12 +6,12 @@ using UnityEngine.Networking;
 public class RemoteVoicePlayer : MonoBehaviour
 {
     private static RemoteVoicePlayer _player;
-    private UnityWebRequest _webRequest;
-    private AudioSource _audioSource;
+    private UnityWebRequest webRequest;
+    private AudioSource audioSource;
     private void Awake()
     {
         _player = this;
-        _audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public static void PlayRemoteOgg(string uri)
@@ -27,41 +27,85 @@ public class RemoteVoicePlayer : MonoBehaviour
         _player.StopAllCoroutines();
         _player.GetComponent<AudioSource>().Stop();
     }
+    
     private IEnumerator PlayFile(string path)
     {
-        _webRequest = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.OGGVORBIS);
-        _webRequest.SendWebRequest();
+        webRequest = UnityWebRequest.Get(path);
+        yield return webRequest.SendWebRequest();
 
-        while (!_webRequest.isDone)
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
-            // Check for errors during streaming
-            if (_webRequest.result != UnityWebRequest.Result.Success)
+            Debug.LogError("Could not load " + webRequest.url);
+            Debug.Log(webRequest.error);
+            yield break;
+        }
+
+        if (IsHLSFormat(webRequest))
+        {
+            // If it's HLS format, stream the audio
+            AudioClip audioClip = DownloadHandlerAudioClip.GetContent(webRequest);
+            if (audioClip == null) yield break;
+
+            audioSource.clip = audioClip;
+            audioSource.Play();
+        }
+        else if (IsOGGFormat(path))
+        {
+            // If it's OGG format, download and play
+            var audioType = GetAudioTypeFromPath(path);
+            using (var www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
             {
-                Debug.LogError("Error streaming audio from " + _webRequest.url);
-                Debug.Log(_webRequest.error);
-                yield break;
+                yield return www.SendWebRequest();
+
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.LogError("Could not load " + www.url);
+                    Debug.Log(www.error);
+                }
+                else
+                {
+                    var myClip = DownloadHandlerAudioClip.GetContent(www);
+                    if (myClip == null) yield break;
+                    audioSource.clip = myClip;
+                    audioSource.Play();
+                }
             }
+        }
+    }
 
-            // Process the downloaded audio data
-            var audioHandler = (DownloadHandlerAudioClip)_webRequest.downloadHandler;
-            var audioClip = audioHandler.audioClip;
+    private bool IsHLSFormat(UnityWebRequest request)
+    {
+        return request.url.ToLower().EndsWith(".hls");
+    }
 
-            // Make sure the audio source is set and ready
-            if (_audioSource.clip == null)
-            {
-                _audioSource.clip = AudioClip.Create("StreamingAudioClip", audioClip.samples, audioClip.channels, audioClip.frequency, false);
-            }
+    private bool IsOGGFormat(string path)
+    {
+        return path.ToLower().EndsWith(".ogg");
+    }
 
-            // Get the samples from the downloaded audio clip
-            var samples = new float[audioClip.samples * audioClip.channels];
-            audioClip.GetData(samples, 0);
+    private static AudioType GetAudioTypeFromPath(string path)
+    {
+        switch (path.ToLower().EndsWith(".ogg"))
+        {
+            case false when path.ToLower().EndsWith(".mp3"):
+                return AudioType.MPEG;
+            case false when path.ToLower().EndsWith(".s3m"):
+                return AudioType.S3M;
+            case false:
+                break;
+            default:
+                return AudioType.OGGVORBIS;
+        }
 
-            // Stream the samples to the audio source
-            _audioSource.clip.SetData(samples, _audioSource.timeSamples);
-            _audioSource.Play();
+        return AudioType.OGGVORBIS;
+    }
 
-            // Wait for a short time before streaming the next portion
-            yield return new WaitForSecondsRealtime(0.1f);
+    private void OnDestroy()
+    {
+        // Clean up the web request when the object is destroyed
+        if (webRequest != null && !webRequest.isDone)
+        {
+            webRequest.Abort();
         }
     }
 }
