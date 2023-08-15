@@ -30,18 +30,10 @@ public class RemoteVoicePlayer : MonoBehaviour
     
     private IEnumerator PlayFile(string path)
     {
-        webRequest = UnityWebRequest.Get(path);
-        yield return webRequest.SendWebRequest();
-
-        if (webRequest.result != UnityWebRequest.Result.Success)
+        if (IsHLSFormat(path))
         {
-            Debug.LogError("Could not load " + webRequest.url);
-            Debug.Log(webRequest.error);
-            yield break;
-        }
-
-        if (IsHLSFormat(webRequest))
-        {
+            webRequest = UnityWebRequest.Get(path);
+            yield return webRequest.SendWebRequest();
             // If it's HLS format, stream the audio
             AudioClip audioClip = DownloadHandlerAudioClip.GetContent(webRequest);
             if (audioClip == null) yield break;
@@ -49,12 +41,38 @@ public class RemoteVoicePlayer : MonoBehaviour
             audioSource.clip = audioClip;
             audioSource.Play();
         }
-        else if (IsOGGFormat(path))
+        else
         {
             // If it's OGG format, download and play
             var audioType = GetAudioTypeFromPath(path);
-            using (var www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
+            
+            #if UNITY_WEBGL
+            if (audioType == AudioType.OGGVORBIS) yield break;  
+                #endif
+                
+                using (var www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
             {
+                if (audioType == AudioType.MPEG)
+                {
+                    DownloadHandlerAudioClip dHA = new DownloadHandlerAudioClip(string.Empty, AudioType.MPEG);
+                    dHA.streamAudio = true;
+                    www.downloadHandler = dHA;
+                    
+                    www.SendWebRequest();
+                    while (www.downloadProgress < 1) {
+                        yield return new WaitForSeconds(.1f);
+                    }
+                    if (www.responseCode != 200 || www.result == UnityWebRequest.Result.ConnectionError) {
+                        Debug.Log("error");
+                    } else {
+                        audioSource.clip = DownloadHandlerAudioClip.GetContent(www);
+                        audioSource.Play();
+                    }
+
+                    yield break;
+
+                }
+
                 yield return www.SendWebRequest();
 
                 if (www.result != UnityWebRequest.Result.Success)
@@ -73,9 +91,9 @@ public class RemoteVoicePlayer : MonoBehaviour
         }
     }
 
-    private bool IsHLSFormat(UnityWebRequest request)
+    private bool IsHLSFormat(string path)
     {
-        return request.url.ToLower().EndsWith(".hls");
+        return path.ToLower().EndsWith(".hls");
     }
 
     private bool IsOGGFormat(string path)
@@ -88,6 +106,8 @@ public class RemoteVoicePlayer : MonoBehaviour
         switch (path.ToLower().EndsWith(".ogg"))
         {
             case false when path.ToLower().EndsWith(".mp3"):
+                return AudioType.MPEG;
+            case false when path.ToLower().EndsWith(".mp4"):
                 return AudioType.MPEG;
             case false when path.ToLower().EndsWith(".s3m"):
                 return AudioType.S3M;

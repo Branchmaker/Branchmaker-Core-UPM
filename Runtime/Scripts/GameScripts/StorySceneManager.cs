@@ -21,17 +21,33 @@ namespace BranchMaker.Story
             }
         }
 
+        private void OnEnable()
+        {
+            foreach (var scene in transform.GetComponentsInChildren<StoryScene>(true))
+            {
+                RegisterScene(scene);
+            }
+        }
+
         internal static void RegisterScene(StoryScene scene)
         {
+            scene.gameObject.SetActive(false);
             if (string.IsNullOrEmpty(scene.storyNodeId)) return;
-            if (SceneBank.ContainsKey(scene.storyNodeId)) return;
+            if (SceneBank.ContainsKey(scene.storyNodeId))
+            {
+                SceneBank[scene.storyNodeId] = scene;
+                foreach (var altId in scene.storyNodeIdAlts)
+                {
+                    SceneBank[altId] = scene;
+                }
+                return;
+            }
             SceneBank.Add(scene.storyNodeId, scene);
             foreach (var altId in scene.storyNodeIdAlts)
             {
                 SceneBank.Add(altId, scene);
             }
 
-            scene.gameObject.SetActive(false);
         }
 
         public static string CurrentSceneLoaded()
