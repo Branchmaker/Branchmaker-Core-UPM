@@ -45,6 +45,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             if (block.clean_action.StartsWith("#") && StoryManager.manager.HideScriptActions) continue;
 
             var buttonLabel = block.dialogue.CapitalizeFirst();
+            if (block.dialogue.StartsWith("<")) buttonLabel = block.dialogue;
             if (!string.IsNullOrEmpty(block.meta_scripts))
             {
                 if (block.meta_scripts.Contains("needword:"))
