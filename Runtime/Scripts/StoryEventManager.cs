@@ -9,7 +9,7 @@ namespace BranchMaker.Story
     public static class StoryEventManager
     {
         static List<StoryEventTrigger> _triggerPool = new();
-        static List<string> _seenNodes = new();
+        public static List<string> _seenNodes = new();
         public static bool PassActionValidation;
         public static BranchNodeBlock StoredAction;
 
