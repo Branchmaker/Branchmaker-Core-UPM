@@ -20,23 +20,20 @@ namespace BranchMaker.LoadSave
 
     public class CloudSaveManager : MonoBehaviour, ILoadSaveHandler
     {
+        public static bool PreventSavefileWrites;
+        
         static SteamCloudPrefs LocalStorage = new SteamCloudPrefs();
 
         private void Start()
         {
-            LocalStorage = Load();
-
-            if (LocalStorage == null)
-            {
-                LocalStorage = new SteamCloudPrefs();
-            }
-
+            LocalStorage = Load() ?? new SteamCloudPrefs();
             if (ResumeSaveButtonManager.manager != null) ResumeSaveButtonManager.manager.CheckButton();
         }
 
 
         void ILoadSaveHandler.UpdateSaveFile()
         {
+            if (PreventSavefileWrites) return;
             LocalStorage ??= new SteamCloudPrefs();
             LocalStorage.saveFile ??= new BranchMakerCloudSave();
             LocalStorage.saveFile.Populate();
