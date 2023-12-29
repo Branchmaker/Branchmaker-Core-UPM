@@ -8,11 +8,6 @@ namespace BranchMaker.Story
         public string storyNodeId = string.Empty;
         public List<string> storyNodeIdAlts = new List<string>();
 
-        private void Awake()
-        {
-            StorySceneManager.RegisterScene(this);
-        }
-
         public bool MatchesNode(BranchNode node)
         {
             if (storyNodeId == node.id) return true;
