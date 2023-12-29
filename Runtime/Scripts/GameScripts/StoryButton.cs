@@ -14,7 +14,7 @@ public class StoryButton : MonoBehaviour
     bool notFirsttime = false;
     private Button _btn;
     private Image _image;
-    private BranchNodeBlock _designatedAction;
+    public BranchNodeBlock designatedAction;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class StoryButton : MonoBehaviour
 
     private void GoToMyNode()
     {
-        if (_designatedAction != null) StoryManager.PerformAction(_designatedAction);
+        if (designatedAction != null) StoryManager.PerformAction(designatedAction);
         else StoryManager.LoadNodeKey(gotoNode);
     }
 
