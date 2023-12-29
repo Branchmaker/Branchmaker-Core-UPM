@@ -20,10 +20,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         _actionButtons = GetComponentsInChildren<DialogueButton>(true).ToList();
     }
 
-    public bool CanHandleBlock(BranchNodeBlock block)
-    {
-        throw new System.NotImplementedException();
-    }
+    public bool CanHandleBlock(BranchNodeBlock block) => true;
 
     public void ProcessNode(BranchNode node)
     {
@@ -36,7 +33,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         
         gameObject.SetActive(true);
 
-        if (clickToContinue != null) clickToContinue.SetActive(false);
+        if (clickToContinue) clickToContinue.SetActive(false);
 
         foreach (var block in node.ActionBlocks())
         {

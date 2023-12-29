@@ -159,7 +159,6 @@ namespace BranchMaker.Story
             if (forceLoad != null) {
                 startingNodeID = forceLoad.currentNode;
                 forceLoad.Resume();
-                StorySceneManager.ShowPotentialScene(forceLoad.backgroundScene);
                 forceLoad = null;
             }
 
@@ -284,12 +283,11 @@ namespace BranchMaker.Story
             {
                 _speakQueue.Add(block);
             }
-            StorySceneManager.ShowPotentialScene(node.id);
             SpeakActiveNode();
 
             node.processed = true;
             _loadSaveHandler?.UpdateSaveFile();
-            manager._optionHandlers.ForEach(a => a.ProcessNode(Currentnode));
+            BuildButtons();
         }
 
         private static void ProcessIncomingNode(BranchNode bNode)
