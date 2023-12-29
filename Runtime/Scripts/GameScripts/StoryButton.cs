@@ -33,7 +33,7 @@ public class StoryButton : MonoBehaviour
 
     private void OnEnable() => UpdateClickable();
 
-    private void UpdateClickable()
+    public void UpdateClickable()
     {
         if (!CanBeClicked())
         {
