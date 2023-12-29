@@ -1,5 +1,6 @@
 ﻿using BranchMaker.Story;
 using System.Collections.Generic;
+using BranchMaker;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ public class StoryButton : MonoBehaviour
 
     bool notFirsttime = false;
     Button btn;
+    public BranchNodeBlock designatedAction;
 
     private void Awake()
     {
@@ -20,7 +22,8 @@ public class StoryButton : MonoBehaviour
     }
     public void GoToMyNode()
     {
-        StoryManager.LoadNodeKey(gotoNode);
+        if (designatedAction != null) StoryManager.PerformAction(designatedAction);
+        else StoryManager.LoadNodeKey(gotoNode);
     }
 
     private void OnEnable()

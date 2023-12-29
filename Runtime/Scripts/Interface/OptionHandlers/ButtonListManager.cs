@@ -37,7 +37,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
         foreach (var block in node.ActionBlocks())
         {
-            if (StorySceneManager.SceneHasNodeButton(block.target_node)) continue;
+            if (StorySceneManager.SceneHasActionButton(block)) continue;
             if (!StoryEventManager.ValidBlockCheck(block)) continue;
             if (block.clean_action.StartsWith("#") && StoryManager.manager.HideScriptActions) continue;
 

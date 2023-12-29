@@ -48,10 +48,15 @@ namespace BranchMaker.Story
             _currentScene = null;
         }
 
-        public static bool SceneHasNodeButton(string nodeId)
+        public static bool SceneHasActionButton(BranchNodeBlock action)
         {
             if (!_currentScene) return false;
-            return _currentScene.GetComponentsInChildren<StoryButton>(true).Any(a => a.gotoNode == nodeId);
+
+            var button = _currentScene.GetComponentsInChildren<StoryButton>(true)
+                .FirstOrDefault(a => a.gotoNode == action.target_node);
+            if (!button) return false;
+            button.designatedAction = action;
+            return true;
         }
     }
 }
