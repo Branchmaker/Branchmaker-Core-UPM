@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Xml;
 
 namespace BranchMaker.Story
 {
@@ -9,8 +11,11 @@ namespace BranchMaker.Story
         private static readonly List<StorySceneManager> Managers = new();
         private static readonly Dictionary<string, StoryScene> SceneBank = new();
         private static readonly Dictionary<string, StoryButton> SceneButtons = new();
+        private static List<StoryScene> SceneCollection = new();
 
-        static StoryScene _currentScene;
+        private static StoryScene _currentScene;
+
+        public bool LogChanges;
 
         private void Awake()
         {
@@ -19,18 +24,46 @@ namespace BranchMaker.Story
             {
                 RegisterScene(scene);
             }
+
+            SceneCollection = transform.GetComponentsInChildren<StoryScene>(true).ToList();
+        }
+
+        private void Start()
+        {
+            StoryManager.manager.OnNodeChange.AddListener(NodeChanged);
+        }
+
+        private void NodeChanged(BranchNode node)
+        {
+            bool removeOthers = false;
+            foreach (var storyScene in SceneCollection.FindAll(a => a.MatchesNode(node)))
+            {
+                removeOthers = true;
+                _currentScene = storyScene;
+                storyScene.gameObject.SetActive(true);
+            }
+
+            if (removeOthers)
+            {
+                foreach (var storyScene in SceneCollection.FindAll(a => !a.MatchesNode(node)))
+                {
+                    storyScene.gameObject.SetActive(false);
+                }   
+            }
         }
 
         private void OnEnable()
-        {
+        {/*
             foreach (var scene in transform.GetComponentsInChildren<StoryScene>(true))
             {
                 RegisterScene(scene);
             }
+        */
         }
 
         internal static void RegisterScene(StoryScene scene)
         {
+            /*
             scene.gameObject.SetActive(false);
             if (string.IsNullOrEmpty(scene.storyNodeId)) return;
             if (SceneBank.ContainsKey(scene.storyNodeId))
@@ -47,12 +80,12 @@ namespace BranchMaker.Story
             {
                 SceneBank.Add(altId, scene);
             }
-
+*/
         }
 
         public static string CurrentSceneLoaded()
         {
-            return _currentScene == null ? string.Empty : _currentScene.storyNodeId;
+            return _currentScene ? _currentScene.storyNodeId : string.Empty;
         }
 
         private void OnDestroy()
@@ -70,6 +103,7 @@ namespace BranchMaker.Story
 
         public static void ShowPotentialScene(string nodeKey)
         {
+            /*
             if (!SceneBank.ContainsKey(nodeKey)) return;
             if (_currentScene != null)
             {
@@ -95,6 +129,7 @@ namespace BranchMaker.Story
                 if (SceneButtons.ContainsKey(btn.gotoNode)) continue;
                 SceneButtons.Add(btn.gotoNode, btn);
             }
+            */
         }
     }
 }

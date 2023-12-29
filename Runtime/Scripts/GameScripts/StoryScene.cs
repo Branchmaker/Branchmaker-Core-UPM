@@ -12,5 +12,12 @@ namespace BranchMaker.Story
         {
             StorySceneManager.RegisterScene(this);
         }
+
+        public bool MatchesNode(BranchNode node)
+        {
+            if (storyNodeId == node.id) return true;
+            if (storyNodeIdAlts.Contains(node.id)) return true;
+            return false;
+        }
     }
 }
