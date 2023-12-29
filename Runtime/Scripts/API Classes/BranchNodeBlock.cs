@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -27,8 +26,8 @@ namespace BranchMaker
         public string process_lines;
         public string process_subtle_lines;
         public List<string> process_line_list;
-        public List<string> script_lines = new List<string>();
-        public List<string> processed_checklist = new List<string>();
+        public List<string> script_lines = new();
+        public List<string> processed_checklist = new();
         public Sprite forcedIcon;
 
         public static BranchNodeBlock createFromJson(SimpleJSON.JSONNode jsonNode)
@@ -59,19 +58,17 @@ namespace BranchMaker
                 // Lingual
                 block.process_lines = jsonNode["processed_lines"].Value.ToLower();
                 block.process_line_list = new List<string>();
-                foreach (string bit in block.process_lines.ToLower().Trim().Split('\n')) {
+                foreach (var bit in block.process_lines.ToLower().Trim().Split('\n')) {
                     block.process_line_list.Add(bit.Trim());
                 }
                 block.process_subtle_lines = jsonNode["processed_subtle_lines"].Value.ToLower();
-
-
             }
             return block;
         }
 
         public bool matchesSegmentationFlag(string[] segments, string currentSegment)
         {
-            foreach (string mk in segments)
+            foreach (var mk in segments)
             {
                 if (script_lines.Contains(mk))
                 {

@@ -240,8 +240,7 @@ namespace BranchMaker.Story
                     {
                         if (!string.IsNullOrEmpty(activeBlock.emotion)) actor.CurrentEmotion = activeBlock.emotion;
                         manager._actorHandlers.ForEach(a => a.ActorUpdate(activeBlock.character, activeBlock));
-                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.themeColor) + ">" +
-                                   actor.displayName + "</color>\n" + dialogue;
+                        dialogue = "<color=#" + ColorUtility.ToHtmlStringRGB(actor.themeColor) + ">" + actor.displayName + "</color>\n" + dialogue;
                     }
                 }
 

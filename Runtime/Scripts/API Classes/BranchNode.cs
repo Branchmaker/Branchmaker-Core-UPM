@@ -30,9 +30,7 @@ namespace BranchMaker {
                 node.blocks.Add(nodeblock);
             }
 
-            if (!nodecollection.ContainsKey(node.id)) nodecollection.Add(node.id, node);
-            else nodecollection[node.id] = node;
-
+            nodecollection[node.id] = node;
 
             return node;
         }
