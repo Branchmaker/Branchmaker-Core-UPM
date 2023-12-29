@@ -51,10 +51,10 @@ namespace BranchMaker.Story
         public static bool SceneHasActionButton(BranchNodeBlock action)
         {
             if (!_currentScene) return false;
-
             var button = _currentScene.GetComponentsInChildren<StoryButton>(true)
                 .FirstOrDefault(a => a.gotoNode == action.target_node);
             if (!button) return false;
+            Debug.Log("Found a button for "+button.name);
             button.designatedAction = action;
             return true;
         }
