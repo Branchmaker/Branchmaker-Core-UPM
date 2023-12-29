@@ -28,9 +28,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         var buttonIndex = 0;
         Cleanup();
 
-        if (StoryManager.HasSpeakingQueue()) return;
-        if (StoryManager.IsCurrentlyWriting()) return;
-        
+        if (StoryManager.HasSpeakingQueue() || StoryManager.IsCurrentlyWriting()) return;
         gameObject.SetActive(true);
 
         if (clickToContinue) clickToContinue.SetActive(false);

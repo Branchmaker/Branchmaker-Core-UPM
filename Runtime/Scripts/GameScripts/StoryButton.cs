@@ -6,56 +6,54 @@ using UnityEngine.UI;
 
 public class StoryButton : MonoBehaviour
 {
-    public static List<string> playerkeys = new List<string>();
+    public static List<string> playerkeys = new();
     public string gotoNode = string.Empty;
 
     public string needKey = string.Empty;
 
     bool notFirsttime = false;
-    Button btn;
-    public BranchNodeBlock designatedAction;
+    private Button _btn;
+    private Image _image;
+    private BranchNodeBlock _designatedAction;
 
     private void Awake()
     {
-        btn = GetComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(GoToMyNode);
-        UpdateClickable();
-    }
-    public void GoToMyNode()
-    {
-        if (designatedAction != null) StoryManager.PerformAction(designatedAction);
-        //else StoryManager.LoadNodeKey(gotoNode);
-    }
-
-    private void OnEnable()
-    {
+        _btn = GetComponent<Button>();
+        _btn.onClick.RemoveAllListeners();
+        _btn.onClick.AddListener(GoToMyNode);
+        _image = GetComponent<Image>();
         UpdateClickable();
     }
 
-    public void UpdateClickable()
+    private void GoToMyNode()
+    {
+        if (_designatedAction != null) StoryManager.PerformAction(_designatedAction);
+        else StoryManager.LoadNodeKey(gotoNode);
+    }
+
+    private void OnEnable() => UpdateClickable();
+
+    private void UpdateClickable()
     {
         if (!CanBeClicked())
         {
-            btn.interactable = false;
-            btn.enabled = false;
-            GetComponent<Image>().CrossFadeColor(Color.black, 0f, false, false);
+            _btn.interactable = false;
+            _btn.enabled = false;
+            _image.CrossFadeColor(Color.black, 0f, false, false);
         } else
         {
-            btn.enabled = true;
-            btn.interactable = true;
+            _btn.enabled = true;
+            _btn.interactable = true;
             if (!notFirsttime)
             {
                 SoundeffectsManager.PlayEffect("ClueChime",true,false);
-                GetComponent<Image>().CrossFadeColor(Color.black, 0f, false, false);
-                GetComponent<Image>().CrossFadeColor(btn.colors.normalColor, 2f, false, false);
-                //GetComponent<Image>().CrossFadeAlpha(1f, 2f,false);
+                _image.CrossFadeColor(Color.black, 0f, false, false);
+                _image.CrossFadeColor(_btn.colors.normalColor, 2f, false, false);
                 notFirsttime = true;
-
             }
             else
             {
-                GetComponent<Image>().CrossFadeColor(btn.colors.normalColor, 0f, false, false);
+                _image.CrossFadeColor(_btn.colors.normalColor, 0f, false, false);
             }
         }
     }
