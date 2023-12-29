@@ -18,12 +18,14 @@ public class StoryButton : MonoBehaviour
     private void Awake()
     {
         btn = GetComponent<Button>();
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(GoToMyNode);
         UpdateClickable();
     }
     public void GoToMyNode()
     {
         if (designatedAction != null) StoryManager.PerformAction(designatedAction);
-        else StoryManager.LoadNodeKey(gotoNode);
+        //else StoryManager.LoadNodeKey(gotoNode);
     }
 
     private void OnEnable()
