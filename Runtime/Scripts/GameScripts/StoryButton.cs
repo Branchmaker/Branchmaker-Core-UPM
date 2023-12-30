@@ -27,8 +27,12 @@ public class StoryButton : MonoBehaviour
 
     private void GoToMyNode()
     {
-        if (designatedAction != null) StoryManager.PerformAction(designatedAction);
-        else StoryManager.LoadNodeKey(gotoNode);
+        if (designatedAction != null)
+        {
+            StoryEventManager.ParseBlockscript(designatedAction);
+            StoryManager.LoadNodeKey(designatedAction.target_node);
+        }
+        else Debug.Log("Missing action for "+gotoNode);
     }
 
     private void OnEnable() => UpdateClickable();
