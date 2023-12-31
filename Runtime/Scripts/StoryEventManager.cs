@@ -11,6 +11,7 @@ namespace BranchMaker.Story
         static List<StoryEventTrigger> _triggerPool = new();
         public static List<string> _seenNodes = new();
         public static bool PassActionValidation;
+        public static bool SkipNextActionNodeChange;
         public static BranchNodeBlock StoredAction;
 
         static StoryEventManager()

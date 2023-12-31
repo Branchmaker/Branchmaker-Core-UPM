@@ -261,6 +261,11 @@ namespace BranchMaker.Story
             if (_actionCooldown > 0) return;
             if (!StoryEventManager.ValidateActionBlock(action)) return;
             StoryEventManager.ParseBlockscript(action);
+            if (StoryEventManager.SkipNextActionNodeChange)
+            {
+                StoryEventManager.SkipNextActionNodeChange = false;
+                return; 
+            } 
             LoadNodeKey(action.target_node);
         }
 

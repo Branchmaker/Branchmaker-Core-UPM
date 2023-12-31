@@ -1,15 +1,14 @@
 {
   "name": "com.branchmaker.core",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "displayName": "Branchmaker CORE",
-  "description": "This is the core package for using Branchmaker API, a cloudbased story writing tool.",
+  "description": "This is the core package for using BranchMaker API, a cloud-based story writing tool.",
   "unity": "2019.1",
   "unityRelease": "0b5",
   "documentationUrl": "https://branchmaker.com/",
-  "changelogUrl": "https://branchmaker.com/changelog.html",
-  "licensesUrl": "https://branchmaker.com/licensing.html",
+  "changelogUrl": "https://branchmaker.com/changelog",
+  "licensesUrl": "https://branchmaker.com/licensing",
   "dependencies": {
-    "com.unity.textmeshpro": "3.0.6"
   },
  "keywords": [
     "narrative",
