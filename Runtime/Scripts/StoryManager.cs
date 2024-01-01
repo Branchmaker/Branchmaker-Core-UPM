@@ -84,7 +84,6 @@ namespace BranchMaker.Story
 
         public void LaunchWithBookKey(string newBookKey)
         {
-            Debug.Log("Hello "+newBookKey);
             if (newBookKey.Length != 36) return;
             if (loadFlow == LoadFlow.AwaitLoadCommand)
             {
