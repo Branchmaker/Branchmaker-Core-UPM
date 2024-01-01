@@ -118,6 +118,7 @@ namespace BranchMaker.Story
             var backupFileName = Application.persistentDataPath + "/" + storybookId + ".txt";
             if (!string.IsNullOrEmpty(fetch.error))
             {
+                LogError("Download error: "+fetch.error);
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -313,6 +314,11 @@ namespace BranchMaker.Story
         protected static void Log(string log)
         {
             if (manager.debugLog) Debug.Log("<color=#00FFFF><b>StoryManager</b></color>: "+log);
+        }
+
+        protected static void LogError(string log)
+        {
+            if (manager.debugLog) Debug.LogError("<color=#00FFFF><b>StoryManager</b></color>: "+log);
         }
     }
 }
