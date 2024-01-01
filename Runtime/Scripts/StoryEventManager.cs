@@ -67,6 +67,21 @@ namespace BranchMaker.Story
                 var cline = line.Trim();
                 foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.ActionCheck))
                 {
+                    if (!cline.StartsWith(trigger.TriggerKey)) continue;
+                    if (!trigger.PassValidation(cline, nodeBlock)) {
+                        PassActionValidation = false; 
+                        break;
+                    }
+                }
+            }
+
+            if (!PassActionValidation) return PassActionValidation;
+            
+            foreach (var line in nodeBlock.MetaScriptLines())
+            {
+                var cline = line.Trim();
+                foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.OnBlockRun))
+                {
                     if (cline.StartsWith(trigger.TriggerKey))
                     {
                         var bits = cline.Split(':');
@@ -74,6 +89,7 @@ namespace BranchMaker.Story
                     }
                 }
             }
+        
 
             return PassActionValidation;
         }
