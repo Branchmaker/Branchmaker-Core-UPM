@@ -1,43 +1,56 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BranchMaker;
+using BranchMaker.Runtime;
+using BranchMaker.Runtime.Utility;
 using BranchMaker.Story;
 using BranchMaker.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasGroup))]
 public class ButtonListManager : MonoBehaviour, IOptionHandler
 {
     private static ButtonListManager manager;
     private List<DialogueButton> _actionButtons;
     public Sprite defaultActionIcon;
-    public GameObject clickToContinue;
-    [SerializeField] private bool blockUnsafeActions; 
+    [SerializeField] private bool blockUnsafeActions;
+    private CanvasGroup _canvasGroup;
     
     public void Awake()
     {
         manager = this;
         _actionButtons = GetComponentsInChildren<DialogueButton>(true).ToList();
+        _canvasGroup = GetComponent<CanvasGroup>();
+        Cleanup();
+    }
+
+    private void Start()
+    {
+        StoryManager.Instance.OnNodeComplete.AddListener(ProcessNode);
+        StoryManager.Instance.OnNodeChange.AddListener(NodeChanged);
     }
 
     public bool CanHandleBlock(BranchNodeBlock block) => true;
+
+    private void NodeChanged(BranchNode node)
+    {
+        Cleanup();
+    }
 
     public void ProcessNode(BranchNode node)
     {
         if (node == null) return;
         var buttonIndex = 0;
         Cleanup();
-
-        if (StoryManager.HasSpeakingQueue() || StoryManager.IsCurrentlyWriting()) return;
-        gameObject.SetActive(true);
-
-        if (clickToContinue) clickToContinue.SetActive(false);
+        _canvasGroup.alpha = 1;
 
         foreach (var block in node.ActionBlocks())
         {
             if (StorySceneManager.SceneHasActionButton(block)) continue;
             if (!StoryEventManager.ValidBlockCheck(block)) continue;
-            if (block.clean_action.StartsWith("#") && StoryManager.manager.HideScriptActions) continue;
+            if (block.clean_action.StartsWith("#") && StoryManager.Instance.HideScriptActions) continue;
 
             var buttonLabel = block.dialogue.CapitalizeFirst();
             if (block.dialogue.StartsWith("<")) buttonLabel = block.dialogue;
@@ -64,7 +77,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             buttonIndex++;
         }
 
-        foreach (var dialogueOption in StoryManager.manager._customDialogueOptions)
+        foreach (var dialogueOption in StoryManager.Instance._customDialogueOptions)
         {
             dialogueOption.ProcessDialogueOptions(node);
         }
@@ -76,6 +89,6 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         {
             but.gameObject.SetActive(false);
         }
-        gameObject.SetActive(false);
+        _canvasGroup.alpha = 0;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using BranchMaker.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -62,7 +63,7 @@ namespace BranchMaker.LoadSave
 
         public static void Save(SteamCloudPrefs steamCloudPrefs)
         {
-            if (StoryManager.manager == null) return;
+            if (StoryManager.Instance == null) return;
             FileStream stream = new FileStream(FilePos, FileMode.Create);
             steamCloudPrefs.activeCaseScene = SceneManager.GetActiveScene().name;
 

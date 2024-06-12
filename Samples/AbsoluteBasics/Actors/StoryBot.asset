@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63e35ae072fe33348b8e9d1277b8c93c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ac5c7515aaf91d4292d8a513f6bb14b, type: 3}
   m_Name: StoryBot
   m_EditorClassIdentifier: 
-  displayName: StoryBot
-  themeColor: {r: 0, g: 0.69306713, b: 0.764151, a: 1}
-  expressions:
-  - expression: base
-    characterImage: {fileID: 21300000, guid: f5ff32debf51b67498a1df86d1210a66, type: 3}
-  current_emotion: 
+  displayName: BranchBot
+  rootNode: 
+  mainSprite: {fileID: 21300000, guid: 0e30bb988b4e25f40ae6f750bde0d3d5, type: 3}
+  themeColor: {r: 0.40970984, g: 0.8524361, b: 0.8773585, a: 0.84313726}
+  expressions: []

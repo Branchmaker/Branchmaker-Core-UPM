@@ -1,6 +1,7 @@
 using BranchMaker.Story;
 using System;
 using System.Collections.Generic;
+using BranchMaker.Runtime;
 
 
 namespace BranchMaker.LoadSave
@@ -24,7 +25,7 @@ public class BranchMakerCloudSave
 
     public void Populate()
     {
-        currentNode = StoryManager.Currentnode.id;
+        currentNode = StoryManager.CurrentNode.id;
         unlockedWords = StoryButton.playerkeys;
         backgroundScene = StorySceneManager.CurrentSceneLoaded();
 

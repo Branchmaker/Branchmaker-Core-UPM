@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using BranchMaker.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -129,7 +130,7 @@ namespace BranchMaker.UI
                 if (displayDialogueBits.Count == 0)
                 {
                     currentlyWriting = false;
-                    StoryManager.BuildButtons();
+                    //StoryManager.BuildButtons();
                 }
             }
             else

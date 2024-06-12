@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +14,7 @@ namespace BranchMaker.Actors
         }
 
         public static ActorObject ActorByKey(string q) =>
-            Actorpool.FirstOrDefault(a => a.name.ToLower() == q.ToLower());
+            Actorpool.FirstOrDefault(a => string.Equals(a.name, q, StringComparison.CurrentCultureIgnoreCase));
 
         public static void PreloadActor(ActorObject newActor)
         {

@@ -1,151 +1,110 @@
-﻿using BranchMaker.Story;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using BranchMaker.Runtime;
 using TMPro;
 using UnityEngine;
 
-namespace BranchMaker.UI
+namespace BranchMaker.Interface.DialogueWriters
 {
-    public class ZeldaTyperTMPro : MonoBehaviour, IDialogueHandler
+    public class ZeldaTyperTMPro : DialogueTyper
     {
-        private static ZeldaTyperTMPro manager;
         static string displayDialogueString;
-        static List<string> displayDialogueBits = new List<string>();
+        private static List<string> _displayDialogueBits = new();
 
-        float lettercooldown = 0f;
-        float speedupCooldown = 0f;
+        private float _lettercooldown = 0f;
+        private float _speedupCooldown = 0f;
 
-        static bool zeldaInsideColor;
-        static bool zeldaInsideBracket;
-        static bool zeldaInsideWord;
-        static string zeldaGeneratedText;
-        private static bool currentlyWriting;
+        private bool _zeldaInsideColor;
+        private bool _zeldaInsideBracket;
+        private bool _zeldaInsideWord;
+        private string _zeldaGeneratedText;
 
-        bool rushSpeaker;
-        public TextMeshProUGUI dialogue;
+        private bool _rushSpeaker;
+        private TMP_Text _dialogueLabel;
 
         private void Awake()
         {
-            manager = this;
-        }
-        
-        public void WriteDialogue(BranchNodeBlock block, string processedText)
-        {
-            DisplayDialogue(processedText);
+            _dialogueLabel = GetComponent<TMP_Text>();
         }
 
-        public bool BusyWriting()
+        protected override void WriteDialogue(BranchNodeBlock currentBlock, string dialogue)
         {
-            return currentlyWriting;
-        }
-        
-        public void DisplayDialogue(string text)
-        {
-            currentlyWriting = true;
-            rushSpeaker = false;
+            CurrentlyWriting = true;
+            _rushSpeaker = false;
 
-            speedupCooldown = 0.5f;
+            _speedupCooldown = 0.5f;
 
-            displayDialogueString = text.Replace("\r", "").Replace("  ", " ").Replace(" ?", "?");
+            displayDialogueString = dialogue.Replace("\r", "").Replace("  ", " ").Replace(" ?", "?");
 
-            //purewrite = Regex.Replace(text, @"<[^>]*>", String.Empty);
-
-            string[] bits = displayDialogueString.Split(' ');
-
-            string[] characters = new string[displayDialogueString.Length];
-            for (int i = 0; i < displayDialogueString.Length; i++)
+            var characters = new string[displayDialogueString.Length];
+            for (var i = 0; i < displayDialogueString.Length; i++)
             {
                 characters[i] = Convert.ToString(displayDialogueString[i]);
             }
 
-            displayDialogueBits = new List<string>(characters);
-            dialogue.text = "";
-            zeldaGeneratedText = "";
-            zeldaInsideBracket = false;
-            zeldaInsideColor = false;
+            _displayDialogueBits = new List<string>(characters);
+            _dialogueLabel.text = "";
+            _zeldaGeneratedText = "";
+            _zeldaInsideBracket = false;
+            _zeldaInsideColor = false;
         }
 
 
-        public static string StripHTML(string input)
+        void ZeldaType(int strength)
         {
-            return Regex.Replace(input, "<.*?>", String.Empty);
-        }
-
-        void ZeldaType()
-        {
-            zeldaInsideWord = false;
-            if (displayDialogueBits.Count > 0)
+            for (var i = 1; i <= strength; i++)
             {
-                currentlyWriting = true;
-
-                if (displayDialogueBits[0] == "<") zeldaInsideBracket = true;
-                if (displayDialogueBits[0] == ">") zeldaInsideBracket = false;
-                if (displayDialogueBits.Count > 3)
+                _zeldaInsideWord = false;
+                if (_displayDialogueBits.Count > 0)
                 {
-                    if (displayDialogueBits[0] + displayDialogueBits[1] == "<c") zeldaInsideColor = true;
-                    if (displayDialogueBits[0] + displayDialogueBits[1] + displayDialogueBits[2] == "</c") zeldaInsideColor = false;
-                }
-                if (displayDialogueBits[0] != " ") zeldaInsideWord = true;
-                zeldaGeneratedText = zeldaGeneratedText + displayDialogueBits[0];
-                dialogue.text = zeldaGeneratedText + (zeldaInsideColor ? "</color>" : "") + "<color=#00ffff00>" + Regex.Replace(displayDialogueString.Replace(zeldaGeneratedText, ""), @"<[^>]*>", String.Empty) + "</color>";
-                displayDialogueBits.RemoveAt(0);
+                    CurrentlyWriting = true;
 
-                if (displayDialogueBits.Count == 0)
-                {
-                    currentlyWriting = false;
-                    StoryManager.BuildButtons();
+                    if (_displayDialogueBits[0] == "<") _zeldaInsideBracket = true;
+                    if (_displayDialogueBits[0] == ">") _zeldaInsideBracket = false;
+                    if (_displayDialogueBits.Count > 3)
+                    {
+                        if (_displayDialogueBits[0] + _displayDialogueBits[1] == "<c") _zeldaInsideColor = true;
+                        if (_displayDialogueBits[0] + _displayDialogueBits[1] + _displayDialogueBits[2] == "</c")
+                            _zeldaInsideColor = false;
+                    }
+
+                    if (_displayDialogueBits[0] != " ") _zeldaInsideWord = true;
+                    _zeldaGeneratedText += _displayDialogueBits[0];
+                    _dialogueLabel.text = _zeldaGeneratedText + (_zeldaInsideColor ? "</color>" : "") + "<color=#00ffff00>" +
+                                         Regex.Replace(displayDialogueString.Replace(_zeldaGeneratedText, ""), @"<[^>]*>",
+                                             string.Empty) + "</color>";
+                    _displayDialogueBits.RemoveAt(0);
                 }
+
+                if (_displayDialogueBits.Count <= 0 && CurrentlyWriting)
+                {
+                    CurrentlyWriting = false;
+                    displayDialogueString = null;
+                    StoryManager.Instance.DoneRenderingBlock();
+                }
+
+                if (_zeldaInsideBracket) ZeldaType(1);
+                if (_zeldaInsideWord) ZeldaType(1);
             }
-            else
-            {
-                displayDialogueString = null;
-                StoryManager.BuildButtons();
-            }
-            if (zeldaInsideBracket) ZeldaType();
-            if (zeldaInsideWord) ZeldaType();
         }
 
         private void Update()
         {
-
-            if (displayDialogueString != null && lettercooldown <= 0)
+            if (displayDialogueString != null && _lettercooldown <= 0)
             {
-                lettercooldown = 0.034f;
-                ZeldaType();
-                /*
-                if (MainMenuManager.textspeed >= 0.25f) ZeldaType();
-                if (MainMenuManager.textspeed >= 0.5f) ZeldaType();
-                if (MainMenuManager.textspeed >= 0.75f) ZeldaType();
-                */
-                if ((Input.anyKey && speedupCooldown <= 0) || rushSpeaker)
-                {
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    ZeldaType();
-                    rushSpeaker = true;
+                _lettercooldown = 0.034f;
+                ZeldaType(1);
 
+                if ((Input.anyKey && _speedupCooldown <= 0) || _rushSpeaker)
+                {
+                    ZeldaType(18);
+                    _rushSpeaker = true;
                 }
             }
-            speedupCooldown -= Time.deltaTime;
-            lettercooldown -= Time.deltaTime;
+
+            _speedupCooldown -= Time.deltaTime;
+            _lettercooldown -= Time.deltaTime;
         }
-
     }
-
 }

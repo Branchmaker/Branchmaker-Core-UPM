@@ -3,6 +3,7 @@ using BranchMaker.Story;
 using System;
 using System.Linq;
 using System.Text;
+using BranchMaker.Runtime.Utility;
 
 public class ReverseSpeak : StoryEventTrigger
 {

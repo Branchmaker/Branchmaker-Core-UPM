@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using BranchMaker.Runtime;
 using BranchMaker.Story;
 using UnityEditor;
 using UnityEngine;

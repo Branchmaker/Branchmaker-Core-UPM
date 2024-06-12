@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using BranchMaker.Runtime;
 
 namespace BranchMaker.Story
 {
@@ -16,7 +17,7 @@ namespace BranchMaker.Story
 
         private void Start()
         {
-            StoryManager.manager.OnNodeChange.AddListener(NodeChanged);
+            StoryManager.Instance.OnNodeChange.AddListener(NodeChanged);
         }
 
         private void NodeChanged(BranchNode node)

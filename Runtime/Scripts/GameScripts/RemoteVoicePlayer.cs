@@ -1,45 +1,58 @@
 using System.Collections;
+using BranchMaker;
+using BranchMaker.Runtime;
+using BranchMaker.Runtime.Utility;
 using UnityEngine;
 using UnityEngine.Networking;
 
 [RequireComponent(typeof(AudioSource))]
-public class RemoteVoicePlayer : MonoBehaviour
+public class RemoteVoicePlayer : BaseController<RemoteVoicePlayer>
 {
-    private static RemoteVoicePlayer _player;
-    private UnityWebRequest webRequest;
-    private AudioSource audioSource;
-    private void Awake()
+    private UnityWebRequest _webRequest;
+    private AudioSource _audioSource;
+
+    protected override void Awake()
     {
-        _player = this;
-        audioSource = GetComponent<AudioSource>();
+        base.Awake();
+        _audioSource = GetComponent<AudioSource>();
+    }
+    
+    void Start()
+    {
+        StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
     }
 
-    public static void PlayRemoteOgg(string uri)
+    private void ProcessBlock(BranchNodeBlock block)
+    {
+        StopSpeaking();
+        if (!string.IsNullOrEmpty(block.voice_file)) PlayRemoteOgg(block.voice_file);
+    }
+
+    private void PlayRemoteOgg(string uri)
     {
         if (string.IsNullOrEmpty(uri)) return;
         if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
-        _player.StartCoroutine(_player.PlayFile(uri));
+        StartCoroutine(PlayFile(uri));
     }
 
-    public static void StopSpeaking()
+    public void StopSpeaking()
     {
-        if (_player == null) return;
-        _player.StopAllCoroutines();
-        _player.GetComponent<AudioSource>().Stop();
+        StopAllCoroutines();
+        GetComponent<AudioSource>().Stop();
     }
     
     private IEnumerator PlayFile(string path)
     {
         if (IsHLSFormat(path))
         {
-            webRequest = UnityWebRequest.Get(path);
-            yield return webRequest.SendWebRequest();
+            _webRequest = UnityWebRequest.Get(path);
+            yield return _webRequest.SendWebRequest();
             // If it's HLS format, stream the audio
-            AudioClip audioClip = DownloadHandlerAudioClip.GetContent(webRequest);
-            if (audioClip == null) yield break;
+            AudioClip audioClip = DownloadHandlerAudioClip.GetContent(_webRequest);
+            if (!audioClip) yield break;
 
-            audioSource.clip = audioClip;
-            audioSource.Play();
+            _audioSource.clip = audioClip;
+            _audioSource.Play();
         }
         else
         {
@@ -65,8 +78,8 @@ public class RemoteVoicePlayer : MonoBehaviour
                     if (www.responseCode != 200 || www.result == UnityWebRequest.Result.ConnectionError) {
                         Debug.Log("error");
                     } else {
-                        audioSource.clip = DownloadHandlerAudioClip.GetContent(www);
-                        audioSource.Play();
+                        _audioSource.clip = DownloadHandlerAudioClip.GetContent(www);
+                        _audioSource.Play();
                     }
 
                     yield break;
@@ -83,9 +96,9 @@ public class RemoteVoicePlayer : MonoBehaviour
                 else
                 {
                     var myClip = DownloadHandlerAudioClip.GetContent(www);
-                    if (myClip == null) yield break;
-                    audioSource.clip = myClip;
-                    audioSource.Play();
+                    if (!myClip) yield break;
+                    _audioSource.clip = myClip;
+                    _audioSource.Play();
                 }
             }
         }
@@ -123,9 +136,9 @@ public class RemoteVoicePlayer : MonoBehaviour
     private void OnDestroy()
     {
         // Clean up the web request when the object is destroyed
-        if (webRequest != null && !webRequest.isDone)
+        if (_webRequest != null && !_webRequest.isDone)
         {
-            webRequest.Abort();
+            _webRequest.Abort();
         }
     }
 }
