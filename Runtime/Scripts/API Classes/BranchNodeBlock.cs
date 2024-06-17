@@ -11,6 +11,7 @@ namespace BranchMaker
         public string nickname;
         public string meta_scripts;
         public string voice_file;
+        public string image_file;
         public string character;
         public string emotion;
 
@@ -37,6 +38,7 @@ namespace BranchMaker
             block.nickname = jsonNode["nickname"].Value;
             block.dialogue = jsonNode["dialogue"].Value;
             block.voice_file = jsonNode["voice_file"].Value;
+            block.image_file = jsonNode["image_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
             block.isSafe = (jsonNode["safe_for_playing"].Value.ToLower() ?? "false") == "true";
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
