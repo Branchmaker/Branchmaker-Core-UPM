@@ -12,7 +12,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class ButtonListManager : MonoBehaviour, IOptionHandler
 {
-    private static ButtonListManager manager;
     private List<DialogueButton> _actionButtons;
     public Sprite defaultActionIcon;
     [SerializeField] private bool blockUnsafeActions;
@@ -20,7 +19,6 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
     
     public void Awake()
     {
-        manager = this;
         _actionButtons = GetComponentsInChildren<DialogueButton>(true).ToList();
         _canvasGroup = GetComponent<CanvasGroup>();
         Cleanup();
@@ -36,11 +34,13 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
     private void NodeChanged(BranchNode node)
     {
+        if (gameObject.activeInHierarchy) return;
         Cleanup();
     }
 
     public void ProcessNode(BranchNode node)
     {
+        if (gameObject.activeInHierarchy) return;
         if (node == null) return;
         var buttonIndex = 0;
         Cleanup();
@@ -60,19 +60,19 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
                     buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
             }
 
-            manager._actionButtons[buttonIndex].gameObject.SetActive(true);
-            manager._actionButtons[buttonIndex].SetLabel(buttonLabel);
+            _actionButtons[buttonIndex].gameObject.SetActive(true);
+            _actionButtons[buttonIndex].SetLabel(buttonLabel);
             
-            if (manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
+            if (_actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
             {
                 var icon = StoryEventManager.BlockIcon(block);
-                manager._actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
-                    (icon == null ? manager.defaultActionIcon : icon);
+                _actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
+                    (icon == null ? defaultActionIcon : icon);
             }
 
-            if (blockUnsafeActions) manager._actionButtons[buttonIndex].GetComponent<Button>().interactable = block.isSafe;
-            manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
-            manager._actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
+            if (blockUnsafeActions) _actionButtons[buttonIndex].GetComponent<Button>().interactable = block.isSafe;
+            _actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
+            _actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
                 () => { StoryManager.PerformAction(block); });
             buttonIndex++;
         }
@@ -85,7 +85,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
     public void Cleanup()
     {
-        foreach (var but in manager._actionButtons)
+        foreach (var but in _actionButtons)
         {
             but.gameObject.SetActive(false);
         }
