@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace BranchMaker.Runtime.Utility
@@ -6,6 +7,7 @@ namespace BranchMaker.Runtime.Utility
     {
         private static T _instance;
         [SerializeField] protected bool debugLog;
+        [SerializeField] protected bool persist;
     
         public static T Instance => _instance != null ? _instance : null;
 
@@ -14,14 +16,15 @@ namespace BranchMaker.Runtime.Utility
             if (_instance == null)
             {
                 _instance = this as T;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                if (this != _instance) Destroy(gameObject);
+                if (persist) DontDestroyOnLoad(gameObject);
             }
         }
-        
+
+        private void OnEnable()
+        {
+            _instance = this as T;
+        }
+
 
         protected void Log(string log)
         {
