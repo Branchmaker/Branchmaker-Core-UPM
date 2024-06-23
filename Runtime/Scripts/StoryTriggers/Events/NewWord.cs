@@ -1,4 +1,5 @@
 using BranchMaker;
+using BranchMaker.GameScripts.Audio;
 using BranchMaker.Story;
 
 public class NewWord : StoryEventTrigger
