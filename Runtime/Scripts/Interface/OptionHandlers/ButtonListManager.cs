@@ -34,13 +34,13 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
 
     private void NodeChanged(BranchNode node)
     {
-        if (gameObject.activeInHierarchy) return;
+        if (!gameObject.activeInHierarchy) return;
         Cleanup();
     }
 
     public void ProcessNode(BranchNode node)
     {
-        if (gameObject.activeInHierarchy) return;
+        if (!gameObject.activeInHierarchy) return;
         if (node == null) return;
         var buttonIndex = 0;
         Cleanup();
