@@ -45,6 +45,8 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
         var buttonIndex = 0;
         Cleanup();
         _canvasGroup.alpha = 1;
+        _canvasGroup.interactable = true;
+        _canvasGroup.blocksRaycasts = true;
 
         foreach (var block in node.ActionBlocks())
         {
@@ -90,5 +92,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             but.gameObject.SetActive(false);
         }
         _canvasGroup.alpha = 0;
+        _canvasGroup.blocksRaycasts = false;
+        _canvasGroup.interactable = false;
     }
 }
