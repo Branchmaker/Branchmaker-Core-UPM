@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using BranchMaker.Runtime;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace BranchMaker.Interface
 {
@@ -7,6 +10,8 @@ namespace BranchMaker.Interface
     {
         private bool _armed;
         public GameObject clickToProceedIndicator;
+        public EventSystem eventSystem;
+        public GraphicRaycaster graphicRaycaster;
 
         private void Start()
         {
@@ -35,11 +40,24 @@ namespace BranchMaker.Interface
             
             if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return) || Input.GetMouseButtonDown(0))
             {
+                if (IsPointerOverUIElement()) return;
                 StoryManager.Instance.SpeakActiveNode();
             }
             
             if (Input.GetKeyUp(KeyCode.F5)) StoryManager.Instance.ForceReloadFromServer();
 
+        }
+        
+        
+        private bool IsPointerOverUIElement()
+        {
+            var pointerEventData = new PointerEventData(eventSystem)
+            {
+                position = Input.mousePosition
+            };
+            var results = new List<RaycastResult>();
+            graphicRaycaster.Raycast(pointerEventData, results);
+            return results.Count > 0;
         }
     }
 }
