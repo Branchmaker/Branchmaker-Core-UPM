@@ -115,6 +115,8 @@ namespace BranchMaker.Runtime
                 forceLoad.Resume();
                 forceLoad = null;
             }
+            
+            Log("Reload purpose");
 
             if (_reloadPurpose)
             {
@@ -199,7 +201,6 @@ namespace BranchMaker.Runtime
             Instance._dialogueQueue.LoadBlocks(node.StoryBlocks());
             
             Instance.SpeakActiveNode();
-
             node.processed = true;
             _loadSaveHandler?.UpdateSaveFile();
         }
