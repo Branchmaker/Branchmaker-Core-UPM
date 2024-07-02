@@ -105,6 +105,8 @@ namespace BranchMaker.Runtime
                 var startingNode = _nodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
                 LoadNode(startingNode);
             }
+            
+            Log("After load node");
 
             _loadingStory = false;
 
@@ -116,6 +118,7 @@ namespace BranchMaker.Runtime
                 forceLoad.Resume();
                 forceLoad = null;
             }
+            Log("Before Reload purpose");
 
             if (_reloadPurpose)
             {
