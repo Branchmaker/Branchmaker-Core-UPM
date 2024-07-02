@@ -126,6 +126,7 @@ namespace BranchMaker.Runtime
             }
 
             OnStoryReady.Invoke();
+            Log("story is ready");
         }
 
 
