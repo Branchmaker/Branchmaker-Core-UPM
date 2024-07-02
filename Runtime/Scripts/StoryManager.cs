@@ -99,14 +99,22 @@ namespace BranchMaker.Runtime
                 StoryEventManager.PreloadScriptCheck(block);
             }
 
+            Instance.OnStoryReady.Invoke();
+            _loadingStory = false;
+            
+            
+            LoadStartingNode();
+        }
+
+        private void LoadStartingNode()
+        {
             if (CurrentNode != null)
             {
                 var startingNode = _nodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
                 LoadNode(startingNode);
+                return;
             }
-
-            _loadingStory = false;
-
+            
             startingNodeID ??= _nodeLib.First().Key;
 
             if (forceLoad != null)
@@ -116,17 +124,11 @@ namespace BranchMaker.Runtime
                 forceLoad = null;
             }
             
-            Log("Reload purpose");
-
             if (_reloadPurpose)
             {
                 LoadNodeKey(startingNodeID);
                 _reloadPurpose = false;
             }
-
-            Log("Will invoke");
-            Instance.OnStoryReady.Invoke();
-            Log("story is ready");
         }
 
 
