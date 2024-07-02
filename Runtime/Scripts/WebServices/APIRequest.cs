@@ -11,7 +11,7 @@ namespace BranchMaker.WebServices
     { 
         public static async Task<string> FetchFromApi(string url, string cacheKey)
         {
-            string content = "";
+            var content = "";
             Debug.Log("Loading: " + url);
     
             var fetch = UnityWebRequest.Get(url);
@@ -28,7 +28,6 @@ namespace BranchMaker.WebServices
             var backupFileName = Application.persistentDataPath + "/" + cacheKey + ".txt";
             if (!string.IsNullOrEmpty(fetch.error))
             {
-                Debug.LogError("Failed");
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
@@ -36,7 +35,6 @@ namespace BranchMaker.WebServices
             }
             else
             {
-                Debug.Log("200 OK");
                 File.WriteAllText(backupFileName, fetch.downloadHandler.text);
                 content = fetch.downloadHandler.text;
             }

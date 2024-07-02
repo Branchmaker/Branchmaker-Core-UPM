@@ -93,6 +93,7 @@ namespace BranchMaker.Runtime
 
             var allNodes = JSONNode.Parse(result);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
+            Log("Got all the nodes!");
 
             foreach (var block in _nodeLib.Values.SelectMany(node => node.blocks))
             {
@@ -101,11 +102,8 @@ namespace BranchMaker.Runtime
 
             if (CurrentNode != null)
             {
-                foreach (var node in _nodeLib.Values.Where(node => node.id == CurrentNode.id))
-                {
-                    LoadNode(node);
-                    break;
-                }
+                var startingNode = _nodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
+                LoadNode(startingNode);
             }
 
             _loadingStory = false;
@@ -125,7 +123,7 @@ namespace BranchMaker.Runtime
                 _reloadPurpose = false;
             }
 
-            OnStoryReady.Invoke();
+            Instance.OnStoryReady.Invoke();
             Log("story is ready");
         }
 
