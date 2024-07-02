@@ -28,12 +28,16 @@ namespace BranchMaker.Runtime.Utility
 
         protected void Log(string log)
         {
-            if (debugLog) Debug.Log("<color=#00FFFF><b>StoryManager</b></color>: "+log);
+            #if UNITY_EDITOR
+            if (debugLog) Debug.Log("<color=#00FFFF><b>"+typeof(T)+"</b></color>: "+log);
+            #endif
         }
 
         protected void LogError(string log)
         {
-            if (debugLog) Debug.LogError("<color=#00FFFF><b>StoryManager</b></color>: "+log);
+            #if UNITY_EDITOR
+            if (debugLog) Debug.LogError("<color=#00FFFF><b>"+typeof(T)+"</b></color>: "+log);
+            #endif
         }
     }
 }
