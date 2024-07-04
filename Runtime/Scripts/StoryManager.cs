@@ -28,6 +28,7 @@ namespace BranchMaker.Runtime
         [SerializeField] private string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
+        [SerializeField] private bool cacheInPlayerPrefs = false;
         private readonly DialogueQueue _dialogueQueue = new();
 
         private static Dictionary<string, BranchNode> _nodeLib = new();
@@ -86,10 +87,7 @@ namespace BranchMaker.Runtime
         {
             _loadingStory = true;
 
-            var result = await APIRequest.FetchFromApi(
-                BranchmakerPaths.StoryNodes(loadFromPublished, storybookId),
-                "story"
-            );
+            var result = await FetchStoryFeed();
 
             var allNodes = JSONNode.Parse(result);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
@@ -104,6 +102,26 @@ namespace BranchMaker.Runtime
             
             
             LoadStartingNode();
+        }
+
+        private async Task<string> FetchStoryFeed()
+        {
+            var key = "branchmaker_feed:" + storybookId;
+            if (cacheInPlayerPrefs)
+            {
+                if (PlayerPrefs.HasKey(key))
+                {
+                    return PlayerPrefs.GetString(key);
+                }
+            }
+
+            var result = await APIRequest.FetchFromApi(
+                BranchmakerPaths.StoryNodes(loadFromPublished, storybookId),
+                "story"
+            );
+            
+            if (cacheInPlayerPrefs) PlayerPrefs.SetString(key, result);
+            return result;
         }
 
         private void LoadStartingNode()
