@@ -28,7 +28,8 @@ namespace BranchMaker.Runtime
         [SerializeField] private string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
-        [SerializeField] private bool cacheInPlayerPrefs = false;
+        [SerializeField] private bool cacheInPlayerPrefs;
+        [SerializeField] private bool verboseLogging;
         private readonly DialogueQueue _dialogueQueue = new();
 
         private static Dictionary<string, BranchNode> _nodeLib = new();
@@ -91,6 +92,8 @@ namespace BranchMaker.Runtime
 
             var allNodes = JSONNode.Parse(result);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
+
+            if (verboseLogging) Log(_nodeLib.Count+" nodes in NodeLib");
 
             foreach (var block in _nodeLib.Values.SelectMany(node => node.blocks))
             {
@@ -215,6 +218,7 @@ namespace BranchMaker.Runtime
 
         private static void LoadNode(BranchNode node)
         {
+            if (Instance.verboseLogging) Instance.Log("Loading node "+node);
             CurrentNode = node;
             Instance._dialogueQueue.Clear();
             Instance.OnNodeChange.Invoke(node);
