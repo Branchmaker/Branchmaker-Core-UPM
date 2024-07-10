@@ -52,7 +52,6 @@ namespace BranchMaker
                 foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.PreloadStory))
                 {
                     if (!cline.StartsWith(trigger.TriggerKey)) continue;
-                    Debug.Log("Running "+cline);
                     var bits = cline.Split(':');
                     trigger.Run(cline, nodeBlock, bits);
                 }
