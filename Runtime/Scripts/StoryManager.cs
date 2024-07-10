@@ -11,7 +11,7 @@ using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BranchMaker.Runtime
+namespace BranchMaker
 {
     public class StoryManager : BaseController<StoryManager>
     {

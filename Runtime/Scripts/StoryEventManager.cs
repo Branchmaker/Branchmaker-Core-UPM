@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System;
 using System.Linq;
+using System.Reflection;
 using BranchMaker.GameScripts.Audio;
-using BranchMaker.Runtime;
+using BranchMaker.Story;
+using UnityEngine;
 
-namespace BranchMaker.Story
+namespace BranchMaker
 {
     public static class StoryEventManager
     {
