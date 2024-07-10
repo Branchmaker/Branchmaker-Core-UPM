@@ -99,6 +99,7 @@ namespace BranchMaker.Runtime
             {
                 StoryEventManager.PreloadScriptCheck(block);
             }
+            if (verboseLogging) Log("Done with PreloadScriptCheck");
 
             Instance.OnStoryReady.Invoke();
             _loadingStory = false;

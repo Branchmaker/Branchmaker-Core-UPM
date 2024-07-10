@@ -4,6 +4,7 @@ using System.Reflection;
 using System;
 using System.Linq;
 using BranchMaker.GameScripts.Audio;
+using BranchMaker.Runtime;
 
 namespace BranchMaker.Story
 {
@@ -47,13 +48,13 @@ namespace BranchMaker.Story
             foreach (var line in nodeBlock.MetaScriptLines())
             {
                 var cline = line.Trim();
+                if (string.IsNullOrEmpty(cline)) continue;
                 foreach (var trigger in _triggerPool.Where(a => a.Method == StoryEventTrigger.TriggerMethod.PreloadStory))
                 {
-                    if (cline.StartsWith(trigger.TriggerKey))
-                    {
-                        var bits = cline.Split(':');
-                        trigger.Run(cline, nodeBlock, bits);
-                    }
+                    if (!cline.StartsWith(trigger.TriggerKey)) continue;
+                    Debug.Log("Running "+cline);
+                    var bits = cline.Split(':');
+                    trigger.Run(cline, nodeBlock, bits);
                 }
             }
         }
