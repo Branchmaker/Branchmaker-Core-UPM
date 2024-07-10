@@ -22,7 +22,7 @@ namespace BranchMaker.Interface
 
         private void BlockComplete(BranchNodeBlock arg0)
         {
-            if (!StoryManager.Instance.HasSpeakingQueue()) return;
+            if (!StoryManager.HasSpeakingQueue()) return;
             _armed = true;
             if (clickToProceedIndicator) clickToProceedIndicator.SetActive(true);
         }
