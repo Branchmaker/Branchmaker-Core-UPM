@@ -6,11 +6,12 @@ namespace BranchMaker
 {
     public abstract class DialogueTyper : MonoBehaviour
     {
-        private DialoguePreprocessor[] preprocessors;
+        private DialoguePreprocessor[] _preprocessors;
         protected static bool CurrentlyWriting;
         void Start()
         {
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
+            _preprocessors = GetComponents<DialoguePreprocessor>();
         }
 
         public bool BusyWriting() => CurrentlyWriting;
@@ -18,9 +19,7 @@ namespace BranchMaker
         private void ProcessBlock(BranchNodeBlock block)
         {
             var processedText = block.dialogue;
-            preprocessors ??= GetComponents<DialoguePreprocessor>();
-            Debug.Log("Running it through "+preprocessors.Length+" processes first");
-            processedText = preprocessors.Aggregate(processedText, (current, preprocessor) => preprocessor.PreprocessDialogue(current, block));
+            processedText = _preprocessors.Aggregate(processedText, (current, preprocessor) => preprocessor.PreprocessDialogue(current, block));
 
             WriteDialogue(block, processedText);
         }
