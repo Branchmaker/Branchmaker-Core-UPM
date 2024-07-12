@@ -19,6 +19,7 @@ namespace BranchMaker
         {
             var processedText = block.dialogue;
             preprocessors ??= GetComponents<DialoguePreprocessor>();
+            Debug.Log("Running it through "+preprocessors.Length+" processes first");
             processedText = preprocessors.Aggregate(processedText, (current, preprocessor) => preprocessor.PreprocessDialogue(current, block));
 
             WriteDialogue(block, processedText);
