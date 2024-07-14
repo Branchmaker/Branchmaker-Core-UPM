@@ -215,6 +215,12 @@ namespace BranchMaker
             }
             LoadNode(NodeLib[key]);
         }
+        
+
+        public static BranchNode GetNodeById(string id)
+        {
+            return NodeLib.GetValueOrDefault(id);
+        }
 
         private static void LoadNode(BranchNode node)
         {
