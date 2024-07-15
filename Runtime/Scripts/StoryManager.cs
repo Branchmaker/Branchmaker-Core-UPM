@@ -101,7 +101,7 @@ namespace BranchMaker
             }
             if (verboseLogging) Log("Done with PreloadScriptCheck");
 
-            Instance.OnStoryReady.Invoke();
+            OnStoryReady.Invoke();
             _loadingStory = false;
             LoadStartingNode();
         }
