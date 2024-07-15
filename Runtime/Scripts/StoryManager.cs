@@ -48,7 +48,7 @@ namespace BranchMaker
         public bool HideScriptActions = true;
 
         [Header("Events")]
-        [NonSerialized] public static UnityEvent OnStoryReady;
+        [NonSerialized] public static UnityEvent OnStoryReady = new();
         [NonSerialized] public readonly UnityEvent<BranchNode> OnNodeChange = new();
         [NonSerialized] public readonly UnityEvent<BranchNode> OnNodeComplete = new();
         [NonSerialized] public readonly UnityEvent<BranchNodeBlock> OnBlockChange = new();
