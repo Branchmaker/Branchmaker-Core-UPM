@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace BranchMaker.Addons.Dyslexia
+namespace BranchMaker.Addons.OpenDyslexic
 {
     public class OpenDyslexicSetting : MonoBehaviour
     {
@@ -28,7 +25,7 @@ namespace BranchMaker.Addons.Dyslexia
 
         void UpdateAllLabels()
         {
-            foreach (var openDyslexicFontReplacer in GameObject.FindObjectsOfType<OpenDyslexicFontReplacer>())
+            foreach (var openDyslexicFontReplacer in GameObject.FindObjectsByType<OpenDyslexicFontReplacer>(FindObjectsSortMode.None))
             {
                 openDyslexicFontReplacer.CheckForFontUpdate();
             }

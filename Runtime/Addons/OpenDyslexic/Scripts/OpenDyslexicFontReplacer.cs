@@ -1,8 +1,7 @@
-using System;
 using TMPro;
 using UnityEngine;
 
-namespace BranchMaker.Addons.Dyslexia
+namespace BranchMaker.Addons.OpenDyslexic
 {
     public class OpenDyslexicFontReplacer : MonoBehaviour
     {
