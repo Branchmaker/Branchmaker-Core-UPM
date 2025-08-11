@@ -20,6 +20,18 @@ namespace BranchMaker.Runtime.Utility
             }
         }
 
+        public static void ForceLocate()
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<T>();
+                if (_instance == null)
+                {
+                    Debug.LogError($"No instance of {typeof(T)} found in the scene.");
+                }
+            }
+        }
+
         private void OnEnable()
         {
             _instance = this as T;
