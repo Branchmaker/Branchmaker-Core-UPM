@@ -9,6 +9,8 @@ namespace BranchMaker
         public string id;
         public string dialogue;
         public string nickname;
+        
+        [TextArea(2,20)]
         public string meta_scripts;
         public string voice_file;
         public string image_file;

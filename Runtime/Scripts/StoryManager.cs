@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using BranchMaker.Api;
 using BranchMaker.LoadSave;
 using BranchMaker.Runtime.Utility;
-using BranchMaker.Story;
 using BranchMaker.WebServices;
 using SimpleJSON;
 using UnityEngine;
@@ -28,7 +27,6 @@ namespace BranchMaker
         [SerializeField] private string storybookId = "Place Storybook API key here";
         [SerializeField] private string startingNodeID;
         [SerializeField] private bool loadFromPublished = true;
-        [SerializeField] private bool cacheInPlayerPrefs;
         [SerializeField] private bool verboseLogging;
         private readonly DialogueQueue _dialogueQueue = new();
 
@@ -38,6 +36,7 @@ namespace BranchMaker
         static bool _loadingStory;
         public static BranchNode CurrentNode;
         public static BranchNodeBlock CurrentBlock;
+        public List<BranchmakerCacheObject> CacheObjects = new();
         
         private static bool _reloadPurpose = true;
 
@@ -106,23 +105,29 @@ namespace BranchMaker
             LoadStartingNode();
         }
 
+        private BranchmakerCacheObject CacheCheck(string url)
+        {
+            return CacheObjects.FirstOrDefault(a => a.cacheUrl == url);
+        }
+
         private async Task<string> FetchStoryFeed()
         {
-            var key = "branchmaker_feed:" + storybookId;
-            if (cacheInPlayerPrefs)
-            {
-                if (PlayerPrefs.HasKey(key))
-                {
-                    return PlayerPrefs.GetString(key);
-                }
-            }
-
+            var path = BranchmakerPaths.StoryNodes(loadFromPublished, storybookId);
+            var storyFeedCache = CacheCheck(path);
+            if (storyFeedCache) return storyFeedCache.cacheData;
+            
             var result = await APIRequest.FetchFromApi(
-                BranchmakerPaths.StoryNodes(loadFromPublished, storybookId),
+                path,
                 "story"
             );
             
-            if (cacheInPlayerPrefs) PlayerPrefs.SetString(key, result);
+            #if UNITY_EDITOR
+            if (storyFeedCache)
+            {
+                storyFeedCache.cacheData = result;
+            }
+            #endif
+            
             return result;
         }
 

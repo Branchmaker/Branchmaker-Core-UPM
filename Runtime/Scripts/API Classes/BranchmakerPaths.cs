@@ -2,7 +2,7 @@ namespace BranchMaker.Api
 {
     public static class BranchmakerPaths
     {
-        const string serverRoot = "https://api.ranchmaker.com/";
+        const string serverRoot = "https://api.branchmaker.com/";
         public static string jsonorderurl = serverRoot + "api/{0}/feed/story.json";
         public static string jsonupdateurl = serverRoot + "suggestions/updateblock/";
         public static string suggesturl = serverRoot + "suggestions/playersuggest/";
