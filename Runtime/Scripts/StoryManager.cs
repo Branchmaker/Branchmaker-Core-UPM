@@ -125,6 +125,9 @@ namespace BranchMaker
             if (storyFeedCache)
             {
                 storyFeedCache.cacheData = result;
+                UnityEditor.EditorUtility.SetDirty(storyFeedCache);
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
             }
             #endif
             
