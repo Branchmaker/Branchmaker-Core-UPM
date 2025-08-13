@@ -5,13 +5,13 @@ namespace BranchMaker.Addons.OpenDyslexic
 {
     public class OpenDyslexicFontReplacer : MonoBehaviour
     {
-        private TMPro.TextMeshProUGUI label;
-        private TMPro.TMP_FontAsset basicFont;
+        private TMP_Text _label;
+        private TMP_FontAsset _basicFont;
         private void Awake()
         {
-            label = GetComponent<TextMeshProUGUI>();
-            if (label == null) return;
-            basicFont = label.font;
+            _label = GetComponent<TMP_Text>();
+            if (_label == null) return;
+            _basicFont = _label.font;
         }
 
         private void OnEnable()
@@ -21,14 +21,14 @@ namespace BranchMaker.Addons.OpenDyslexic
 
         public void CheckForFontUpdate()
         {
-            if (label == null) return;
+            if (_label == null) return;
             if (OpenDyslexicSetting.ChangeFonts())
             {
-                if (label.font != OpenDyslexicSetting.globalDysFont) label.font = OpenDyslexicSetting.globalDysFont;
+                if (_label.font != OpenDyslexicSetting.globalDysFont) _label.font = OpenDyslexicSetting.globalDysFont;
             }
             else
             {
-                if (label.font != basicFont) label.font = basicFont;
+                if (_label.font != _basicFont) _label.font = _basicFont;
             }
         }
     }
