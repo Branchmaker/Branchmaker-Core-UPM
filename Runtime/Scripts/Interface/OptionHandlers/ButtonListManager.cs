@@ -72,7 +72,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
                     (icon == null ? defaultActionIcon : icon);
             }
 
-            if (blockUnsafeActions) _actionButtons[buttonIndex].GetComponent<Button>().interactable = block.isSafe;
+            if (blockUnsafeActions) _actionButtons[buttonIndex].GetComponent<Button>().interactable = block.safe_for_playing;
             _actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
             _actionButtons[buttonIndex].GetComponent<Button>().onClick.AddListener(
                 () => { StoryManager.PerformAction(block); });

@@ -25,7 +25,7 @@ namespace BranchMaker
 
         public bool processed;
         [JsonProperty("safe_for_playing")]
-        public bool isSafe;
+        public bool safe_for_playing;
 
         // Lingual
         public string process_lines;
@@ -44,7 +44,7 @@ namespace BranchMaker
             block.voice_file = jsonNode["voice_file"].Value;
             block.image_file = jsonNode["image_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
-            block.isSafe = (jsonNode["safe_for_playing"].Value.ToLower() ?? "false") == "true";
+            block.safe_for_playing = (jsonNode["safe_for_playing"].Value.ToLower() ?? "false") == "true";
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
             block.emotion = (jsonNode["emotion"].Value.ToLower() ?? null);
 
@@ -60,7 +60,7 @@ namespace BranchMaker
             if (jsonNode["target_node"] != null)
             {
                 block.target_node = jsonNode["target_node"].Value;
-                block.isSafe = jsonNode["safe_for_playing"].AsBool;
+                block.safe_for_playing = jsonNode["safe_for_playing"].AsBool;
                 block.clean_action = jsonNode["dialogue"].Value.Trim().ToLower();
                 // Lingual
                 block.process_lines = jsonNode["processed_lines"].Value.ToLower();
