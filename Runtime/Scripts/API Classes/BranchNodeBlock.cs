@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 
 
@@ -24,7 +23,6 @@ namespace BranchMaker
         public string node_id;
 
         public bool processed;
-        [JsonProperty("safe_for_playing")]
         public bool safe_for_playing;
 
         // Lingual
