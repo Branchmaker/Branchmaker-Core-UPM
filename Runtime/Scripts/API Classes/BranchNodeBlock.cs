@@ -58,6 +58,7 @@ namespace BranchMaker
             if (jsonNode["target_node"] != null)
             {
                 block.target_node = jsonNode["target_node"].Value;
+                block.isSafe = jsonNode["safe_for_playing"].AsBool;
                 block.clean_action = jsonNode["dialogue"].Value.Trim().ToLower();
                 // Lingual
                 block.process_lines = jsonNode["processed_lines"].Value.ToLower();
