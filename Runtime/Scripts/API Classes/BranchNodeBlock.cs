@@ -88,7 +88,7 @@ namespace BranchMaker
         }
 
         public bool isActionNode() {
-            return (target_node != null);
+            return string.IsNullOrEmpty(target_node);
         }
 
         public bool HasMetaScript()
