@@ -243,7 +243,7 @@ namespace BranchMaker
             _loadSaveHandler?.UpdateSaveFile();
         }
 
-        private static void ProcessIncomingNode(BranchNode bNode)
+        public static void ProcessIncomingNode(BranchNode bNode)
         {
             NodeLib.TryAdd(bNode.id, bNode);
             bNode.processed = false;
