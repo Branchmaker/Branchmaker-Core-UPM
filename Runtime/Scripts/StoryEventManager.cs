@@ -30,6 +30,13 @@ namespace BranchMaker
             SkipNextActionNodeChange = false;
             StoredAction = null;
         }
+        public static void ClearSeen()
+        {
+            _seenNodes.Clear();
+            PassActionValidation = true;
+            SkipNextActionNodeChange = false;
+            StoredAction = null;
+        }
 
         public static void RegisterEventTrigger(Type eventClass)
         {
