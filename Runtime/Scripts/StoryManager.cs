@@ -44,6 +44,8 @@ namespace BranchMaker
         public List<ICustomDialogueAction> _customDialogueOptions;
         static ILoadSaveHandler _loadSaveHandler;
 
+        public bool RunStartingNodeAfterLoading = true;
+
         public bool HideScriptActions = true;
 
         [Header("Events")]
@@ -136,6 +138,7 @@ namespace BranchMaker
 
         private void LoadStartingNode()
         {
+            if (!RunStartingNodeAfterLoading) return;
             if (verboseLogging) Log("Looking for starting node");
             if (CurrentNode != null)
             {
