@@ -1,6 +1,9 @@
 using System.Linq;
 using BranchMaker.Runtime;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace BranchMaker
 {
