@@ -23,6 +23,8 @@ namespace BranchMaker.Interface.DialogueWriters
         private bool _rushSpeaker;
         private TMP_Text _dialogueLabel;
 
+        public bool Rushed;
+
         private void Awake()
         {
             _dialogueLabel = GetComponent<TMP_Text>();
@@ -96,7 +98,7 @@ namespace BranchMaker.Interface.DialogueWriters
                 _lettercooldown = 0.034f;
                 ZeldaType(1);
 
-                if ((AnyInputPressed() && _speedupCooldown <= 0) || _rushSpeaker)
+                if ((Rushed && _speedupCooldown <= 0) || _rushSpeaker)
                 {
                     ZeldaType(18);
                     _rushSpeaker = true;
