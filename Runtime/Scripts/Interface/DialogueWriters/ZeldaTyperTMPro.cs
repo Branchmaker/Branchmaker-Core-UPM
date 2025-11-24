@@ -96,7 +96,7 @@ namespace BranchMaker.Interface.DialogueWriters
                 _lettercooldown = 0.034f;
                 ZeldaType(1);
 
-                if ((Input.anyKey && _speedupCooldown <= 0) || _rushSpeaker)
+                if ((AnyInputPressed() && _speedupCooldown <= 0) || _rushSpeaker)
                 {
                     ZeldaType(18);
                     _rushSpeaker = true;
