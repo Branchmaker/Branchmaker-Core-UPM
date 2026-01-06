@@ -56,7 +56,7 @@ namespace BranchMaker.Interface
                 position = Input.mousePosition
             };
             var results = new List<RaycastResult>();
-            graphicRaycaster.Raycast(pointerEventData, results);
+            if (graphicRaycaster) graphicRaycaster.Raycast(pointerEventData, results);
             return results.Count > 0;
         }
     }

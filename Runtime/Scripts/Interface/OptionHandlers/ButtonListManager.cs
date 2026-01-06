@@ -79,7 +79,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             buttonIndex++;
         }
 
-        foreach (var dialogueOption in StoryManager.Instance._customDialogueOptions)
+        foreach (var dialogueOption in StoryManager.Instance.CustomDialogueOptions)
         {
             dialogueOption.ProcessDialogueOptions(node);
         }

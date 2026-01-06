@@ -22,6 +22,7 @@ namespace BranchMaker.WebServices
             {
                 await Task.Yield();
             }
+            content = fetch.downloadHandler.text;
 
             #if BRANCHMAKER_STORELOCAL
             var backupFileName = Application.persistentDataPath + "/" + cacheKey + ".txt";

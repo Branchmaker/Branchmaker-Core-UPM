@@ -36,13 +36,13 @@ namespace BranchMaker
         static bool _loadingStory;
         public static BranchNode CurrentNode;
         public static BranchNodeBlock CurrentBlock;
-        public List<BranchmakerCacheObject> CacheObjects = new();
+        public BranchmakerCacheObject StoryCache;
         
         private static bool _reloadPurpose = true;
 
         private List<IWindowOverlay> _windowOverlays;
-        public List<ICustomDialogueAction> _customDialogueOptions;
-        static ILoadSaveHandler _loadSaveHandler;
+        public List<ICustomDialogueAction> CustomDialogueOptions;
+        private static ILoadSaveHandler _loadSaveHandler;
 
         public bool RunStartingNodeAfterLoading = true;
 
@@ -66,13 +66,16 @@ namespace BranchMaker
             StoryButton.playerkeys.Clear();
             
             _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
-            _customDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
+            CustomDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
             _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().FirstOrDefault();
+            
+            
+            if (loadFlow == LoadFlow.LoadOnLaunch) OnStoryReady.AddListener(LoadStartingNode);
         }
         
         private void Start()
         {
-            if (loadFlow == LoadFlow.LoadOnLaunch) LaunchWithBookKey(storybookId, startingNodeID);
+            LaunchWithBookKey(storybookId, startingNodeID);
         }
 
         public void LaunchWithBookKey(string newBookKey, string newStartingNode = null)
@@ -94,51 +97,30 @@ namespace BranchMaker
             var allNodes = JSONNode.Parse(result);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
 
-            if (verboseLogging) Log(NodeLib.Count+" nodes in NodeLib");
-
+            Log(NodeLib.Count+" nodes in NodeLib");
             foreach (var block in NodeLib.Values.SelectMany(node => node.blocks))
             {
                 StoryEventManager.PreloadScriptCheck(block);
             }
-            if (verboseLogging) Log("Done with PreloadScriptCheck");
+            Log("Done with PreloadScriptCheck");
 
             OnStoryReady.Invoke();
             _loadingStory = false;
-            LoadStartingNode();
-        }
-
-        private BranchmakerCacheObject CacheCheck(string url)
-        {
-            return CacheObjects.FirstOrDefault(a => a.cacheUrl == url);
         }
 
         private async Task<string> FetchStoryFeed()
         {
             var path = BranchmakerPaths.StoryNodes(loadFromPublished, storybookId);
-            var storyFeedCache = CacheCheck(path);
-            if (storyFeedCache) return storyFeedCache.cacheData;
-            
             var result = await APIRequest.FetchFromApi(
                 path,
                 "story"
             );
-            
-            #if UNITY_EDITOR
-            if (storyFeedCache)
-            {
-                storyFeedCache.cacheData = result;
-                UnityEditor.EditorUtility.SetDirty(storyFeedCache);
-                UnityEditor.AssetDatabase.SaveAssets();
-                UnityEditor.AssetDatabase.Refresh();
-            }
-            #endif
-            
+            Log("result"+result.Length);
             return result;
         }
 
         private void LoadStartingNode()
         {
-            if (!RunStartingNodeAfterLoading) return;
             if (CurrentNode != null)
             {
                 var startingNode = NodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
