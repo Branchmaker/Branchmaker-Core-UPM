@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -12,8 +10,6 @@ namespace BranchMaker.Interface
     {
         private bool _armed;
         public GameObject clickToProceedIndicator;
-        public EventSystem eventSystem;
-        public GraphicRaycaster graphicRaycaster;
 
         private void Start()
         {
@@ -70,15 +66,10 @@ namespace BranchMaker.Interface
 #endif
         }
         
+        
         private bool IsPointerOverUIElement()
         {
-            var pointerEventData = new PointerEventData(eventSystem)
-            {
-                position = Input.mousePosition
-            };
-            var results = new List<RaycastResult>();
-            if (graphicRaycaster) graphicRaycaster.Raycast(pointerEventData, results);
-            return results.Count > 0;
+            return EventSystem.current && EventSystem.current.IsPointerOverGameObject();
         }
     }
 }
