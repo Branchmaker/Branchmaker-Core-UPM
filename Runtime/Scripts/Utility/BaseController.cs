@@ -36,16 +36,15 @@ namespace BranchMaker.Runtime.Utility
         {
             _instance = this as T;
         }
-
-
-        protected void Log(string log)
+        
+        public void Log(string log)
         {
             #if UNITY_EDITOR
             if (debugLog) Debug.Log("<color=#00FFFF><b>"+typeof(T)+"</b></color>: "+log);
             #endif
         }
 
-        protected void LogError(string log)
+        public void LogError(string log)
         {
             #if UNITY_EDITOR
             if (debugLog) Debug.LogError("<color=#00FFFF><b>"+typeof(T)+"</b></color>: "+log);
