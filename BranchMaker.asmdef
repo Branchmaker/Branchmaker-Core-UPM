@@ -2,7 +2,8 @@
     "name": "BranchMaker",
     "rootNamespace": "BranchMaker",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using BranchMaker.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -46,9 +45,6 @@ namespace BranchMaker.Interface
                 if (IsPointerOverUIElement()) return;
                 StoryManager.Instance.SpeakActiveNode();
             }
-            
-            if (Input.GetKeyUp(KeyCode.F5)) StoryManager.Instance.ForceReloadFromServer();
-
         }
         
         private static bool WasAdvancePressedThisFrame()
@@ -60,13 +56,11 @@ namespace BranchMaker.Interface
                 if (Keyboard.current.spaceKey.wasReleasedThisFrame) return true;
                 if (Keyboard.current.enterKey.wasReleasedThisFrame) return true;
                 if (Keyboard.current.numpadEnterKey.wasReleasedThisFrame) return true;
-                if (Keyboard.current.returnKey != null && Keyboard.current.returnKey.wasReleasedThisFrame) return true; // older packages
             }
 
             // Pointer / touch (primary press)
-            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) understanding: return true;
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) return true;
             if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) return true;
-
             return false;
 #else
             return Input.GetKeyUp(KeyCode.Space)
