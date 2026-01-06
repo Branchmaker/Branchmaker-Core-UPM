@@ -8,7 +8,6 @@ using UnityEngine;
 namespace BranchMaker.Actors
 {
     [CreateAssetMenu]
-    [SerializeField]
     public class ActorObject : ScriptableObject
     {
         public string displayName;
