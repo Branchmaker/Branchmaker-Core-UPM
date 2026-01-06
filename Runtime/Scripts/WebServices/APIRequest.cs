@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using BranchMaker;
 
 namespace BranchMaker.WebServices
 {
@@ -16,29 +15,28 @@ namespace BranchMaker.WebServices
             StoryManager.Instance.Log("Loading: " + url);
     
             var fetch = UnityWebRequest.Get(url);
-            //fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
-            //fetch.SetRequestHeader("Pragma", "no-cache");
     
             var operation = fetch.SendWebRequest();
     
             while (!operation.isDone)
             {
-                await Task.Yield(); // wait for the next frame
+                await Task.Yield();
             }
 
+            #if BRANCHMAKER_STORELOCAL
             var backupFileName = Application.persistentDataPath + "/" + cacheKey + ".txt";
             if (!string.IsNullOrEmpty(fetch.error))
             {
                 if (File.Exists(backupFileName))
                 {
                     content = File.ReadAllText(backupFileName);
-                }
             }
             else
             {
                 File.WriteAllText(backupFileName, fetch.downloadHandler.text);
                 content = fetch.downloadHandler.text;
             }
+            #endif
     
             return content;
         }
