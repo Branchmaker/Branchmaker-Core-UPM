@@ -38,7 +38,7 @@ namespace BranchMaker.Interface
             if (!_armed) return;
             if (StoryManager.Busy()) return;
             
-            if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.Return) || Input.GetMouseButtonDown(0))
+            if (WasAdvancePressedThisFrame())
             {
                 if (IsPointerOverUIElement()) return;
                 StoryManager.Instance.SpeakActiveNode();
@@ -48,6 +48,30 @@ namespace BranchMaker.Interface
 
         }
         
+        private static bool WasAdvancePressedThisFrame()
+        {
+#if ENABLE_INPUT_SYSTEM
+            // Keyboard
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.spaceKey.wasReleasedThisFrame) return true;
+                if (Keyboard.current.enterKey.wasReleasedThisFrame) return true;
+                if (Keyboard.current.numpadEnterKey.wasReleasedThisFrame) return true;
+                if (Keyboard.current.returnKey != null && Keyboard.current.returnKey.wasReleasedThisFrame) return true; // older packages
+            }
+
+            // Pointer / touch (primary press)
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) understanding: return true;
+            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) return true;
+
+            return false;
+#else
+            return Input.GetKeyUp(KeyCode.Space)
+                   || Input.GetKeyUp(KeyCode.Return)
+                   || Input.GetKeyUp(KeyCode.KeypadEnter)
+                   || Input.GetMouseButtonDown(0);
+#endif
+        }
         
         private bool IsPointerOverUIElement()
         {

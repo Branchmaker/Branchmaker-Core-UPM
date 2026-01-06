@@ -115,7 +115,6 @@ namespace BranchMaker
                 path,
                 "story"
             );
-            Log("result"+result.Length);
             return result;
         }
 
