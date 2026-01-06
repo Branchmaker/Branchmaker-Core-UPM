@@ -220,7 +220,7 @@ namespace BranchMaker
         public static void LoadNodeKey(string key)
         {
             if (string.IsNullOrEmpty(key)) return;
-            Log("Loading node: "+key);
+            Instance.Log("Loading node: "+key);
             if (!NodeLib.ContainsKey(key))
             {
                 Instance.LogError("Could not find node: "+key);
