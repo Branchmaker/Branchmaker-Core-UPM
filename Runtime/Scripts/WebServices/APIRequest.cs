@@ -12,7 +12,7 @@ namespace BranchMaker.WebServices
         public static async Task<string> FetchFromApi(string url, string cacheKey)
         {
             var content = "";
-            Debug.Log("Loading: " + url);
+            StoryManager.Instance.Log("Loading: " + url);
     
             var fetch = UnityWebRequest.Get(url);
             //fetch.SetRequestHeader("Cache-Control", "max-age=0, no-cache, no-store");
