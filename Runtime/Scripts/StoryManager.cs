@@ -139,7 +139,7 @@ namespace BranchMaker
         private void LoadStartingNode()
         {
             if (!RunStartingNodeAfterLoading) return;
-            if (verboseLogging) Log("Looking for starting node");
+            Log("Looking for starting node");
             if (CurrentNode != null)
             {
                 var startingNode = NodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
@@ -147,7 +147,7 @@ namespace BranchMaker
                 return;
             }
             
-            startingNodeID ??= NodeLib.First().Key;
+            if (string.IsNullOrEmpty(startingNodeID)) startingNodeID = NodeLib.First().Key;
 
             if (forceLoad != null)
             {
@@ -219,9 +219,11 @@ namespace BranchMaker
 
         public static void LoadNodeKey(string key)
         {
+            if (string.IsNullOrEmpty(key)) return;
+            Log("Loading node: "+key);
             if (!NodeLib.ContainsKey(key))
             {
-                Instance.LogError("Could not find that node."+key);
+                Instance.LogError("Could not find node: "+key);
                 return;
             }
             LoadNode(NodeLib[key]);
