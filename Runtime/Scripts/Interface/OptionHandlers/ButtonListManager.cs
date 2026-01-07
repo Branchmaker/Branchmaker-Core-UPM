@@ -13,7 +13,6 @@ using UnityEngine.UI;
 public class ButtonListManager : MonoBehaviour, IOptionHandler
 {
     private List<DialogueButton> _actionButtons;
-    public Sprite defaultActionIcon;
     [SerializeField] private bool blockUnsafeActions;
     private CanvasGroup _canvasGroup;
     
@@ -63,14 +62,7 @@ public class ButtonListManager : MonoBehaviour, IOptionHandler
             }
 
             _actionButtons[buttonIndex].gameObject.SetActive(true);
-            _actionButtons[buttonIndex].SetLabel(buttonLabel);
-            
-            if (_actionButtons[buttonIndex].gameObject.transform.Find("Icon") != null)
-            {
-                var icon = StoryEventManager.BlockIcon(block);
-                _actionButtons[buttonIndex].gameObject.transform.Find("Icon").GetComponent<Image>().sprite =
-                    (icon == null ? defaultActionIcon : icon);
-            }
+            _actionButtons[buttonIndex].SetLabel(buttonLabel, block);
 
             if (blockUnsafeActions) _actionButtons[buttonIndex].GetComponent<Button>().interactable = block.safe_for_playing;
             _actionButtons[buttonIndex].GetComponent<Button>().onClick.RemoveAllListeners();
