@@ -62,6 +62,11 @@ public class StoryActor : MonoBehaviour
         return new Color(newR,newG,newB);
     }
 
+    public void Hide()
+    {
+        characterImage.enabled = false;
+    }
+
     public static void FadeInSpeaker(StoryActor newshown)
     {
         currentlySpeaking = newshown;
