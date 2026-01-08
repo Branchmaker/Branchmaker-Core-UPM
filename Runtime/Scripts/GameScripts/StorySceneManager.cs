@@ -22,16 +22,12 @@ namespace BranchMaker.Story
 
         private void NodeChanged(BranchNode node)
         {
-            var removeOthers = false;
-            foreach (var storyScene in _sceneCollection.FindAll(a => a.MatchesNode(node)))
+            var targetScene = _sceneCollection.FirstOrDefault(a => a.MatchesNode(node));
+            if (targetScene)
             {
-                removeOthers = true;
-                _currentScene = storyScene;
-                storyScene.gameObject.SetActive(true);
-            }
-
-            if (removeOthers)
-            {
+                _currentScene = targetScene;
+                targetScene.gameObject.SetActive(true);
+                _currentScene.SceneRootActivated();
                 foreach (var storyScene in _sceneCollection.FindAll(a => !a.MatchesNode(node)))
                 {
                     storyScene.gameObject.SetActive(false);

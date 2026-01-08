@@ -14,5 +14,10 @@ namespace BranchMaker.Story
             if (storyNodeIdAlts.Contains(node.id)) return true;
             return false;
         }
+
+        public virtual void SceneRootActivated()
+        {
+            // Insert scene activation scripts.
+        }
     }
 }
