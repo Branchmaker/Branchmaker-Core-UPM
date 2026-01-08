@@ -43,6 +43,10 @@ namespace BranchMaker.Story
         {
             return _currentScene ? _currentScene.storyNodeId : string.Empty;
         }
+        public static StoryScene CurrentScene()
+        {
+            return _currentScene ? _currentScene : null;
+        }
 
         private void OnDestroy()
         {
