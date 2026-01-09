@@ -92,7 +92,15 @@ namespace BranchMaker
         {
             _loadingStory = true;
 
-            var result = await FetchStoryFeed();
+            var result = string.Empty;
+            if (StoryCache && string.IsNullOrEmpty(StoryCache.cacheData))
+            {
+                result = StoryCache.cacheData;
+            }
+            else
+            {
+                result = await FetchStoryFeed();
+            }
 
             var allNodes = JSONNode.Parse(result);
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
@@ -102,7 +110,6 @@ namespace BranchMaker
             {
                 StoryEventManager.PreloadScriptCheck(block);
             }
-            Log("Done with PreloadScriptCheck");
 
             OnStoryReady.Invoke();
             _loadingStory = false;
