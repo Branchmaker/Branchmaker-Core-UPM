@@ -93,7 +93,7 @@ namespace BranchMaker
             _loadingStory = true;
 
             var result = string.Empty;
-            if (StoryCache && string.IsNullOrEmpty(StoryCache.cacheData))
+            if (StoryCache && !string.IsNullOrEmpty(StoryCache.cacheData))
             {
                 result = StoryCache.cacheData;
             }
