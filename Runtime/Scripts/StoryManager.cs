@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BranchMaker.Api;
+using BranchMaker.GameScripts;
 using BranchMaker.LoadSave;
 using BranchMaker.Runtime.Utility;
 using BranchMaker.WebServices;
@@ -75,6 +76,11 @@ namespace BranchMaker
         
         private void Start()
         {
+            var preloadedWindow = Enumerable.OfType<IStoryPreloader>(FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+            foreach (var preloader in preloadedWindow)
+            {
+                preloader.PrepareBeforeStory();
+            }
             LaunchWithBookKey(storybookId, startingNodeID);
         }
 
