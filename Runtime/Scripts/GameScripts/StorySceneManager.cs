@@ -1,22 +1,20 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using BranchMaker.GameScripts;
 using BranchMaker.Runtime;
 
 namespace BranchMaker.Story
 {
-    public class StorySceneManager : MonoBehaviour
+    public class StorySceneManager : MonoBehaviour, IStoryPreloader
     {
         private static List<StoryScene> _sceneCollection = new();
         private static StoryScene _currentScene;
 
-        private void Awake()
+        public void PrepareBeforeStory()
         {
-            _sceneCollection = transform.GetComponentsInChildren<StoryScene>(true).ToList();
-        }
-
-        private void Start()
-        {
+            _sceneCollection = FindObjectsByType<StoryScene>(FindObjectsInactive.Include, FindObjectsSortMode.None).ToList();
+            foreach (var storyScene in _sceneCollection) storyScene.gameObject.SetActive(false);
             StoryManager.Instance.OnNodeChange.AddListener(NodeChanged);
         }
 
@@ -59,5 +57,6 @@ namespace BranchMaker.Story
             button.designatedAction = action;
             return true;
         }
+
     }
 }
