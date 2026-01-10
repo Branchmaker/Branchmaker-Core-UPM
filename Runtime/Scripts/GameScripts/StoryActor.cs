@@ -24,7 +24,7 @@ public class StoryActor : MonoBehaviour
 
     Image characterImage;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         if (string.IsNullOrEmpty(actorKey)) return;
         actorKey = actorKey.ToLower();
