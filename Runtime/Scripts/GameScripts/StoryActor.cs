@@ -75,10 +75,10 @@ public class StoryActor : MonoBehaviour
             blocked.characterImage.enabled = false;
         }
 
-        if (newshown.characterImage != null)
+        if (newshown.characterImage)
         {
             newshown.characterImage.enabled = true;
-            newshown.characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
+            newshown.Focus();
         }
 
         /*
@@ -104,6 +104,19 @@ public class StoryActor : MonoBehaviour
         */
     }
 
+    // ReSharper disable once MemberCanBeProtected.Global
+    public virtual void Focus()
+    {
+        characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
+    }
+    
+    // ReSharper disable once MemberCanBeProtected.Global
+    public virtual void Unfocus()
+    {
+        characterImage.CrossFadeColor(currentlySpeaking.UnspokenColorTint(),
+            speakFadeSpeed, false, false);
+    }
+
     public static void ShowSpeaker(string actor)
     {
         if (!actorpool.ContainsKey(actor)) return;
@@ -111,25 +124,18 @@ public class StoryActor : MonoBehaviour
     }
     public static void NewSpeaker(string actor)
     {
-        if (currentlySpeaking != null) {
+        if (currentlySpeaking) {
 
             if (currentlySpeaking.actorKey == actor) return;
         }
         if (!actorpool.ContainsKey(actor)) return;
 
-        if (currentlySpeaking != null)
-        {
-            if (currentlySpeaking.gameObject.activeInHierarchy)
+        if (currentlySpeaking && currentlySpeaking.gameObject.activeInHierarchy)
             {
-                if (currentlySpeaking.characterImage != null)
+                if (currentlySpeaking.characterImage && currentlySpeaking.characterImage.enabled)
                 {
-                    if (currentlySpeaking.characterImage.enabled)
-                    {
-                        currentlySpeaking.characterImage.CrossFadeColor(currentlySpeaking.UnspokenColorTint(),
-                            speakFadeSpeed, false, false);
-                    }
+                    currentlySpeaking.Unfocus();
                 }
-            }
         }
         
         FadeInSpeaker(actorpool[actor]);
