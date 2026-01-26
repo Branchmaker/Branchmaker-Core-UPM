@@ -98,7 +98,7 @@ namespace BranchMaker
         {
             _loadingStory = true;
 
-            var result = string.Empty;
+            string result;
             if (StoryCache && !string.IsNullOrEmpty(StoryCache.cacheData))
             {
                 result = StoryCache.cacheData;
@@ -112,10 +112,7 @@ namespace BranchMaker
             foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
 
             Log(NodeLib.Count+" nodes in NodeLib");
-            foreach (var block in NodeLib.Values.SelectMany(node => node.blocks))
-            {
-                StoryEventManager.PreloadScriptCheck(block);
-            }
+            foreach (var block in NodeLib.Values.SelectMany(node => node.blocks)) StoryEventManager.PreloadScriptCheck(block);
 
             OnStoryReady.Invoke();
             _loadingStory = false;
@@ -214,6 +211,7 @@ namespace BranchMaker
         public static void LoadNodeKey(string key)
         {
             if (string.IsNullOrEmpty(key)) return;
+            if (CurrentNode != null && CurrentNode.id == key) return;
             Instance.Log("Loading node: "+key);
             if (!NodeLib.ContainsKey(key))
             {
