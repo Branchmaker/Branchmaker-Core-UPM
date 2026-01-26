@@ -97,6 +97,7 @@ namespace BranchMaker
         private async Task GetAllTheNodes()
         {
             _loadingStory = true;
+            await Awaitable.NextFrameAsync();
 
             string result;
             if (StoryCache && !string.IsNullOrEmpty(StoryCache.cacheData))
