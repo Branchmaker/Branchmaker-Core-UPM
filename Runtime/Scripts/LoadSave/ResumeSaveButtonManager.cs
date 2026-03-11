@@ -26,11 +26,5 @@ namespace BranchMaker.LoadSave
         {
             resumeButton.SetActive(CloudSaveManager.CheckForSaveFile());
         }
-
-        public void ResumeGame()
-        {
-            string scene = CloudSaveManager.Resume();
-            SceneManager.LoadScene(scene);
-        }
     }
 }

@@ -48,7 +48,7 @@ namespace BranchMaker.LoadSave
 
         void ILoadSaveHandler.Resume()
         {
-            return Resume();
+            // return Resume();
         }
 
         private void OnDestroy()
