@@ -46,7 +46,7 @@ namespace BranchMaker.LoadSave
             return CheckForSaveFile();
         }
 
-        string ILoadSaveHandler.Resume()
+        void ILoadSaveHandler.Resume()
         {
             return Resume();
         }
@@ -82,10 +82,10 @@ namespace BranchMaker.LoadSave
             return (LocalStorage != null);
         }
 
-        public static string Resume()
+        public static void Resume()
         {
-            StoryManager.forceLoad = LocalStorage.saveFile;
-            return LocalStorage.activeCaseScene;
+            //StoryManager.forceLoad = LocalStorage.saveFile;
+           // return LocalStorage.activeCaseScene;
         }
 
         public static SteamCloudPrefs Load()
