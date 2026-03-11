@@ -8,6 +8,6 @@ namespace BranchMaker.LoadSave
     {
         public void UpdateSaveFile();
         public bool CheckForSaveFile();
-        public string Resume();
+        public void Resume();
     }
 }
