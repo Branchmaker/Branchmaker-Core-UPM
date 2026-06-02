@@ -93,6 +93,7 @@ namespace BranchMaker
         }
 
         public static List<BranchNode> AllNodes() => NodeLib.Values.ToList();
+        public List<BranchNode> AllLoadedNodes() => NodeLib.Values.ToList();
 
         private async Task GetAllTheNodes()
         {
