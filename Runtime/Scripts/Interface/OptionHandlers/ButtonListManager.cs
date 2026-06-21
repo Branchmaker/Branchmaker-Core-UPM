@@ -59,9 +59,11 @@ namespace BranchMaker.Interface.OptionHandlers
             foreach (var block in node.ActionBlocks())
             {
                 Debug.Log($"Considering {block.id} {block.dialogue}");
-                if (StorySceneManager.SceneHasActionButton(block)) continue;
-                if (!StoryEventManager.ValidBlockCheck(block)) continue;
-                if (block.clean_action.StartsWith("#") && hideScriptActions) continue;
+                if (!TryValidateBlock(block, out string rejectionReason))
+                {
+                    Debug.Log($"Rejected {block.id} {block.dialogue}: {rejectionReason}");
+                    continue;
+                }
 
                 var buttonLabel = block.dialogue.CapitalizeFirst();
                 if (block.dialogue.StartsWith("<")) buttonLabel = block.dialogue;
@@ -82,6 +84,30 @@ namespace BranchMaker.Interface.OptionHandlers
             {
                 dialogueOption.ProcessDialogueOptions(node);
             }
+        }
+
+        private bool TryValidateBlock(BranchNodeBlock block, out string reason)
+        {
+            if (StorySceneManager.SceneHasActionButton(block))
+            {
+                reason = "Action button already exists in scene";
+                return false;
+            }
+
+            if (!StoryEventManager.ValidBlockCheck(block))
+            {
+                reason = "ValidBlockCheck failed";
+                return false;
+            }
+
+            if (block.clean_action.StartsWith("#") && hideScriptActions)
+            {
+                reason = "Script actions are hidden";
+                return false;
+            }
+
+            reason = null;
+            return true;
         }
 
         public void Cleanup()
