@@ -87,7 +87,7 @@ namespace BranchMaker
             return true;
         }
 
-        public bool isActionNode() {
+        public bool IsActionNode() {
             return !string.IsNullOrEmpty(target_node);
         }
 

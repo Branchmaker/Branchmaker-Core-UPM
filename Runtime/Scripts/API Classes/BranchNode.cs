@@ -10,8 +10,8 @@ namespace BranchMaker {
 
         public bool processed;
 
-        public List<BranchNodeBlock> StoryBlocks() => blocks.FindAll(a => !a.isActionNode());
-        public List<BranchNodeBlock> ActionBlocks() => blocks.FindAll(a => a.isActionNode());
+        public List<BranchNodeBlock> StoryBlocks() => blocks.FindAll(a => !a.IsActionNode());
+        public List<BranchNodeBlock> ActionBlocks() => blocks.FindAll(a => a.IsActionNode());
 
         static public Dictionary<string, BranchNode> nodecollection = new();
 

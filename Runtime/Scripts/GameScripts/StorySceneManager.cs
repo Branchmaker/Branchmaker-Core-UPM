@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using BranchMaker.GameScripts;
-using BranchMaker.Runtime;
+using BranchMaker.Story;
+using UnityEngine;
 
-namespace BranchMaker.Story
+namespace BranchMaker.GameScripts
 {
     public class StorySceneManager : MonoBehaviour, IStoryPreloader
     {

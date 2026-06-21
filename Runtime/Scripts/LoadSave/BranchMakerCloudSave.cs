@@ -1,6 +1,7 @@
 using BranchMaker.Story;
 using System;
 using System.Collections.Generic;
+using BranchMaker.GameScripts;
 using BranchMaker.Runtime;
 
 
