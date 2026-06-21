@@ -10,7 +10,7 @@ namespace BranchMaker
 {
     public static class StoryEventManager
     {
-        static List<StoryEventTrigger> _triggerPool = new();
+        private static readonly List<StoryEventTrigger> _triggerPool = new();
         public static List<string> _seenNodes = new();
         public static bool PassActionValidation;
         public static bool SkipNextActionNodeChange;
@@ -46,15 +46,37 @@ namespace BranchMaker
             _triggerPool.Add(trigger);
         }
 
+        
         private static void PreloadEvents()
         {
-            var allAbilities = Assembly.GetAssembly(typeof(StoryEventTrigger)).GetTypes().Where(t => !t.IsAbstract && typeof(StoryEventTrigger).IsAssignableFrom(t));
+            var triggerType = typeof(StoryEventTrigger);
 
-            foreach (var triggerEvent in allAbilities)
+            var allTriggers = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(GetLoadableTypes)
+                .Where(t =>
+                    !t.IsAbstract &&
+                    triggerType.IsAssignableFrom(t));
+
+            foreach (var triggerEvent in allTriggers)
             {
+                if (_triggerPool.Any(a => a.GetType() == triggerEvent))
+                    continue;
+
                 var trigger = Activator.CreateInstance(triggerEvent) as StoryEventTrigger;
-                if (_triggerPool.Any(a => a.GetType() == triggerEvent)) continue;
                 _triggerPool.Add(trigger);
+            }
+        }
+
+        private static Type[] GetLoadableTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                return e.Types.Where(t => t != null).ToArray();
             }
         }
         
