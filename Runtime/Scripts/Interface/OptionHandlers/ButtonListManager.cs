@@ -53,15 +53,15 @@ namespace BranchMaker.Interface.OptionHandlers
 
             if (debugOutput)
             {
-                Debug.Log($"Node {node.id} has {actions.Count} actions");
+                Log($"Node {node.id} has {actions.Count} actions");
             }
 
             foreach (var block in node.ActionBlocks())
             {
-                Debug.Log($"Considering {block.id} {block.dialogue}");
-                if (!TryValidateBlock(block, out string rejectionReason))
+                Log($"Considering {block.id} {block.dialogue}");
+                if (!TryValidateBlock(block, out var rejectionReason))
                 {
-                    Debug.Log($"Rejected {block.id} {block.dialogue}: {rejectionReason}");
+                    Log($"Rejected {block.id} {block.dialogue}: {rejectionReason}");
                     continue;
                 }
 
@@ -84,6 +84,15 @@ namespace BranchMaker.Interface.OptionHandlers
             {
                 dialogueOption.ProcessDialogueOptions(node);
             }
+        }
+
+        private void Log(string s)
+        {
+            #if !UNITY_EDITOR
+            return;            
+#endif
+            if (!debugOutput) return;
+            Debug.Log(s);
         }
 
         private bool TryValidateBlock(BranchNodeBlock block, out string reason)
