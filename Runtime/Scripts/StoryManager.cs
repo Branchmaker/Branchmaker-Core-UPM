@@ -247,6 +247,18 @@ namespace BranchMaker
             NodeLib.TryAdd(bNode.id, bNode);
             bNode.processed = false;
         }
+        public static void ReloadNode(BranchNode bNode)
+        {
+            if (NodeLib.ContainsKey(bNode.id))
+            {
+                NodeLib[bNode.id] = bNode;
+            }
+            else
+            {
+                ProcessIncomingNode(bNode);
+            }
+        }
+
 
         public static bool HasSpeakingQueue() => Instance._dialogueQueue.Count() > 0;
     }
