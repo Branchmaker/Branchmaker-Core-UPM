@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -18,7 +19,7 @@ namespace BranchMaker
         public string emotion;
 
         // Action nodes
-        public string clean_action;
+        public string clean_action = string.Empty;
         public string target_node;
         public string node_id;
 
@@ -101,6 +102,14 @@ namespace BranchMaker
         public IEnumerable<string> MetaScriptLines()
         {
             return meta_scripts.Trim().Split("\n"[0]);
+        }
+
+        public void Validate()
+        {
+            if (string.IsNullOrEmpty(clean_action))
+            {
+                clean_action = dialogue.Trim().ToLower();
+            }
         }
     }
 }

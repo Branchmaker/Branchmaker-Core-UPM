@@ -109,6 +109,8 @@ namespace BranchMaker.Interface.OptionHandlers
                 return false;
             }
 
+            block.Validate();
+
             if (block.clean_action.StartsWith("#") && hideScriptActions)
             {
                 reason = "Script actions are hidden";
