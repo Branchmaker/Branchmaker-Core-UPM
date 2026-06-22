@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace BranchMaker.Interface
 {
     [RequireComponent(typeof(Button))]
-    public sealed class DialogueButton : MonoBehaviour, IBranchDialogueButton
+    public class DialogueButton : MonoBehaviour, IBranchDialogueButton
     {
         public TextMeshProUGUI TMLabel;
         public Button button;
