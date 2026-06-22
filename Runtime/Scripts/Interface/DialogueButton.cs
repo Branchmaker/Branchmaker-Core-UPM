@@ -11,7 +11,7 @@ namespace BranchMaker.Interface
         public TextMeshProUGUI TMLabel;
         public Button button;
 
-        public void SetLabel(string newLabel, BranchNodeBlock fromBlock)
+        public virtual void SetLabel(string newLabel, BranchNodeBlock fromBlock)
         {
             if (TMLabel != null) TMLabel.text = newLabel;
             if (GetComponent<Text>() != null) GetComponent<Text>().text = newLabel;
