@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,17 +14,26 @@ namespace BranchMaker.Actors
         public Sprite mainSprite;
         public Color themeColor;
         public List<CharacterExpression> expressions;
+        public List<CharacterExpressionSet> expressionLayers = new();
+
         [NonSerialized] public string CurrentEmotion;
-        
+
         public Sprite PortraitSprite()
         {
-            if (expressions.Count == 0) return mainSprite;
+            if (expressions == null || expressions.Count == 0) return mainSprite;
+
             if (string.IsNullOrEmpty(CurrentEmotion)) return expressions.First().characterImage;
-            foreach (var expression in expressions) {
-                if (expression.expression == CurrentEmotion) return expression.characterImage;
+            foreach (var expression in expressions.Where(expression => expression.expression == CurrentEmotion))
+            {
+                return expression.characterImage;
             }
-            //Debug.LogError("Could not find sprite for expression = "+expressions);
+
             return mainSprite;
+        }
+
+        public void ResetExpressions()
+        {
+            CurrentEmotion = string.Empty;
         }
     }
 
@@ -34,7 +42,13 @@ namespace BranchMaker.Actors
     {
         public string expression;
         public Sprite characterImage;
-
     }
 
+    [Serializable]
+    public class CharacterExpressionSet
+    {
+        public string prefix;
+        public List<CharacterExpression> expressions;
+        public bool startsEmpty;
+    }
 }
