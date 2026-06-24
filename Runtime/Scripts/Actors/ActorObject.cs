@@ -62,6 +62,8 @@ namespace BranchMaker.Actors
                 result[layer.prefix] = sprite;
             }
 
+            if (result.All(a => !a.Value)) return null;
+
             return result;
         }
 
