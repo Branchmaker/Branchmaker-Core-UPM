@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace BranchMaker
 {
@@ -14,7 +12,6 @@ namespace BranchMaker
         [TextArea(2,20)]
         public string meta_scripts;
         public string voice_file;
-        public string image_file;
         public string character;
         public string emotion;
 
@@ -33,6 +30,8 @@ namespace BranchMaker
         public List<string> script_lines = new();
         public List<string> processed_checklist = new();
         public Sprite forcedIcon;
+        
+        public List<BranchNodeImage> images = new();
 
         public static BranchNodeBlock createFromJson(SimpleJSON.JSONNode jsonNode)
         {
@@ -41,7 +40,6 @@ namespace BranchMaker
             block.nickname = jsonNode["nickname"].Value;
             block.dialogue = jsonNode["dialogue"].Value;
             block.voice_file = jsonNode["voice_file"].Value;
-            block.image_file = jsonNode["image_file"].Value;
             block.meta_scripts = jsonNode["meta_scripts"].Value.ToLower();
             block.safe_for_playing = (jsonNode["safe_for_playing"].Value.ToLower() ?? "false") == "true";
             block.character = (jsonNode["character"].Value.ToLower() ?? null);
@@ -53,6 +51,25 @@ namespace BranchMaker
                 {
                     block.script_lines.Add(bit.Trim());
                 }
+            }
+
+            if (jsonNode["images"] != null && jsonNode["images"].IsArray)
+            {
+                foreach (SimpleJSON.JSONNode imageNode in jsonNode["images"].AsArray)
+                {
+                    block.images.Add(new BranchNodeImage
+                    {
+                        image_type = imageNode["image_type"].Value,
+                        image_url = imageNode["image_url"].Value
+                    });
+                }
+            } else if (!string.IsNullOrEmpty(jsonNode["image_file"].Value))
+            {
+                block.images.Add(new BranchNodeImage
+                {
+                    image_type = "default",
+                    image_url = jsonNode["image_file"].Value
+                });
             }
 
             // Action nodes

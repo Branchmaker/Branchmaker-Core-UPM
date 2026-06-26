@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace BranchMaker.Story
+namespace BranchMaker.GameScripts
 {
     public class StoryScene : MonoBehaviour
     {
