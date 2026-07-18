@@ -109,7 +109,16 @@ namespace BranchMaker
             }
 
             var allNodes = JSONNode.Parse(result);
-            foreach (var storyNode in allNodes["nodes"]) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
+
+            var rootNode = allNodes["nodes"];
+            if (rootNode.Count == 0)
+            {
+                rootNode = allNodes;
+            }
+
+            Log($"Counting nodes: {rootNode.Count}");
+            
+            foreach (var storyNode in rootNode) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
 
             Log(NodeLib.Count+" nodes in NodeLib");
             foreach (var block in NodeLib.Values.SelectMany(node => node.blocks)) StoryEventManager.PreloadScriptCheck(block);
