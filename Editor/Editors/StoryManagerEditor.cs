@@ -162,7 +162,6 @@ namespace BranchMaker.Editor.Editors
         private async void TryStartCacheDownload(BranchmakerCacheObject cacheObj)
         {
             if (!cacheObj) return;
-            StoryManager.ForceLocate();
 
             var url = (cacheObj.cacheUrl ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(url))
