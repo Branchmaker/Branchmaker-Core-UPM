@@ -226,7 +226,7 @@ namespace BranchMaker
             Instance.Log("Loading node: "+key);
             if (!NodeLib.ContainsKey(key))
             {
-                Instance.LogError("Could not find node: "+key);
+                Instance.LogError($"Could not find node: {key} in collection of {NodeLib.Count}");
                 return;
             }
             LoadNode(NodeLib[key]);
