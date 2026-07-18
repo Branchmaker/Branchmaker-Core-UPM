@@ -251,7 +251,8 @@ namespace BranchMaker
 
         public static void ProcessIncomingNode(BranchNode bNode)
         {
-            NodeLib.TryAdd(bNode.id, bNode);
+            NodeLib[bNode.id] = bNode;
+
             bNode.processed = false;
         }
         public static void ReloadNode(BranchNode bNode)
