@@ -192,15 +192,6 @@ namespace BranchMaker
             {
                 var cline = line.Trim();
                 
-                // Dynamic trigger handling
-                foreach (var trigger in _triggerPool)
-                {
-                    if (trigger.Method == StoryEventTrigger.TriggerMethod.OnBlockRun && cline.StartsWith(trigger.TriggerKey))
-                    {
-                        var bits = cline.Split(':');
-                        trigger.Run(cline, nodeBlock, bits);
-                    }
-                }
                 
                 if (cline.StartsWith("sound:"))
                 {
@@ -217,6 +208,15 @@ namespace BranchMaker
                 {
                     var charname = cline.Replace("showcharacter:", "").ToLower().Trim();
                     StoryActor.NewSpeaker(charname);
+                }
+                // Dynamic trigger handling
+                foreach (var trigger in _triggerPool)
+                {
+                    if (trigger.Method == StoryEventTrigger.TriggerMethod.OnBlockRun && cline.StartsWith(trigger.TriggerKey))
+                    {
+                        var bits = cline.Split(':');
+                        trigger.Run(cline, nodeBlock, bits);
+                    }
                 }
             }
         }

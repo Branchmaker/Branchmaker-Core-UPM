@@ -196,8 +196,8 @@ namespace BranchMaker
             var canRun = StoryEventManager.ValidBlockCheck(CurrentBlock);
             if (canRun)
             {
-                OnBlockChange.Invoke(CurrentBlock);
                 StoryEventManager.ParseBlockscript(CurrentBlock);
+                OnBlockChange.Invoke(CurrentBlock);
             }
             else
             {
