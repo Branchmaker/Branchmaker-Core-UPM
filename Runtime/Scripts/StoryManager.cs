@@ -95,6 +95,8 @@ namespace BranchMaker
 
         private async Task GetAllTheNodes()
         {
+            NodeLib.Clear();
+            CurrentNode = null;
             _loadingStory = true;
             await Awaitable.WaitForSecondsAsync(.02f);
 
@@ -252,7 +254,7 @@ namespace BranchMaker
         public static void ProcessIncomingNode(BranchNode bNode)
         {
             NodeLib[bNode.id] = bNode;
-
+            Instance.Log("Installing "+bNode.id);
             bNode.processed = false;
         }
         public static void ReloadNode(BranchNode bNode)
