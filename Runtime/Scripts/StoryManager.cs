@@ -32,7 +32,7 @@ namespace BranchMaker
         [SerializeField] private bool verboseLogging;
         private readonly DialogueQueue _dialogueQueue = new();
 
-        private static readonly Dictionary<string, BranchNode> NodeLib = new();
+        private readonly Dictionary<string, BranchNode> _nodeLib = new();
 
         [Header("Handlers")]
         static bool _loadingStory;
@@ -62,7 +62,6 @@ namespace BranchMaker
         {
             CurrentNode = null;
             _reloadPurpose = true;
-            NodeLib.Clear();
             StoryButton.playerkeys.Clear();
             
             _windowOverlays = SceneFind.All<IWindowOverlay>();
@@ -91,11 +90,11 @@ namespace BranchMaker
             _ = GetAllTheNodes();
         }
 
-        public static List<BranchNode> AllNodes() => NodeLib.Values.ToList();
+        public static List<BranchNode> AllNodes() => Instance._nodeLib.Values.ToList();
 
         private async Task GetAllTheNodes()
         {
-            NodeLib.Clear();
+            _nodeLib.Clear();
             CurrentNode = null;
             _loadingStory = true;
             await Awaitable.WaitForSecondsAsync(.02f);
@@ -122,8 +121,8 @@ namespace BranchMaker
             
             foreach (var storyNode in rootNode) ProcessIncomingNode(BranchNode.createFromJson(storyNode));
 
-            Log(NodeLib.Count+" nodes in NodeLib");
-            foreach (var block in NodeLib.Values.SelectMany(node => node.blocks)) StoryEventManager.PreloadScriptCheck(block);
+            Log(_nodeLib.Count+" nodes in NodeLib");
+            foreach (var block in _nodeLib.Values.SelectMany(node => node.blocks)) StoryEventManager.PreloadScriptCheck(block);
 
             OnStoryReady.Invoke();
             _loadingStory = false;
@@ -143,13 +142,13 @@ namespace BranchMaker
         {
             if (CurrentNode != null)
             {
-                var startingNode = NodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
+                var startingNode = _nodeLib.Values.FirstOrDefault(node => node.id == CurrentNode.id);
                 LoadNode(startingNode);
                 return;
             }
             
             Log("Looking for starting node");
-            if (string.IsNullOrEmpty(startingNodeID)) startingNodeID = NodeLib.First().Key;
+            if (string.IsNullOrEmpty(startingNodeID)) startingNodeID = _nodeLib.First().Key;
 
             if (forceLoad != null)
             {
@@ -224,18 +223,18 @@ namespace BranchMaker
             if (string.IsNullOrEmpty(key)) return;
             if (CurrentNode != null && CurrentNode.id == key) return;
             Instance.Log("Loading node: "+key);
-            if (!NodeLib.ContainsKey(key))
+            if (!Instance._nodeLib.TryGetValue(key, out var value))
             {
-                Instance.LogError($"Could not find node: {key} in collection of {NodeLib.Count}");
+                Instance.LogError($"Could not find node: {key} in collection of {Instance._nodeLib.Count}");
                 return;
             }
-            LoadNode(NodeLib[key]);
+            LoadNode(value);
         }
         
 
         public static BranchNode GetNodeById(string id)
         {
-            return NodeLib.GetValueOrDefault(id);
+            return Instance._nodeLib.GetValueOrDefault(id);
         }
 
         private static void LoadNode(BranchNode node)
@@ -253,15 +252,15 @@ namespace BranchMaker
 
         public static void ProcessIncomingNode(BranchNode bNode)
         {
-            NodeLib[bNode.id] = bNode;
+            Instance._nodeLib[bNode.id] = bNode;
             Instance.Log("Installing "+bNode.id);
             bNode.processed = false;
         }
         public static void ReloadNode(BranchNode bNode)
         {
-            if (NodeLib.ContainsKey(bNode.id))
+            if (Instance._nodeLib.ContainsKey(bNode.id))
             {
-                NodeLib[bNode.id] = bNode;
+                Instance._nodeLib[bNode.id] = bNode;
             }
             else
             {
