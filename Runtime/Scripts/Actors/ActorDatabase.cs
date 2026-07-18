@@ -6,21 +6,22 @@ namespace BranchMaker.Actors
 {
     public static class ActorDatabase
     {
-        static List<ActorObject> Actorpool = new();
+        [NonSerialized] private static readonly List<ActorObject> ActorPool = new();
 
         static ActorDatabase()
         {
-            Actorpool.Clear();
+            ActorPool.Clear();
         }
 
         public static ActorObject ActorByKey(string q) =>
-            Actorpool.FirstOrDefault(a => string.Equals(a.name, q, StringComparison.CurrentCultureIgnoreCase));
+            ActorPool.FirstOrDefault(a => string.Equals(a.name, q, StringComparison.CurrentCultureIgnoreCase));
 
         public static void PreloadActor(ActorObject newActor)
         {
-            if (!Actorpool.Contains(newActor))
+            if (!newActor) return;
+            if (!ActorPool.Contains(newActor))
             {
-                Actorpool.Add(newActor);
+                ActorPool.Add(newActor);
             }
         }
     }
