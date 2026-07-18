@@ -6,6 +6,7 @@ using BranchMaker.Api;
 using BranchMaker.GameScripts;
 using BranchMaker.LoadSave;
 using BranchMaker.Runtime.Utility;
+using BranchMaker.Utility;
 using BranchMaker.WebServices;
 using SimpleJSON;
 using UnityEngine;
@@ -46,7 +47,6 @@ namespace BranchMaker
         private static ILoadSaveHandler _loadSaveHandler;
 
         public bool RunStartingNodeAfterLoading = true;
-
         public bool HideScriptActions = true;
 
         [Header("Events")]
@@ -57,23 +57,22 @@ namespace BranchMaker
         [NonSerialized] public readonly UnityEvent<BranchNodeBlock> OnBlockComplete = new();
         
         public static string ActiveStoryId => Instance.storybookId;
-
-        protected override void Awake()
+        
+        protected override void Prepare()
         {
-            base.Awake();
             CurrentNode = null;
             _reloadPurpose = true;
             NodeLib.Clear();
             StoryButton.playerkeys.Clear();
             
-            _windowOverlays = FindObjectsOfType<MonoBehaviour>(true).OfType<IWindowOverlay>().ToList();
-            CustomDialogueOptions = FindObjectsOfType<MonoBehaviour>(true).OfType<ICustomDialogueAction>().ToList();
-            _loadSaveHandler = FindObjectsOfType<MonoBehaviour>(true).OfType<ILoadSaveHandler>().FirstOrDefault();
+            _windowOverlays = SceneFind.All<IWindowOverlay>();
+            CustomDialogueOptions = SceneFind.All<ICustomDialogueAction>();
+            _loadSaveHandler = SceneFind.First<ILoadSaveHandler>();
             
             
             if (loadFlow == LoadFlow.LoadOnLaunch) OnStoryReady.AddListener(LoadStartingNode);
         }
-        
+
         private void Start()
         {
             var preloadedWindow = Enumerable.OfType<IStoryPreloader>(FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None));
@@ -93,7 +92,6 @@ namespace BranchMaker
         }
 
         public static List<BranchNode> AllNodes() => NodeLib.Values.ToList();
-        public List<BranchNode> AllLoadedNodes() => NodeLib.Values.ToList();
 
         private async Task GetAllTheNodes()
         {

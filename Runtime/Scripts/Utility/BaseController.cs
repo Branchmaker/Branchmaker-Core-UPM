@@ -1,35 +1,57 @@
-using System;
 using UnityEngine;
 
-namespace BranchMaker.Runtime.Utility
+namespace BranchMaker.Utility
 {
-    public abstract class BaseController<T> : MonoBehaviour where T : MonoBehaviour
+    public abstract class BaseController<T> : MonoBehaviour
+        where T : BaseController<T>
     {
         private static T _instance;
         [SerializeField] protected bool debugLog;
         [SerializeField] protected bool persist;
+        private bool _prepared;
     
-        public static T Instance => _instance != null ? _instance : null;
-
-        protected virtual void Awake()
+        public static T Instance
         {
-            if (_instance == null)
+            get
             {
-                _instance = this as T;
-                if (persist) DontDestroyOnLoad(gameObject);
+                if (_instance)
+                    return _instance;
+
+#if UNITY_2023_1_OR_NEWER
+                _instance = FindFirstObjectByType<T>(FindObjectsInactive.Include);
+#else
+                _instance = FindObjectOfType<T>();
+#endif
+
+                if (_instance) _instance.EnsurePrepared();
+
+                return _instance;
             }
         }
 
-        public static void ForceLocate()
+        protected virtual void Prepare()
         {
-            if (_instance == null)
+        }
+
+        private void EnsurePrepared()
+        {
+            if (_prepared) return;
+            _prepared = true;
+            Prepare();
+        }
+
+
+        protected virtual void Awake()
+        {
+            if (persist && _instance)
             {
-                _instance = FindObjectOfType<T>();
-                if (_instance == null)
-                {
-                    Debug.LogError($"No instance of {typeof(T)} found in the scene.");
-                }
+                Destroy(this);
+                return;
             }
+
+            if (_instance) return;
+            _instance = this as T;
+            EnsurePrepared();
         }
 
         private void OnEnable()
@@ -37,6 +59,7 @@ namespace BranchMaker.Runtime.Utility
             _instance = this as T;
         }
         
+        // ReSharper disable Unity.PerformanceAnalysis
         public void Log(string log)
         {
             #if UNITY_EDITOR
@@ -44,6 +67,7 @@ namespace BranchMaker.Runtime.Utility
             #endif
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         public void LogError(string log)
         {
             #if UNITY_EDITOR
