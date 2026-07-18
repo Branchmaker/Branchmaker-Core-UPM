@@ -104,6 +104,11 @@ public class StoryActor : MonoBehaviour
         */
     }
 
+    public static void ClearCurrentSpeaker()
+    {
+        currentlySpeaking = null;
+    }
+
     // ReSharper disable once MemberCanBeProtected.Global
     public virtual void Focus()
     {
