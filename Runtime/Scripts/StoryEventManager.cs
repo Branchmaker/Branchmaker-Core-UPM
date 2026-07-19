@@ -11,7 +11,8 @@ namespace BranchMaker
     public static class StoryEventManager
     {
         private static readonly List<StoryEventTrigger> _triggerPool = new();
-        public static List<string> _seenNodes = new();
+        private static List<string> _seenBlocks = new();
+        private static List<string> _seenNodes = new();
         public static bool PassActionValidation;
         public static bool SkipNextActionNodeChange;
         public static BranchNodeBlock StoredAction;
@@ -25,14 +26,14 @@ namespace BranchMaker
         public static void ClearEvents()
         {
             _triggerPool.Clear();
-            _seenNodes.Clear();
+            _seenBlocks.Clear();
             PassActionValidation = true;
             SkipNextActionNodeChange = false;
             StoredAction = null;
         }
         public static void ClearSeen()
         {
-            _seenNodes.Clear();
+            _seenBlocks.Clear();
             PassActionValidation = true;
             SkipNextActionNodeChange = false;
             StoredAction = null;
@@ -95,7 +96,16 @@ namespace BranchMaker
                 }
             }
         }
-        
+
+        public static bool HasSeenNode(string nodeId)
+        {
+            return _seenNodes.Contains(nodeId);
+        }
+        public static void MarkNodeSeen(string nodeId)
+        {
+            if (!_seenNodes.Contains(nodeId)) _seenNodes.Add(nodeId);
+        }
+
         public static bool ValidateActionBlock(BranchNodeBlock nodeBlock)
         {
             if (!nodeBlock.HasMetaScript()) return true;
@@ -177,8 +187,8 @@ namespace BranchMaker
             
             if (nodeBlock.meta_scripts.Contains("dontrepeat"))
             {
-                if (_seenNodes.Contains(nodeBlock.id)) return false;
-                _seenNodes.Add(nodeBlock.id);
+                if (_seenBlocks.Contains(nodeBlock.id)) return false;
+                _seenBlocks.Add(nodeBlock.id);
             }
             return true;
         }

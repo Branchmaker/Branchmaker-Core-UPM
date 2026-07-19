@@ -241,6 +241,7 @@ namespace BranchMaker
         {
             if (Instance.verboseLogging) Instance.Log("Loading node "+node);
             CurrentNode = node;
+            StoryEventManager.MarkNodeSeen(node.id);
             Instance._dialogueQueue.Clear();
             Instance.OnNodeChange.Invoke(node);
             Instance._dialogueQueue.LoadBlocks(node.StoryBlocks());
