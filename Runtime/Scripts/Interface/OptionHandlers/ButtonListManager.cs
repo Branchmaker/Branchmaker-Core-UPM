@@ -71,6 +71,7 @@ namespace BranchMaker.Interface.OptionHandlers
                 if (!string.IsNullOrEmpty(block.meta_scripts))
                 {
                     if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
+                    if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
                 }
 
                 _actionButtons[buttonIndex].gameObject.SetActive(true);
