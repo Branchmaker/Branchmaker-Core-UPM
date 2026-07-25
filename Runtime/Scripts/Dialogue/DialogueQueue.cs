@@ -29,6 +29,7 @@ namespace BranchMaker
         {
             foreach (var block in storyBlocks)
             {
+                if (!StoryEventManager.ValidBlockCheck(block)) continue;
                 _blockQueue.Add(block);
             }
         }
