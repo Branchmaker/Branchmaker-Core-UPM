@@ -200,6 +200,7 @@ namespace BranchMaker
             {
                 StoryEventManager.ParseBlockscript(CurrentBlock);
                 OnBlockChange.Invoke(CurrentBlock);
+                StoryEventManager.MarkBlockSeen(CurrentBlock);
             }
             else
             {

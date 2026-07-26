@@ -105,6 +105,10 @@ namespace BranchMaker
         {
             if (!_seenNodes.Contains(nodeId)) _seenNodes.Add(nodeId);
         }
+        public static void MarkBlockSeen(BranchNodeBlock block)
+        {
+            if (!_seenBlocks.Contains(block.id)) _seenBlocks.Add(block.id);
+        }
 
         public static bool ValidateActionBlock(BranchNodeBlock nodeBlock)
         {
@@ -188,7 +192,6 @@ namespace BranchMaker
             if (nodeBlock.meta_scripts.Contains("dontrepeat"))
             {
                 if (_seenBlocks.Contains(nodeBlock.id)) return false;
-                _seenBlocks.Add(nodeBlock.id);
             }
             return true;
         }
