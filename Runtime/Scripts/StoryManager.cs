@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BranchMaker.Api;
+using BranchMaker.Dialogue;
 using BranchMaker.GameScripts;
 using BranchMaker.LoadSave;
 using BranchMaker.Runtime.Utility;

@@ -9,20 +9,29 @@ namespace BranchMaker.Interface
     public class DialogueButton : MonoBehaviour, IBranchDialogueButton
     {
         public TextMeshProUGUI TMLabel;
+        public Text LegacyTextLabel;
         public Button button;
 
         public virtual void SetLabel(string newLabel, BranchNodeBlock fromBlock)
         {
-            if (TMLabel != null) TMLabel.text = newLabel;
-            if (GetComponent<Text>() != null) GetComponent<Text>().text = newLabel;
+            if (TMLabel)
+            {
+                TMLabel.text = newLabel;
+                return;
+            }
+            if (LegacyTextLabel) LegacyTextLabel.text = newLabel;
         }
         public void LoadBlock(BranchNodeBlock block, ButtonListManager manager)
         {
             button ??= GetComponent<Button>();
             if (manager.blockUnsafeActions) button.interactable = block.safe_for_playing;
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(
-                () => { StoryManager.PerformAction(block); });
+            button.onClick.AddListener(() => { ExecuteNode(block); });
+        }
+
+        protected virtual void ExecuteNode(BranchNodeBlock block)
+        {
+            StoryManager.PerformAction(block);
         }
     }
 
