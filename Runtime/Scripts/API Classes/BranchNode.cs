@@ -9,6 +9,7 @@ namespace BranchMaker {
         public List<BranchNodeBlock> suggestions = new();
 
         public bool processed;
+        public int branchDepth;
 
         public List<BranchNodeBlock> StoryBlocks() => blocks.FindAll(a => !a.IsActionNode());
         public List<BranchNodeBlock> ActionBlocks() => blocks.FindAll(a => a.IsActionNode());
