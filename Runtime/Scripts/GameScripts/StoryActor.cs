@@ -14,7 +14,7 @@ public class StoryActor : MonoBehaviour
     public string actorKey;
     static Color unspokenColor = new Color(0.3f, 0.3f, 0.3f,1f);
 
-    static StoryActor currentlySpeaking;
+    public static StoryActor currentlySpeaking;
 
     static float speakFadeSpeed = 0.3f;
 
