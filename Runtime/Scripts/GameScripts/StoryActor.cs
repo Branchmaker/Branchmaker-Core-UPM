@@ -112,12 +112,14 @@ public class StoryActor : MonoBehaviour
     // ReSharper disable once MemberCanBeProtected.Global
     public virtual void Focus()
     {
+        if (!characterImage) return;
         characterImage.CrossFadeColor(Color.white, speakFadeSpeed, false, false);
     }
     
     // ReSharper disable once MemberCanBeProtected.Global
     public virtual void Unfocus()
     {
+        if (!characterImage) return;
         characterImage.CrossFadeColor(currentlySpeaking.UnspokenColorTint(),
             speakFadeSpeed, false, false);
     }
