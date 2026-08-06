@@ -68,6 +68,7 @@ namespace BranchMaker
             _windowOverlays = SceneFind.All<IWindowOverlay>();
             CustomDialogueOptions = SceneFind.All<ICustomDialogueAction>();
             _loadSaveHandler = SceneFind.First<ILoadSaveHandler>();
+            Log("Save handler: "+_loadSaveHandler);
             
             
             if (loadFlow == LoadFlow.LoadOnLaunch) OnStoryReady.AddListener(LoadStartingNode);
