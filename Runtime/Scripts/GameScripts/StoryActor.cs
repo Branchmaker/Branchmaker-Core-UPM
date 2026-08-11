@@ -41,9 +41,9 @@ public class StoryActor : MonoBehaviour
         currentlySpeaking = null;
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        if (characterImage != null) characterImage.CrossFadeColor(UnspokenColorTint(), 0f, false, false);
+        //if (characterImage != null) characterImage.CrossFadeColor(UnspokenColorTint(), 0f, false, false);
         if (string.IsNullOrEmpty(actorKey)) return;
         if (!actorpool.ContainsKey(actorKey)) actorpool.Add(actorKey.ToLower(), this);
         actorpool[actorKey] = this;
