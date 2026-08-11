@@ -49,7 +49,7 @@ public class StoryActor : MonoBehaviour
         actorpool[actorKey] = this;
     }
 
-    Color UnspokenColorTint() {
+    public Color UnspokenColorTint() {
         if (ActorObject == null) return Color.black;
         var tinted = ActorObject.themeColor * 0.3f;
 
