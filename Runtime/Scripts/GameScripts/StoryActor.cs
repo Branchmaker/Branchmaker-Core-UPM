@@ -16,13 +16,13 @@ public class StoryActor : MonoBehaviour
 
     public static StoryActor currentlySpeaking;
 
-    static float speakFadeSpeed = 0.3f;
+    static protected float speakFadeSpeed = 0.3f;
 
     public List<StoryActor> blocksOutActors = new List<StoryActor>();
 
     public RawImage rawImage;
 
-    Image characterImage;
+    protected Image characterImage;
 
     protected virtual void Awake()
     {
