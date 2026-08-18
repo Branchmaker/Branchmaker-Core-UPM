@@ -11,27 +11,27 @@ namespace BranchMaker.Interface
         private bool _armed;
         public GameObject clickToProceedIndicator;
 
-        private void Start()
+        protected virtual  void Start()
         {
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
             StoryManager.Instance.OnBlockComplete.AddListener(BlockComplete);
             if (clickToProceedIndicator) clickToProceedIndicator.SetActive(false);
         }
 
-        private void BlockComplete(BranchNodeBlock arg0)
+        protected virtual  void BlockComplete(BranchNodeBlock arg0)
         {
             if (!StoryManager.HasSpeakingQueue()) return;
             _armed = true;
             if (clickToProceedIndicator) clickToProceedIndicator.SetActive(true);
         }
 
-        private void ProcessBlock(BranchNodeBlock arg0)
+        protected virtual  void ProcessBlock(BranchNodeBlock arg0)
         {
             _armed = false;
             if (clickToProceedIndicator) clickToProceedIndicator.SetActive(false);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (!_armed) return;
             if (StoryManager.Busy()) return;
@@ -67,7 +67,7 @@ namespace BranchMaker.Interface
         }
         
         
-        private bool IsPointerOverUIElement()
+        protected virtual  bool IsPointerOverUIElement()
         {
             return EventSystem.current && EventSystem.current.IsPointerOverGameObject();
         }
