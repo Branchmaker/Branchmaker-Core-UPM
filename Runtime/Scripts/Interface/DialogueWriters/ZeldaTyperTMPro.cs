@@ -25,8 +25,9 @@ namespace BranchMaker.Interface.DialogueWriters
 
         public bool Rushed;
 
-        private void Awake()
+        public override void Prepare()
         {
+            base.Prepare();
             _dialogueLabel = GetComponent<TMP_Text>();
         }
 

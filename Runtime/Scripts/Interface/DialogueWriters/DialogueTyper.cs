@@ -13,7 +13,7 @@ namespace BranchMaker.Interface.DialogueWriters
             Prepare();
         }
 
-        public void Prepare()
+        public virtual void Prepare()
         {
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
             _preprocessors = GetComponents<DialoguePreprocessor>();
