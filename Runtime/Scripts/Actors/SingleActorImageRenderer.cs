@@ -11,16 +11,20 @@ namespace BranchMaker.Actors
         public List<ActorObject> preloadActors = new();
         private Image _actorImage;
         private ActorObject _currentlyShowingActor;
+        private bool _initialized;
         
         private void Awake()
         {
+            Prepare();
+        }
+        
+        public void Prepare()
+        {
+            if (_initialized) return;
+            _initialized = true;
             _actorImage = GetComponent<Image>();
             preloadActors.ForEach(ActorDatabase.PreloadActor);
             _actorImage.enabled = false;
-        }
-
-        private void Start()
-        {
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
         }
 
