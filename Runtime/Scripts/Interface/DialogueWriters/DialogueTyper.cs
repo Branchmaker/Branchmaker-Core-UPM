@@ -1,14 +1,19 @@
 using System.Linq;
-using BranchMaker.Runtime;
 using UnityEngine;
 
-namespace BranchMaker
+namespace BranchMaker.Interface.DialogueWriters
 {
     public abstract class DialogueTyper : MonoBehaviour
     {
         private DialoguePreprocessor[] _preprocessors;
         protected static bool CurrentlyWriting;
-        void Start()
+
+        private void Awake()
+        {
+            Prepare();
+        }
+
+        public void Prepare()
         {
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
             _preprocessors = GetComponents<DialoguePreprocessor>();
