@@ -28,13 +28,18 @@ namespace BranchMaker.Actors
             StoryManager.Instance.OnBlockChange.AddListener(ProcessBlock);
         }
 
-        private void ProcessBlock(BranchNodeBlock CurrentBlock)
+        private void ProcessBlock(BranchNodeBlock currentBlock)
         {
-            if (!string.IsNullOrEmpty(CurrentBlock.character))
+            ShowActor(currentBlock.character, currentBlock.emotion);
+        }
+
+        public void ShowActor(string character, string emotion)
+        {
+            if (!string.IsNullOrEmpty(character))
             {
-                _currentlyShowingActor = ActorDatabase.ActorByKey(CurrentBlock.character);
+                _currentlyShowingActor = ActorDatabase.ActorByKey(character);
                 if (!_currentlyShowingActor) return;
-                if (!string.IsNullOrEmpty(CurrentBlock.emotion)) _currentlyShowingActor.CurrentEmotion = CurrentBlock.emotion;
+                if (!string.IsNullOrEmpty(emotion)) _currentlyShowingActor.CurrentEmotion = emotion;
                 
                 _actorImage.sprite = _currentlyShowingActor.PortraitSprite();
                 _actorImage.enabled = (_actorImage.sprite != null);
