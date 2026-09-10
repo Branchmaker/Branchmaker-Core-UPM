@@ -13,7 +13,7 @@ namespace BranchMaker.Interface.OptionHandlers
         private List<DialogueButton> _actionButtons;
         private CanvasGroup _canvasGroup;
         [SerializeField] private  bool debugOutput;
-        [SerializeField] private  bool autoFadeCanvasGroup;
+        [SerializeField] private  bool autoFadeCanvasGroup = true;
         
         [Header("Filters")]
         public bool blockUnsafeActions;
