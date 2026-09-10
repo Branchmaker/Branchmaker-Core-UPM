@@ -140,7 +140,7 @@ namespace BranchMaker
             return result;
         }
 
-        private void LoadStartingNode()
+        public void LoadStartingNode()
         {
             if (CurrentNode != null)
             {
