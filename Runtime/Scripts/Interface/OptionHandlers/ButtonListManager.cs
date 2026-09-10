@@ -13,6 +13,7 @@ namespace BranchMaker.Interface.OptionHandlers
         private List<DialogueButton> _actionButtons;
         private CanvasGroup _canvasGroup;
         [SerializeField] private  bool debugOutput;
+        [SerializeField] private  bool autoFadeCanvasGroup;
         
         [Header("Filters")]
         public bool blockUnsafeActions;
@@ -45,7 +46,7 @@ namespace BranchMaker.Interface.OptionHandlers
             if (node == null) return;
             var buttonIndex = 0;
             Cleanup();
-            _canvasGroup.alpha = 1;
+            if (autoFadeCanvasGroup) _canvasGroup.alpha = 1;
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
 
@@ -128,7 +129,7 @@ namespace BranchMaker.Interface.OptionHandlers
             {
                 but.gameObject.SetActive(false);
             }
-            _canvasGroup.alpha = 0;
+            if (autoFadeCanvasGroup) _canvasGroup.alpha = 0;
             _canvasGroup.blocksRaycasts = false;
             _canvasGroup.interactable = false;
         }
