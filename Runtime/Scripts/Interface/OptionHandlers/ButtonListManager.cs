@@ -3,7 +3,6 @@ using System.Linq;
 using BranchMaker.GameScripts;
 using BranchMaker.Runtime.Utility;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace BranchMaker.Interface.OptionHandlers
 {
@@ -12,8 +11,9 @@ namespace BranchMaker.Interface.OptionHandlers
     {
         private List<DialogueButton> _actionButtons;
         private CanvasGroup _canvasGroup;
-        [SerializeField] private  bool debugOutput;
-        [SerializeField] private  bool autoFadeCanvasGroup = true;
+        [SerializeField] private bool debugOutput;
+        [SerializeField] private bool autoFadeCanvasGroup = true;
+        [SerializeField] private bool highlightNeedKey = true;
         
         [Header("Filters")]
         public bool blockUnsafeActions;
@@ -69,10 +69,10 @@ namespace BranchMaker.Interface.OptionHandlers
                 var buttonLabel = block.dialogue.CapitalizeFirst();
                 if (block.dialogue.StartsWith("<")) buttonLabel = block.dialogue;
                 
-                if (!string.IsNullOrEmpty(block.meta_scripts))
+                if (highlightNeedKey && !string.IsNullOrEmpty(block.meta_scripts))
                 {
                     if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
-                    if (block.meta_scripts.Contains("needword:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
+                    if (block.meta_scripts.Contains("needkey:")) buttonLabel = "<color=#00FFFF>" + buttonLabel + "</color>";
                 }
 
                 _actionButtons[buttonIndex].gameObject.SetActive(true);
