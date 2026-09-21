@@ -32,7 +32,7 @@ namespace BranchMaker.GameScripts
         {
             if (string.IsNullOrEmpty(uri)) return;
             if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
-            if (!uri.ToLower().EndsWith(".mp3")) return;
+            if (!uri.ToLower().EndsWith(".mp3") && !uri.ToLower().EndsWith(".ogg") && !uri.ToLower().EndsWith(".ogx")) return;
             StartCoroutine(PlayFile(uri));
         }
 
