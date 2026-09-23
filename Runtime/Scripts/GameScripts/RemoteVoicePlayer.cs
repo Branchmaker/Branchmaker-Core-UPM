@@ -9,12 +9,12 @@ namespace BranchMaker.GameScripts
     public class RemoteVoicePlayer : BaseController<RemoteVoicePlayer>
     {
         private UnityWebRequest _webRequest;
-        private AudioSource _audioSource;
+        protected AudioSource AudioSource;
 
         protected override void Awake()
         {
             base.Awake();
-            _audioSource = GetComponent<AudioSource>();
+            AudioSource = GetComponent<AudioSource>();
         }
 
         private void Start()
@@ -52,8 +52,8 @@ namespace BranchMaker.GameScripts
                 AudioClip audioClip = DownloadHandlerAudioClip.GetContent(_webRequest);
                 if (!audioClip) yield break;
 
-                _audioSource.clip = audioClip;
-                _audioSource.Play();
+                AudioSource.clip = audioClip;
+                AudioSource.Play();
             }
             else
             {
@@ -79,8 +79,8 @@ namespace BranchMaker.GameScripts
                         if (www.responseCode != 200 || www.result == UnityWebRequest.Result.ConnectionError) {
                             Debug.Log("error");
                         } else {
-                            _audioSource.clip = DownloadHandlerAudioClip.GetContent(www);
-                            _audioSource.Play();
+                            AudioSource.clip = DownloadHandlerAudioClip.GetContent(www);
+                            AudioSource.Play();
                         }
 
                         yield break;
@@ -98,8 +98,8 @@ namespace BranchMaker.GameScripts
                     {
                         var myClip = DownloadHandlerAudioClip.GetContent(www);
                         if (!myClip) yield break;
-                        _audioSource.clip = myClip;
-                        _audioSource.Play();
+                        AudioSource.clip = myClip;
+                        AudioSource.Play();
                     }
                 }
             }
