@@ -272,6 +272,15 @@ namespace BranchMaker
             }
         }
 
+        private void OnDestroy()
+        {
+            OnStoryReady.RemoveAllListeners();
+            OnNodeChange.RemoveAllListeners();
+            OnNodeComplete.RemoveAllListeners();
+            OnBlockChange.RemoveAllListeners();
+            OnBlockComplete.RemoveAllListeners();
+        }
+
 
         public static bool HasSpeakingQueue() => Instance._dialogueQueue.Count() > 0;
     }
