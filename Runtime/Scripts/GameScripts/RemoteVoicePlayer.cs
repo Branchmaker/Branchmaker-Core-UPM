@@ -32,7 +32,8 @@ namespace BranchMaker.GameScripts
         {
             if (string.IsNullOrEmpty(uri)) return;
             if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
-            if (!uri.ToLower().EndsWith(".mp3") && !uri.ToLower().EndsWith(".ogg") && !uri.ToLower().EndsWith(".ogx")) return;
+            if (!uri.ToLower().EndsWith(".mp3") && !uri.ToLower().EndsWith(".ogg") &&
+                !uri.ToLower().EndsWith(".ogx")) return;
             StartCoroutine(PlayFile(uri));
         }
 
@@ -41,68 +42,95 @@ namespace BranchMaker.GameScripts
             StopAllCoroutines();
             GetComponent<AudioSource>().Stop();
         }
-    
+
         private IEnumerator PlayFile(string path)
         {
+            const int maxAttempts = 3; // Initial attempt + 2 retries
+            const float retryDelay = 0.5f;
+
             if (IsHLSFormat(path))
             {
-                _webRequest = UnityWebRequest.Get(path);
-                yield return _webRequest.SendWebRequest();
-                // If it's HLS format, stream the audio
-                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(_webRequest);
-                if (!audioClip) yield break;
+                for (var attempt = 1; attempt <= maxAttempts; attempt++)
+                {
+                    _webRequest = UnityWebRequestMultimedia.GetAudioClip(path, AudioType.UNKNOWN);
 
-                AudioSource.clip = audioClip;
-                AudioSource.Play();
+                    yield return _webRequest.SendWebRequest();
+
+                    if (_webRequest.result == UnityWebRequest.Result.Success)
+                    {
+                        var audioClip = DownloadHandlerAudioClip.GetContent(_webRequest);
+
+                        if (audioClip)
+                        {
+                            AudioSource.clip = audioClip;
+                            AudioSource.Play();
+                            yield break;
+                        }
+                    }
+
+                    Debug.LogWarning(
+                        $"Failed to load voice file '{path}' " +
+                        $"(attempt {attempt}/{maxAttempts}): {_webRequest.error}"
+                    );
+
+                    _webRequest.Dispose();
+                    _webRequest = null;
+
+                    if (attempt < maxAttempts)
+                        yield return new WaitForSeconds(retryDelay);
+                }
+
+                Debug.LogError($"Could not load voice file '{path}' after {maxAttempts} attempts.");
+                yield break;
             }
-            else
-            {
-                // If it's OGG format, download and play
-                var audioType = GetAudioTypeFromPath(path);
-            
+
+            var audioType = GetAudioTypeFromPath(path);
+
 #if UNITY_WEBGL
-            if (audioType == AudioType.OGGVORBIS) yield break;  
+    if (audioType == AudioType.OGGVORBIS)
+        yield break;
 #endif
-                
+
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            {
                 using (var www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
                 {
                     if (audioType == AudioType.MPEG)
                     {
-                        DownloadHandlerAudioClip dHA = new DownloadHandlerAudioClip(string.Empty, AudioType.MPEG);
-                        dHA.streamAudio = true;
-                        www.downloadHandler = dHA;
-                    
-                        www.SendWebRequest();
-                        while (www.downloadProgress < 1) {
-                            yield return new WaitForSeconds(.1f);
-                        }
-                        if (www.responseCode != 200 || www.result == UnityWebRequest.Result.ConnectionError) {
-                            Debug.Log("error");
-                        } else {
-                            AudioSource.clip = DownloadHandlerAudioClip.GetContent(www);
-                            AudioSource.Play();
-                        }
+                        var downloadHandler = new DownloadHandlerAudioClip(
+                            string.Empty,
+                            AudioType.MPEG
+                        );
 
-                        yield break;
-
+                        downloadHandler.streamAudio = true;
+                        www.downloadHandler = downloadHandler;
                     }
 
                     yield return www.SendWebRequest();
 
-                    if (www.result != UnityWebRequest.Result.Success)
+                    if (www.result == UnityWebRequest.Result.Success)
                     {
-                        Debug.LogError("Could not load " + www.url);
-                        Debug.Log(www.error);
+                        var audioClip = DownloadHandlerAudioClip.GetContent(www);
+
+                        if (audioClip)
+                        {
+                            AudioSource.clip = audioClip;
+                            AudioSource.Play();
+                            yield break;
+                        }
                     }
-                    else
-                    {
-                        var myClip = DownloadHandlerAudioClip.GetContent(www);
-                        if (!myClip) yield break;
-                        AudioSource.clip = myClip;
-                        AudioSource.Play();
-                    }
+
+                    Debug.LogWarning(
+                        $"Failed to load voice file '{path}' " +
+                        $"(attempt {attempt}/{maxAttempts}): {www.error}"
+                    );
                 }
+
+                if (attempt < maxAttempts)
+                    yield return new WaitForSeconds(retryDelay);
             }
+
+            Debug.LogError($"Could not load voice file '{path}' after {maxAttempts} attempts.");
         }
 
         private bool IsHLSFormat(string path)
@@ -137,10 +165,7 @@ namespace BranchMaker.GameScripts
         private void OnDestroy()
         {
             // Clean up the web request when the object is destroyed
-            if (_webRequest != null && !_webRequest.isDone)
-            {
-                _webRequest.Abort();
-            }
+            if (_webRequest != null && !_webRequest.isDone) _webRequest.Abort();
         }
     }
 }
