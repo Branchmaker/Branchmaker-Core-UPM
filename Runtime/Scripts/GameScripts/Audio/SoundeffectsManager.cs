@@ -95,6 +95,7 @@ namespace BranchMaker.GameScripts.Audio
         // Update is called once per frame
         static public void PlayEffect (string key,bool jiggleSound = true, bool playStacked = true)
         {
+            key = key.ToLower();
             foreach (SoundeffectsManager man in soundlibs)
             {
                 if (!man.gameObject.activeInHierarchy) continue;
