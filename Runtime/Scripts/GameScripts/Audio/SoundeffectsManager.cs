@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using BranchMaker.Utility;
 using UnityEngine;
 
 namespace BranchMaker.GameScripts.Audio
 {
-    public class SoundeffectsManager : MonoBehaviour {
-        static List<SoundeffectsManager> soundlibs = new List<SoundeffectsManager>();
+    public class SoundeffectsManager : BaseController<SoundeffectsManager> {
+        static List<SoundeffectsManager> soundlibs = new();
         List<AudioSource> sources;
-        public AudioClip[] clips;
+        public List<AudioClip> clips;
 
-        Dictionary<string, AudioClip> clipdics = new Dictionary<string, AudioClip>();
+        Dictionary<string, AudioClip> clipdics = new();
 
         static public float volume = 0.5f;
 
@@ -34,12 +36,12 @@ namespace BranchMaker.GameScripts.Audio
 
         public static void stopSpeech() {
 
-            foreach (SoundeffectsManager man in soundlibs)
+            foreach (var man in soundlibs)
             {
                 if (!man.isVoiceCharacter) continue;
-                foreach (AudioSource source in man.sources)
+                foreach (var source in man.sources)
                 {
-                    if (source == null) continue;
+                    if (!source) continue;
                     if (source.isPlaying)
                     {
                         source.Stop();
@@ -49,24 +51,25 @@ namespace BranchMaker.GameScripts.Audio
         }
 
         // Use this for initialization
-        void Awake () {
-
-            if (clips.Length == 0) return;
+        protected override void Prepare()
+        {
+            clips.RemoveAll(a => !a);
+            if (clips.Count == 0) return;
             if (!soundlibs.Contains(this)) soundlibs.Add(this);
             //ToggleSettingBox.preloadSettings();
-            sources = new List<AudioSource>(GetComponents<AudioSource>());
+            sources = GetComponents<AudioSource>().ToList();
             forceVolume(PlayerPrefs.GetFloat("sfx", 0.5f));
         
-            foreach (AudioSource sur in sources) {
+            foreach (var sur in sources) {
                 sur.volume = volume;
             }
 
             if (clips == null) return;
-            foreach (AudioClip clip in clips)
+            foreach (var clip in clips)
             {
-                if (clip == null) continue;
-                if (clipdics.ContainsKey(clip.name)) continue;
-                clipdics.Add(clip.name, clip);
+                if (!clip) continue;
+                if (clipdics.ContainsKey(clip.name.ToLower())) continue;
+                clipdics.Add(clip.name.ToLower(), clip);
             }
 
         }
@@ -99,7 +102,7 @@ namespace BranchMaker.GameScripts.Audio
 
                 if (!playStacked)
                 {
-                    foreach (AudioSource source in man.sources)
+                    foreach (var source in man.sources)
                     {
                         if (!source.isPlaying) continue;
                         if (source.clip == man.clipdics[key]) return;
@@ -107,9 +110,9 @@ namespace BranchMaker.GameScripts.Audio
                 }
 
 
-                foreach (AudioSource source in man.sources)
+                foreach (var source in man.sources)
                 {
-                    if (source == null) continue;
+                    if (!source) continue;
                     if (source.isPlaying) continue;
                     if (!source.enabled) continue;
                     source.clip = man.clipdics[key];
