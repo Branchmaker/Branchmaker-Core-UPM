@@ -3,6 +3,7 @@ using System.Linq;
 using BranchMaker.GameScripts;
 using BranchMaker.Runtime.Utility;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace BranchMaker.Interface.OptionHandlers
 {
@@ -86,6 +87,13 @@ namespace BranchMaker.Interface.OptionHandlers
             {
                 dialogueOption.ProcessDialogueOptions(node);
             }
+
+            PrepareSelection();
+        }
+
+        protected void PrepareSelection()
+        {
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         private void Log(string s)
