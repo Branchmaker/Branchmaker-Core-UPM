@@ -28,7 +28,7 @@ namespace BranchMaker.GameScripts
             if (!string.IsNullOrEmpty(block.voice_file)) PlayRemoteOgg(block.voice_file);
         }
 
-        protected void PlayRemoteOgg(string uri)
+        protected virtual void PlayRemoteOgg(string uri)
         {
             if (string.IsNullOrEmpty(uri)) return;
             if (uri.EndsWith(".jpg") || uri.EndsWith(".jpeg")) return;
@@ -37,13 +37,13 @@ namespace BranchMaker.GameScripts
             StartCoroutine(PlayFile(uri));
         }
 
-        public void StopSpeaking()
+        public virtual void StopSpeaking()
         {
             StopAllCoroutines();
             GetComponent<AudioSource>().Stop();
         }
 
-        protected IEnumerator PlayFile(string path)
+        protected virtual IEnumerator PlayFile(string path)
         {
             const int maxAttempts = 3; // Initial attempt + 2 retries
             const float retryDelay = 0.5f;
