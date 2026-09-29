@@ -8,7 +8,7 @@ namespace BranchMaker.GameScripts
     [RequireComponent(typeof(AudioSource))]
     public class RemoteVoicePlayer : BaseController<RemoteVoicePlayer>
     {
-        private UnityWebRequest _webRequest;
+        protected UnityWebRequest _webRequest;
         protected AudioSource AudioSource;
 
         protected override void Awake()
