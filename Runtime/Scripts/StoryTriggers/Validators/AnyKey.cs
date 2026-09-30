@@ -9,7 +9,7 @@ public class AnyKey : StoryEventTrigger
 
     public override bool PassValidation(string trigger, BranchNodeBlock block)
     {
-        var keystring = trigger.Replace("needkey:", "").ToLower().Trim();
+        var keystring = trigger.Replace("anykey:", "").ToLower().Trim();
         var keys = keystring.Split(",").ToList();
         return keys.Any(key => StoryButton.playerkeys.Contains(key));
     }
