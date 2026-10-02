@@ -39,6 +39,8 @@ namespace BranchMaker
             StoredAction = null;
         }
 
+        public static List<string> AllSeenNodes() => _seenNodes;
+
         public static void RegisterEventTrigger(Type eventClass)
         {
             if (_triggerPool.Count == 0) PreloadEvents();
