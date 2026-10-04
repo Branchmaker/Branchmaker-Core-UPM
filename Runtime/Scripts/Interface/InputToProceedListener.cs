@@ -57,6 +57,7 @@ namespace BranchMaker.Interface
             // Gamepad
             if (Gamepad.current != null)
             {
+                if (Gamepad.current.rightTrigger.wasReleasedThisFrame) return true; // RT
                 if (Gamepad.current.buttonSouth.wasReleasedThisFrame) return true; // A
                 if (Gamepad.current.buttonEast.wasReleasedThisFrame) return true;  // B
             }
