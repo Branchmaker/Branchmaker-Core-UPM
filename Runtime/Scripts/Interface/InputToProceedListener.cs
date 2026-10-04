@@ -54,6 +54,13 @@ namespace BranchMaker.Interface
                 if (Keyboard.current.numpadEnterKey.wasReleasedThisFrame) return true;
             }
 
+            // Gamepad
+            if (Gamepad.current != null)
+            {
+                if (Gamepad.current.buttonSouth.wasReleasedThisFrame) return true; // A
+                if (Gamepad.current.buttonEast.wasReleasedThisFrame) return true;  // B
+            }
+            
             // Pointer / touch (primary press)
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) return true;
             if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) return true;
